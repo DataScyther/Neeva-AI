@@ -41,6 +41,12 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    // Configure APK output name
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "AI Mental Wellness App.apk"
+        }
+    }
 }
 
 repositories {
