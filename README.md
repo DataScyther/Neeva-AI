@@ -1,27 +1,98 @@
-# AI-Powered Mental Health App
+# AI Mental Wellness App
 
-## Project Overview
+A powerful, AI-driven mental health application to support users in managing their well-being through interactive tools, smart insights, and a user-friendly experience.
 
-This is an AI-powered mental health application designed to support users in managing their mental well-being using interactive tools and AI-driven features.
+---
 
-## Running the code
+## 🚀 Features
 
-Run `npm i` to install the dependencies.
+- **AI-Powered Support**: Personalized mental wellness tips and resources powered by machine learning.
+- **Interactive Tools**: Mood tracking, goal setting, journaling, and mindfulness exercises.
+- **Cross-Platform**: Optimized for web and mobile (Android) using Capacitor.
+- **Secure & Private**: User data is handled securely following best practices.
 
-Run `npm run dev` to start the development server.
+---
 
-## Building for Production
+## 🖥️ Getting Started
 
-Run `npm run build` to create a production build.
+### Prerequisites
 
-## Mobile App
+- [Node.js](https://nodejs.org/) (v14 or higher)
+- [npm](https://www.npmjs.com/)
+- [Android Studio](https://developer.android.com/studio) (for mobile builds)
 
-This project uses Capacitor for mobile deployment. The Android project is located in the `android` directory.
+### Installation
 
-To build the Android APK:
-1. Run `npm run build` to create the web build
-2. Run `npx cap sync` to sync the web build with the Android project
-3. Run `npx cap open android` to open the project in Android Studio
-4. Build the APK in Android Studio
+```bash
+npm install
+```
 
-The generated APK will be named "AI Mental Wellness App.apk".
+### Running the Development Server
+
+```bash
+npm run dev
+```
+Visit `http://localhost:3000` (or as specified) in your browser.
+
+---
+
+## 📦 Build for Production
+
+```bash
+npm run build
+```
+
+The optimized production build will be available in the `dist` directory.
+
+---
+
+## 📱 Mobile App Deployment (Android)
+
+This project uses [Capacitor](https://capacitorjs.com/) for deploying to mobile platforms.
+
+1. Build the web app:
+   ```bash
+   npm run build
+   ```
+2. Sync the build with the Android project:
+   ```bash
+   npx cap sync
+   ```
+3. Open the project in Android Studio:
+   ```bash
+   npx cap open android
+   ```
+4. Build the APK from Android Studio. The output will be named `AI Mental Wellness App.apk`.
+
+---
+
+## 🛠️ Technologies Used
+
+- **TypeScript**
+- **React** / [Your Frontend Framework]
+- **Capacitor**
+- **CSS**
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+[MIT License](LICENSE)
+
+---
+
+## 🙋‍♂️ Contact & Support
+
+For questions, suggestions, or support, please open an issue or contact [DataScyther](https://github.com/DataScyther).
