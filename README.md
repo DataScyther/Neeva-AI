@@ -1,7 +1,5 @@
 # AI-Powered Mental Health App
 
-This is a code bundle for AI-Powered Mental Health App. The original project is available at https://www.figma.com/design/0anmaU48uP4XvfQw1Vy4li/AI-Powered-Mental-Health-App.
-
 ## Project Overview
 
 This is an AI-powered mental health application designed to support users in managing their mental well-being using interactive tools and AI-driven features.
