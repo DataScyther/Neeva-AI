@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
-import { Send, Bot, User, Heart } from 'lucide-react';
+import { Send, Bot, User } from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -130,8 +130,8 @@ export function Chatbot() {
                   <div className="bg-gray-100 p-3 rounded-2xl">
                     <div className="flex space-x-1">
                       <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce animate-delay-100"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce animate-delay-200"></div>
                     </div>
                   </div>
                 </div>
