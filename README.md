@@ -29,7 +29,11 @@ Welcome to the AI Mental Wellness App! This innovative platform combines artific
 - 🧠 **AI-Powered Support**
   - Personalized mental wellness recommendations
   - Smart mood pattern analysis
-  - Adaptive learning system for better support  
+  - Adaptive learning system for better support
+  - Real time mood logging and tracking
+  - Community Support
+  - Guided exercises (meditation, journal, 1/2 ADHD based games)
+ 
   
 - 🛠️ **Interactive Tools**
   - Advanced mood tracking and visualization
