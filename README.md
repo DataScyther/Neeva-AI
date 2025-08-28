@@ -44,8 +44,6 @@ Welcome to the AI Mental Wellness App! This innovative platform combines artific
 
 - 🔐 **Security & Privacy**
   - End-to-end encryption
-  - GDPR-compliant data handling
-  - Regular security audits
 
 ## 💻 Getting Started
 
