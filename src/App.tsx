@@ -14,6 +14,7 @@ import { GuidedMeditation } from "./components/GuidedMeditation";
 import { CrisisSupport } from "./components/CrisisSupport";
 import { Chatbot } from "./components/Chatbot";
 import { MoodTracker } from "./components/MoodTracker";
+import { SplashScreen } from "./components/SplashScreen";
 import { Toaster } from "./components/ui/sonner";
 import {
   Card,
@@ -44,6 +45,7 @@ import {
   Plus,
   Smile,
 } from "lucide-react";
+import { SupabaseProvider } from "./contexts/SupabaseContext";
 
 // Inline Dashboard Component
 function Dashboard() {
@@ -363,6 +365,7 @@ function Dashboard() {
 
 function AppContent() {
   const { state } = useAppContext();
+  const [showSplash, setShowSplash] = useState(true);
 
   // Check if user has completed onboarding
   const hasCompletedOnboarding =
@@ -383,6 +386,10 @@ function AppContent() {
       document.documentElement.classList.toggle("dark", isDark);
     }
   }, [state.theme]);
+
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
 
   if (!state.isAuthenticated) {
     return <Authentication />;
@@ -435,8 +442,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
+    <SupabaseProvider>
+      <AppProvider>
+        <AppContent />
+      </AppProvider>
+    </SupabaseProvider>
   );
 }

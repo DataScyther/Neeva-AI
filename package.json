@@ -1,5 +1,5 @@
 {
-    "name": "ai-powered-mental-health-app",
+    "name": "neeva-ai-mental-wellness-app",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
@@ -33,12 +33,20 @@
         "@radix-ui/react-toggle-group": "^1.1.2",
         "@radix-ui/react-tooltip": "^1.1.8",
         "@supabase/supabase-js": "^2.0.0",
+        "bcryptjs": "^3.0.2",
         "class-variance-authority": "^0.7.1",
         "clsx": "*",
         "cmdk": "^1.1.1",
+        "cookie-parser": "^1.4.7",
+        "crypto": "^1.0.1",
+        "dotenv": "^17.2.2",
         "embla-carousel-react": "^8.6.0",
+        "express": "^5.1.0",
         "input-otp": "^1.4.2",
+        "jsonwebtoken": "^9.0.2",
         "lucide-react": "^0.487.0",
+        "mailtrap": "^4.2.0",
+        "mongoose": "^8.18.0",
         "motion": "*",
         "react": "^18.3.1",
         "react-day-picker": "^8.10.1",
@@ -53,10 +61,25 @@
     "devDependencies": {
         "@types/node": "^20.10.0",
         "@vitejs/plugin-react-swc": "^3.10.2",
-        "vite": "^5.4.19"
+        "nodemon": "^3.1.10",
+        "vite": "^7.1.4"
     },
     "scripts": {
         "dev": "vite",
         "build": "vite build"
-    }
+    },
+    "description": "<div align=\"center\">",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DataScyther/AI-Mental-Wellness-App.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/DataScyther/AI-Mental-Wellness-App/issues"
+    },
+    "homepage": "https://github.com/DataScyther/AI-Mental-Wellness-App#readme"
 }

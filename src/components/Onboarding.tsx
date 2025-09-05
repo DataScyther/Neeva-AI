@@ -30,7 +30,7 @@ interface OnboardingData {
 const onboardingSteps = [
   {
     id: 1,
-    title: 'Welcome to MindWell',
+    title: 'Welcome to Neeva',
     description: 'Your personal mental health companion',
     icon: Heart
   },
@@ -144,7 +144,7 @@ export function Onboarding() {
               <Heart className="w-12 h-12 text-white" />
             </div>
             <div className="space-y-4">
-              <h2 className="text-3xl font-bold">Welcome to MindWell</h2>
+              <h2 className="text-3xl font-bold">Welcome to Neeva</h2>
               <p className="text-muted-foreground text-lg max-w-md mx-auto">
                 Your personal AI-powered mental health companion. We're here to support you on your wellness journey with evidence-based tools and techniques.
               </p>

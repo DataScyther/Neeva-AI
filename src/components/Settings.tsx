@@ -68,7 +68,7 @@ export function Settings() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `mindwell-data-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `neeva-data-${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -82,7 +82,7 @@ export function Settings() {
           <SettingsIcon className="w-8 h-8 text-gray-500" />
           <span>Settings</span>
         </h1>
-        <p className="text-muted-foreground">Customize your MindWell experience</p>
+        <p className="text-muted-foreground">Customize your Neeva experience</p>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
@@ -320,7 +320,7 @@ export function Settings() {
                 <Palette className="w-5 h-5" />
                 <span>Appearance</span>
               </CardTitle>
-              <CardDescription>Customize how MindWell looks and feels</CardDescription>
+              <CardDescription>Customize how Neeva looks and feels</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">

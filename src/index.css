@@ -318,7 +318,6 @@
   }
 
   img, svg, video, canvas, audio, iframe, embed, object {
-    vertical-align: middle;
     display: block;
   }
 
@@ -821,6 +820,7 @@
   }
 
   .line-clamp-1 {
+    line-clamp: 1;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     display: -webkit-box;
@@ -4143,21 +4143,50 @@
   }
 
   :is(.\*\:data-\[slot\=select-value\]\:line-clamp-1 > *)[data-slot="select-value"] {
+    line-clamp: 1;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     display: -webkit-box;
     overflow: hidden;
   }
 
-  :is(.\*\:data-\[slot\=select-value\]\:flex > *)[data-slot="select-value"] {
-    display: flex;
+  .line-clamp-1 {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
   }
-
-  :is(.\*\:data-\[slot\=select-value\]\:items-center > *)[data-slot="select-value"] {
+  
+  :is(.\*:data-\[slot\=select-value\]\:items-center > *)[data-slot="select-value"] {
     align-items: center;
   }
 
-  :is(.\*\:data-\[slot\=select-value\]\:gap-2 > *)[data-slot="select-value"] {
+  :is(.\*:data-\[slot\=select-value\]\:justify-center > *)[data-slot="select-value"] {
+    justify-content: center;
+  }
+
+  :is(.\*:data-\[slot\=select-value\]\:justify-between > *)[data-slot="select-value"] {
+    justify-content: space-between;
+  }
+
+  :is(.\*:data-\[slot\=select-value\]\:justify-around > *)[data-slot="select-value"] {
+    justify-content: space-around;
+  }
+
+  :is(.\*:data-\[slot\=select-value\]\:justify-evenly > *)[data-slot="select-value"] {
+    justify-content: space-evenly;
+  }
+
+  .line-clamp-1 {
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
+  }
+
+  :is(.\*:data-\[slot\=select-value\]\:gap-2 > *)[data-slot="select-value"] {
     gap: calc(var(--spacing) * 2);
   }
 

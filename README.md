@@ -1,4 +1,4 @@
-# 🧠 AI Mental Wellness App
+# 🧠 Neeva - AI Mental Wellness App
 
 <div align="center">
 
