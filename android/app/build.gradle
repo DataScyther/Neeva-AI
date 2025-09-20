@@ -29,6 +29,12 @@ android {
         }
     }
     buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            applicationIdSuffix ".debug"
+            versionNameSuffix "-debug"
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -50,8 +56,12 @@ android {
 }
 
 repositories {
-    flatDir{
+    google()
+    mavenCentral()
+    flatDir {
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+        // Suppressing deprecation warning as this is required for Capacitor plugins
+        //noinspection GrDeprecatedAPIUsage
     }
 }
 

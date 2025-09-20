@@ -1,7 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">AI-Powered Mental Health App</string>
-    <string name="title_activity_main">AI-Powered Mental Health App</string>
-    <string name="package_name">com.mentalhealth.app</string>
-    <string name="custom_url_scheme">com.mentalhealth.app</string>
+    <string name="app_name">Neeva</string>
+    <string name="title_activity_main">Neeva</string>
 </resources>

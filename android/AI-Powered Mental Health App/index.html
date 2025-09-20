@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neeva - Mental Health Companion</title>
+    
+    <!-- Google Sign-In Permissions Policy for FedCM -->
+    <meta http-equiv="Permissions-Policy" content="identity-credentials-get=*, publickey-credentials-get=*, publickey-credentials-create=*" />
+    
+    <!-- Google Sign-In Origin Trial Token (if needed) -->
+    <meta http-equiv="origin-trial" content="" />
+    
+    <!-- Preconnect to Google APIs for better performance -->
+    <link rel="preconnect" href="https://accounts.google.com" />
+    <link rel="preconnect" href="https://www.googleapis.com" />
+    
+    <!-- Security headers for OAuth -->
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="unsafe-none" />
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+  
