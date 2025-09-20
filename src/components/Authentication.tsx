@@ -81,12 +81,11 @@ export function Authentication() {
 
       if (error) {
         // Handle JWT expiration error
-        if (error.message.includes('jwt') || error.message.includes('expired')) {
+        if (error.message.includes('jwt')) {
           // Try to refresh the session
           const { error: refreshError } = await refreshSession();
           if (refreshError) {
             alert("Session expired. Please sign in again.");
-            setIsLoading(false);
             return;
           }
           // Retry sign in after refresh
@@ -129,12 +128,11 @@ export function Authentication() {
 
       if (error) {
         // Handle JWT expiration error
-        if (error.message.includes('jwt') || error.message.includes('expired')) {
+        if (error.message.includes('jwt')) {
           // Try to refresh the session
           const { error: refreshError } = await refreshSession();
           if (refreshError) {
             alert("Session expired. Please try again.");
-            setIsLoading(false);
             return;
           }
           // Retry sign up after refresh
@@ -174,7 +172,7 @@ export function Authentication() {
 
       if (error) {
         // Handle JWT expiration error
-        if (error.message.includes('jwt') || error.message.includes('expired')) {
+        if (error.message.includes('jwt')) {
           // Try to refresh the session
           const { error: refreshError } = await refreshSession();
           if (refreshError) {

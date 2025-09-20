@@ -5,22 +5,7 @@ import { projectId, publicAnonKey } from '../../utils/supabase/info'
 const supabaseUrl = `https://${projectId}.supabase.co`
 const supabaseAnonKey = publicAnonKey
 
-// Create a single Supabase client instance for the frontend with enhanced configuration
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    // Automatically refresh tokens when they expire
-    autoRefreshToken: true,
-    // Persist session data in localStorage
-    persistSession: true,
-    // Detect session changes in other tabs
-    detectSessionInUrl: true
-  },
-  // Global error handling
-  global: {
-    headers: {
-      'X-Client-Info': 'NeevaAI/1.0'
-    }
-  }
-})
+// Create a single Supabase client instance for the frontend
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 export type SupabaseClient = typeof supabase
