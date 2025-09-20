@@ -25,7 +25,13 @@ import {
   EyeOff,
   Chrome,
 } from "lucide-react";
-import { supabase } from "../lib/supabase/client";
+import { 
+  signIn, 
+  signUp, 
+  signInWithGoogle, 
+  getCurrentUser,
+  refreshSession
+} from "../lib/supabase/auth";
 import { useEffect } from "react";
 
 export function Authentication() {
@@ -42,40 +48,24 @@ export function Authentication() {
   // Check for existing session on component mount
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        dispatch({
-          type: "SET_USER",
-          payload: {
-            id: session.user.id,
-            email: session.user.email || "",
-            name: session.user.user_metadata?.name || "User",
-          },
-        });
+      try {
+        const user = await getCurrentUser();
+        if (user) {
+          dispatch({
+            type: "SET_USER",
+            payload: {
+              id: user.id,
+              email: user.email || "",
+              name: user.user_metadata?.name || "User",
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
       }
     };
     
     checkSession();
-    
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        dispatch({
-          type: "SET_USER",
-          payload: {
-            id: session.user.id,
-            email: session.user.email || "",
-            name: session.user.user_metadata?.name || "User",
-          },
-        });
-      } else {
-        dispatch({ type: "LOGOUT" });
-      }
-    });
-    
-    return () => {
-      subscription.unsubscribe();
-    };
   }, [dispatch]);
 
   const handleInputChange = (field: string, value: string) => {
@@ -87,23 +77,38 @@ export function Authentication() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
-      });
+      const { data, error } = await signIn(formData.email, formData.password);
 
-      if (error) throw error;
+      if (error) {
+        // Handle JWT expiration error
+        if (error.message.includes('jwt')) {
+          // Try to refresh the session
+          const { error: refreshError } = await refreshSession();
+          if (refreshError) {
+            alert("Session expired. Please sign in again.");
+            return;
+          }
+          // Retry sign in after refresh
+          const retry = await signIn(formData.email, formData.password);
+          if (retry.error) throw retry.error;
+        } else {
+          throw error;
+        }
+      }
 
-      dispatch({
-        type: "SET_USER",
-        payload: {
-          id: data.user.id,
-          email: data.user.email || "",
-          name: data.user.user_metadata?.name || "User",
-        },
-      });
+      if (data?.user) {
+        dispatch({
+          type: "SET_USER",
+          payload: {
+            id: data.user.id,
+            email: data.user.email || "",
+            name: data.user.user_metadata?.name || "User",
+          },
+        });
+      }
     } catch (error: any) {
-      alert(error.message);
+      console.error("Sign in error:", error);
+      alert(error.message || "An error occurred during sign in. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -119,28 +124,41 @@ export function Authentication() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            name: formData.name,
+      const { data, error } = await signUp(formData.email, formData.password, formData.name);
+
+      if (error) {
+        // Handle JWT expiration error
+        if (error.message.includes('jwt')) {
+          // Try to refresh the session
+          const { error: refreshError } = await refreshSession();
+          if (refreshError) {
+            alert("Session expired. Please try again.");
+            return;
+          }
+          // Retry sign up after refresh
+          const retry = await signUp(formData.email, formData.password, formData.name);
+          if (retry.error) throw retry.error;
+        } else {
+          throw error;
+        }
+      }
+
+      if (data?.user) {
+        dispatch({
+          type: "SET_USER",
+          payload: {
+            id: data.user.id,
+            email: data.user.email || "",
+            name: formData.name || data.user.user_metadata?.name || "User",
           },
-        },
-      });
-
-      if (error) throw error;
-
-      dispatch({
-        type: "SET_USER",
-        payload: {
-          id: data.user?.id || "",
-          email: data.user?.email || "",
-          name: formData.name,
-        },
-      });
+        });
+        alert("Account created successfully! Please check your email to confirm your account.");
+      } else {
+        alert("Account created successfully! Please check your email to confirm your account.");
+      }
     } catch (error: any) {
-      alert(error.message);
+      console.error("Sign up error:", error);
+      alert(error.message || "An error occurred during sign up. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -150,16 +168,28 @@ export function Authentication() {
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin,
-        },
-      });
+      const { data, error } = await signInWithGoogle();
 
-      if (error) throw error;
+      if (error) {
+        // Handle JWT expiration error
+        if (error.message.includes('jwt')) {
+          // Try to refresh the session
+          const { error: refreshError } = await refreshSession();
+          if (refreshError) {
+            alert("Session expired. Please try again.");
+            setIsLoading(false);
+            return;
+          }
+          // Retry Google sign in after refresh
+          const retry = await signInWithGoogle();
+          if (retry.error) throw retry.error;
+        } else {
+          throw error;
+        }
+      }
     } catch (error: any) {
-      alert(error.message);
+      console.error("Google sign in error:", error);
+      alert(error.message || "An error occurred during Google sign in. Please try again.");
       setIsLoading(false);
     }
   };
