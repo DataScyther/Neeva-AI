@@ -32,6 +32,7 @@ Neeva AI is an innovative mental health companion application designed to provid
 
 1. Clone the repository:
    ```bash
+   
    git clone https://github.com/DataScyther/Neeva-AI.git
    ```
 
