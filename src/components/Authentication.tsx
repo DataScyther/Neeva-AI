@@ -276,6 +276,7 @@ export function Authentication() {
                           )
                         }
                         required
+                        autoComplete="current-password"
                       />
                       <button
                         type="button"
@@ -392,6 +393,7 @@ export function Authentication() {
                           )
                         }
                         required
+                        autoComplete="new-password"
                       />
                       <button
                         type="button"
@@ -428,6 +430,7 @@ export function Authentication() {
                           )
                         }
                         required
+                        autoComplete="new-password"
                       />
                     </div>
                   </div>

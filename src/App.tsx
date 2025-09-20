@@ -50,6 +50,20 @@ import {
   Flame,
 } from "lucide-react";
 import { motion } from "motion/react";
+import { testSupabaseConnection } from "./utils/test-supabase";
+
+// Run Supabase connection test on app start
+testSupabaseConnection();
+
+function App() {
+  return (
+    <AppProvider>
+      <div className="App">
+        <AppContent />
+      </div>
+    </AppProvider>
+  );
+}
 
 // Inline Dashboard Component
 function Dashboard() {
@@ -1447,13 +1461,5 @@ function AppContent() {
 
       <Toaster />
     </div>
-  );
-}
-
-export default function App() {
-  return (
-    <AppProvider>
-      <AppContent />
-    </AppProvider>
   );
 }
