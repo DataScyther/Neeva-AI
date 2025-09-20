@@ -65,15 +65,7 @@ export function MoodTracker() {
   const [note, setNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleMoodSubmit = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Prevent any animation by temporarily disabling pointer events
-    const button = e.currentTarget as HTMLButtonElement;
-    button.style.pointerEvents = 'none';
-    button.style.transform = 'none';
-
+  const handleMoodSubmit = async () => {
     if (selectedMood === null) return;
 
     setIsSubmitting(true);
@@ -91,14 +83,6 @@ export function MoodTracker() {
       setSelectedMood(null);
       setNote("");
       setIsSubmitting(false);
-
-      // Re-enable pointer events after animation would have completed
-      setTimeout(() => {
-        if (button) {
-          button.style.pointerEvents = '';
-          button.style.transform = '';
-        }
-      }, 100);
     }, 500);
   };
 
@@ -145,14 +129,14 @@ export function MoodTracker() {
             <CardContent className="space-y-6">
               {/* Circular Mood Selector */}
               <div className="relative flex items-center justify-center py-8">
-                <div className="relative w-96 h-96 md:w-[28rem] md:h-[28rem]">
+                <div className="relative w-80 h-80 md:w-96 md:h-96">
                   {/* Background Circle */}
                   <div className="absolute inset-0 rounded-full border-4 border-gray-200 dark:border-gray-700"></div>
 
                   {/* Mood Buttons in Circle */}
                   {moodOptions.map((mood, index) => {
                     const angle = (index * 72 - 90) * (Math.PI / 180); // Start from top
-                    const radius = 140; // Distance from center
+                    const radius = 120; // Distance from center
                     const x = Math.cos(angle) * radius;
                     const y = Math.sin(angle) * radius;
 
@@ -160,20 +144,20 @@ export function MoodTracker() {
                       <button
                         key={mood.value}
                         onClick={() => setSelectedMood(mood.value)}
-                        className={`absolute w-24 h-24 md:w-28 md:h-28 rounded-full flex flex-col items-center justify-center text-center transition-all duration-300 shadow-lg ${
+                        className={`absolute w-16 h-16 md:w-20 md:h-20 rounded-full flex flex-col items-center justify-center text-center transition-all duration-300 transform hover:scale-110 shadow-lg ${
                           selectedMood === mood.value
-                            ? `bg-gradient-to-r ${mood.color} text-white ring-4 ring-white dark:ring-gray-800 scale-105`
+                            ? `bg-gradient-to-r ${mood.color} text-white ring-4 ring-white dark:ring-gray-800 scale-110`
                             : `bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-xl`
                         }`}
                         style={{
                           left: '50%',
                           top: '50%',
-                          transform: `translate(-50%, -50%) translate(${x}px, ${y}px) ${selectedMood === mood.value ? 'scale(1.05)' : ''}`,
+                          transform: `translate(-50%, -50%) translate(${x}px, ${y}px) ${selectedMood === mood.value ? 'scale(1.1)' : ''}`,
                         }}
                       >
-                        <span className="text-3xl md:text-4xl mb-1">{mood.emoji}</span>
-                        <span className={`text-xs md:text-sm font-medium leading-tight px-1 ${selectedMood === mood.value ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
-                          {mood.label}
+                        <span className="text-2xl md:text-3xl mb-1">{mood.emoji}</span>
+                        <span className={`text-xs font-medium leading-tight ${selectedMood === mood.value ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                          {mood.label.split(' ')[0]}
                         </span>
                       </button>
                     );
@@ -181,29 +165,26 @@ export function MoodTracker() {
 
                   {/* Center Content */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center max-w-[200px]">
+                    <div className="text-center">
                       {selectedMood ? (
-                        <div className="space-y-3">
-                          <div className="text-5xl md:text-6xl">
+                        <div className="space-y-2">
+                          <div className="text-4xl">
                             {moodOptions.find(m => m.value === selectedMood)?.emoji}
                           </div>
-                          <div className="text-lg md:text-xl font-semibold">
+                          <div className="text-sm font-medium">
                             {moodOptions.find(m => m.value === selectedMood)?.label}
                           </div>
-                          <div className="text-sm md:text-base text-muted-foreground px-2">
+                          <div className="text-xs text-muted-foreground">
                             {moodOptions.find(m => m.value === selectedMood)?.description}
                           </div>
                         </div>
                       ) : (
-                        <div className="space-y-3">
-                          <div className="w-20 h-20 md:w-24 md:h-24 mx-auto rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                            <Smile className="w-10 h-10 md:w-12 md:h-12 text-gray-400" />
-                          </div>
-                          <div className="text-base md:text-lg text-muted-foreground font-medium">
-                            Select a mood above
+                        <div className="space-y-2">
+                          <div className="w-16 h-16 mx-auto rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                            <Smile className="w-8 h-8 text-gray-400" />
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            Choose how you're feeling today
+                            Tap a mood above
                           </div>
                         </div>
                       )}
@@ -233,30 +214,24 @@ export function MoodTracker() {
 
               {/* Submit Button */}
               {selectedMood && (
-                <div className="relative">
-                  <button
-                    onClick={handleMoodSubmit}
-                    disabled={isSubmitting}
-                    className="w-full h-12 text-lg font-medium bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg rounded-lg text-white flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 no-animation"
-                    style={{
-                      transform: 'none !important',
-                      animation: 'none !important',
-                      transition: 'background 0.2s ease-in-out !important'
-                    }}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        <span>Recording Your Mood...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="w-5 h-5" />
-                        <span>Log This Mood</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                <Button
+                  onClick={handleMoodSubmit}
+                  disabled={isSubmitting}
+                  className="w-full h-12 text-lg font-medium bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg"
+                  size="lg"
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Recording Your Mood...</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center space-x-2">
+                      <Plus className="w-5 h-5" />
+                      <span>Log This Mood</span>
+                    </span>
+                  )}
+                </Button>
               )}
             </CardContent>
           </Card>
