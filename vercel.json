@@ -11,7 +11,21 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "^/assets/(.*)$",
+      "headers": {
+        "cache-control": "max-age=31536000, immutable"
+      },
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "^/index.html$",
+      "headers": {
+        "cache-control": "no-cache"
+      },
+      "dest": "/index.html"
+    },
+    {
+      "src": "^/(.*)$",
       "dest": "/index.html"
     }
   ]
