@@ -96,6 +96,24 @@ npm run build
    - Connect your GitHub repository
    - Deploy!
 
+### Authentication Configuration
+
+#### Updating Redirect URLs
+
+To update your Supabase project to remove localhost URLs and use only the Netlify deployment URL, follow the guide in [docs/SUPABASE_REDIRECT_URL_UPDATE.md](docs/SUPABASE_REDIRECT_URL_UPDATE.md).
+
+This change ensures consistent authentication behavior and removes potential security risks associated with localhost redirects in production.
+
+#### Google Authentication Redirect URLs
+
+To permanently fix the Google authentication redirect issue (redirecting to localhost:3000), please follow the detailed guide in [docs/SUPABASE_GOOGLE_AUTH_FIX.md](docs/SUPABASE_GOOGLE_AUTH_FIX.md).
+
+Note: The client-side code has already been updated to use only the Netlify URL (`https://neevaai.netlify.app/`) for all authentication redirects.
+
+#### CAPTCHA Verification Issues
+
+If you encounter CAPTCHA verification failures during authentication, please refer to [docs/SUPABASE_CAPTCHA_ISSUES.md](docs/SUPABASE_CAPTCHA_ISSUES.md) for troubleshooting steps and solutions.
+
 ## Project Structure
 
 ```
@@ -108,6 +126,10 @@ src/
 ├── utils/               # Utility functions
 ├── App.tsx             # Main application component
 ├── main.tsx            # Application entry point
+docs/
+├── SUPABASE_REDIRECT_URL_UPDATE.md   # Guide to update Supabase redirect URLs
+├── SUPABASE_GOOGLE_AUTH_FIX.md       # Guide to fix Google auth redirect URLs
+├── SUPABASE_CAPTCHA_ISSUES.md        # Guide to fix CAPTCHA verification issues
 ```
 
 ## Contributing

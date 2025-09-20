@@ -11,11 +11,16 @@ const logAuthError = (operation: string, error: any) => {
   });
 };
 
+// Function to get the correct redirect URL - now using only the Netlify URL
+export const getRedirectUrl = (): string => {
+  // Always use the Netlify deployment URL
+  return 'https://neevaai.netlify.app/';
+};
+
 // Authentication helper functions
 export const signUp = async (email: string, password: string, name?: string) => {
   try {
-    // Determine the redirect URL based on environment
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = getRedirectUrl();
       
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -44,7 +49,7 @@ export const signIn = async (email: string, password: string) => {
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password,
+      password
     })
     
     if (error) {
@@ -115,8 +120,7 @@ export const getCurrentUser = async (): Promise<User | null> => {
 
 export const resetPassword = async (email: string) => {
   try {
-    // Determine the redirect URL based on environment
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = getRedirectUrl();
       
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
@@ -136,8 +140,8 @@ export const resetPassword = async (email: string) => {
 // New function to handle Google sign in
 export const signInWithGoogle = async () => {
   try {
-    // Determine the redirect URL based on environment
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = getRedirectUrl();
+    console.log('[Supabase Auth] Google Sign In - Redirect URL:', redirectUrl);
       
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -149,6 +153,10 @@ export const signInWithGoogle = async () => {
     
     if (error) {
       logAuthError('signInWithGoogle', error);
+    }
+    
+    if (data?.url) {
+      console.log('[Supabase Auth] Google Sign In - Redirecting to:', data.url);
     }
     
     return { data, error }

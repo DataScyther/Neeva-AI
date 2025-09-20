@@ -27,6 +27,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     headers: {
       'X-Client-Info': 'NeevaAI/1.0'
     }
+  },
+  // Configure request timeouts
+  realtime: {
+    timeout: 10000, // 10 seconds
   }
 })
 

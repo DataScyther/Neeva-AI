@@ -80,6 +80,12 @@ export function Authentication() {
       const { data, error } = await signIn(formData.email, formData.password);
 
       if (error) {
+        // Handle CAPTCHA error specifically
+        if (error.message.includes('captcha')) {
+          alert("Authentication failed due to CAPTCHA verification. Please try again or contact support if the issue persists.");
+          return;
+        }
+        
         // Handle JWT expiration error
         if (error.message.includes('jwt')) {
           // Try to refresh the session
@@ -127,6 +133,12 @@ export function Authentication() {
       const { data, error } = await signUp(formData.email, formData.password, formData.name);
 
       if (error) {
+        // Handle CAPTCHA error specifically
+        if (error.message.includes('captcha')) {
+          alert("Registration failed due to CAPTCHA verification. Please try again or contact support if the issue persists.");
+          return;
+        }
+        
         // Handle JWT expiration error
         if (error.message.includes('jwt')) {
           // Try to refresh the session
@@ -168,9 +180,11 @@ export function Authentication() {
     setIsLoading(true);
     
     try {
+      console.log("[Authentication] Initiating Google Sign In");
       const { data, error } = await signInWithGoogle();
 
       if (error) {
+        console.error("[Authentication] Google Sign In Error:", error);
         // Handle JWT expiration error
         if (error.message.includes('jwt')) {
           // Try to refresh the session
@@ -187,6 +201,10 @@ export function Authentication() {
           throw error;
         }
       }
+      
+      // Note: For OAuth, the redirect happens automatically
+      // We don't need to do anything else here
+      console.log("[Authentication] Google Sign In initiated successfully");
     } catch (error: any) {
       console.error("Google sign in error:", error);
       alert(error.message || "An error occurred during Google sign in. Please try again.");
@@ -253,6 +271,7 @@ export function Authentication() {
                           )
                         }
                         required
+                        autoComplete="username"
                       />
                     </div>
                   </div>
@@ -347,6 +366,7 @@ export function Authentication() {
                           )
                         }
                         required
+                        autoComplete="name"
                       />
                     </div>
                   </div>
@@ -368,6 +388,7 @@ export function Authentication() {
                           )
                         }
                         required
+                        autoComplete="username"
                       />
                     </div>
                   </div>

@@ -50,40 +50,6 @@ import {
   Flame,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { testSupabaseConnection } from "./utils/test-supabase";
-import AuthCallbackHandler from "./components/AuthCallbackHandler";
-
-// Run Supabase connection test on app start
-testSupabaseConnection();
-
-function App() {
-  return (
-    <AppProvider>
-      <div className="App">
-        <AppContent />
-      </div>
-    </AppProvider>
-  );
-}
-
-function AppContent() {
-  const { state } = useAppContext();
-  
-  // Check if we're handling an auth callback (URL contains hash with access tokens)
-  const isAuthCallback = window.location.hash.includes('access_token') || 
-                        window.location.hash.includes('error');
-  
-  if (isAuthCallback) {
-    return <AuthCallbackHandler />;
-  }
-  
-  return (
-    <>
-      {state.user ? <Dashboard /> : <Authentication />}
-      <Toaster />
-    </>
-  );
-}
 
 // Inline Dashboard Component
 function Dashboard() {
@@ -1412,4 +1378,82 @@ function MoodTracker() {
   );
 }
 
-export default App;
+function AppContent() {
+  const { state } = useAppContext();
+
+  // Check if user has completed onboarding
+  const hasCompletedOnboarding =
+    localStorage.getItem("onboardingCompleted") === "true";
+
+  useEffect(() => {
+    // Apply theme on mount
+    const theme = state.theme;
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else if (theme === "light") {
+      document.documentElement.classList.remove("dark");
+    } else {
+      // Auto theme based on system preference
+      const isDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      document.documentElement.classList.toggle("dark", isDark);
+    }
+  }, [state.theme]);
+
+  if (!state.isAuthenticated) {
+    return <Authentication />;
+  }
+
+  if (!hasCompletedOnboarding) {
+    return <Onboarding />;
+  }
+
+  const renderCurrentView = () => {
+    switch (state.currentView) {
+      case "dashboard":
+        return <Dashboard />;
+      case "chatbot":
+        return <Chatbot />;
+      case "mood":
+        return <MoodTracker />;
+      case "exercises":
+        return <CBTExercises />;
+      case "community":
+        return <CommunityGroups />;
+      case "settings":
+        return <Settings />;
+      case "insights":
+        return <InsightsDashboard />;
+      case "meditation":
+        return <GuidedMeditation />;
+      case "crisis":
+        return <CrisisSupport />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <Navigation />
+
+      {/* Main Content */}
+      <main className="lg:pl-64 pb-16 lg:pb-0">
+        <div className="min-h-screen">
+          {renderCurrentView()}
+        </div>
+      </main>
+
+      <Toaster />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
+  );
+}
