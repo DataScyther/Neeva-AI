@@ -7247,29 +7247,3 @@ html {
     opacity: 0;
   }
 }
-
-/* Disable animations for specific elements */
-.no-animation,
-.no-animation *,
-.no-animation button,
-.no-animation [data-slot="button"] {
-  animation: none !important;
-  transition: none !important;
-  transform: none !important;
-  -webkit-transform: none !important;
-  -moz-transform: none !important;
-  -ms-transform: none !important;
-  -o-transform: none !important;
-}
-
-/* Specifically target motion library animations */
-.no-animation [style*="transform"] {
-  transform: none !important;
-}
-
-/* Override any motion-related classes */
-.no-animation div[style*="scale"],
-.no-animation div[style*="transform"] {
-  transform: none !important;
-  animation: none !important;
-}

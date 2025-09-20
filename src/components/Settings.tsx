@@ -1,13 +1,30 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Switch } from './ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { useAppContext } from './AppContext';
-import { 
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Switch } from "./ui/switch";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "./ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { useAppContext } from "./AppContext";
+import {
   Settings as SettingsIcon,
   User,
   Bell,
@@ -20,8 +37,8 @@ import {
   Smartphone,
   Mail,
   Lock,
-  Database
-} from 'lucide-react';
+  Database,
+} from "lucide-react";
 
 export function Settings() {
   const { state, dispatch } = useAppContext();
@@ -29,26 +46,30 @@ export function Settings() {
     daily: true,
     weekly: true,
     exercises: true,
-    community: false
+    community: false,
   });
   const [privacy, setPrivacy] = useState({
     anonymous: false,
     analytics: true,
-    dataSharing: false
+    dataSharing: false,
   });
 
-  const handleThemeChange = (theme: 'light' | 'dark' | 'auto') => {
-    dispatch({ type: 'SET_THEME', payload: theme });
-    
+  const handleThemeChange = (
+    theme: "light" | "dark" | "auto",
+  ) => {
+    dispatch({ type: "SET_THEME", payload: theme });
+
     // Apply theme to document
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else if (theme === 'light') {
-      document.documentElement.classList.remove('dark');
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else if (theme === "light") {
+      document.documentElement.classList.remove("dark");
     } else {
       // Auto theme based on system preference
-      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      document.documentElement.classList.toggle('dark', isDark);
+      const isDark = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+      ).matches;
+      document.documentElement.classList.toggle("dark", isDark);
     }
   };
 
@@ -56,19 +77,21 @@ export function Settings() {
     const data = {
       moodEntries: state.moodEntries,
       exercises: state.exercises,
-      chatHistory: state.chatHistory.map(msg => ({
+      chatHistory: state.chatHistory.map((msg) => ({
         content: msg.content,
         isUser: msg.isUser,
-        timestamp: msg.timestamp
+        timestamp: msg.timestamp,
       })),
-      exportDate: new Date().toISOString()
+      exportDate: new Date().toISOString(),
     };
-    
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `neeva-data-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `neeva-data-${new Date().toISOString().split("T")[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -82,28 +105,47 @@ export function Settings() {
           <SettingsIcon className="w-8 h-8 text-gray-500" />
           <span>Settings</span>
         </h1>
-        <p className="text-muted-foreground">Customize your Neeva experience</p>
+        <p className="text-muted-foreground">
+          Customize your Neeva experience
+        </p>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="profile" className="flex items-center space-x-2">
+          <TabsTrigger
+            value="profile"
+            className="flex items-center space-x-2"
+          >
             <User className="w-4 h-4" />
             <span className="hidden sm:inline">Profile</span>
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center space-x-2">
+          <TabsTrigger
+            value="notifications"
+            className="flex items-center space-x-2"
+          >
             <Bell className="w-4 h-4" />
-            <span className="hidden sm:inline">Notifications</span>
+            <span className="hidden sm:inline">
+              Notifications
+            </span>
           </TabsTrigger>
-          <TabsTrigger value="privacy" className="flex items-center space-x-2">
+          <TabsTrigger
+            value="privacy"
+            className="flex items-center space-x-2"
+          >
             <Shield className="w-4 h-4" />
             <span className="hidden sm:inline">Privacy</span>
           </TabsTrigger>
-          <TabsTrigger value="appearance" className="flex items-center space-x-2">
+          <TabsTrigger
+            value="appearance"
+            className="flex items-center space-x-2"
+          >
             <Palette className="w-4 h-4" />
             <span className="hidden sm:inline">Appearance</span>
           </TabsTrigger>
-          <TabsTrigger value="data" className="flex items-center space-x-2">
+          <TabsTrigger
+            value="data"
+            className="flex items-center space-x-2"
+          >
             <Database className="w-4 h-4" />
             <span className="hidden sm:inline">Data</span>
           </TabsTrigger>
@@ -118,7 +160,9 @@ export function Settings() {
                   <User className="w-5 h-5" />
                   <span>Profile Information</span>
                 </CardTitle>
-                <CardDescription>Update your personal information</CardDescription>
+                <CardDescription>
+                  Update your personal information
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -129,7 +173,7 @@ export function Settings() {
                     placeholder="Your name"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
@@ -139,7 +183,7 @@ export function Settings() {
                     placeholder="your.email@example.com"
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="timezone">Timezone</Label>
                   <Select defaultValue="utc-5">
@@ -147,14 +191,22 @@ export function Settings() {
                       <SelectValue placeholder="Select timezone" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="utc-8">Pacific Time (UTC-8)</SelectItem>
-                      <SelectItem value="utc-7">Mountain Time (UTC-7)</SelectItem>
-                      <SelectItem value="utc-6">Central Time (UTC-6)</SelectItem>
-                      <SelectItem value="utc-5">Eastern Time (UTC-5)</SelectItem>
+                      <SelectItem value="utc-8">
+                        Pacific Time (UTC-8)
+                      </SelectItem>
+                      <SelectItem value="utc-7">
+                        Mountain Time (UTC-7)
+                      </SelectItem>
+                      <SelectItem value="utc-6">
+                        Central Time (UTC-6)
+                      </SelectItem>
+                      <SelectItem value="utc-5">
+                        Eastern Time (UTC-5)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <Button className="w-full">Save Changes</Button>
               </CardContent>
             </Card>
@@ -165,7 +217,9 @@ export function Settings() {
                   <Lock className="w-5 h-5" />
                   <span>Security</span>
                 </CardTitle>
-                <CardDescription>Manage your account security</CardDescription>
+                <CardDescription>
+                  Manage your account security
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button variant="outline" className="w-full">
@@ -187,7 +241,9 @@ export function Settings() {
                 <Bell className="w-5 h-5" />
                 <span>Notification Preferences</span>
               </CardTitle>
-              <CardDescription>Choose what notifications you want to receive</CardDescription>
+              <CardDescription>
+                Choose what notifications you want to receive
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
@@ -199,12 +255,15 @@ export function Settings() {
                 </div>
                 <Switch
                   checked={notifications.daily}
-                  onCheckedChange={(checked) => 
-                    setNotifications(prev => ({ ...prev, daily: checked }))
+                  onCheckedChange={(checked) =>
+                    setNotifications((prev) => ({
+                      ...prev,
+                      daily: checked,
+                    }))
                   }
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Weekly Summaries</Label>
@@ -214,12 +273,15 @@ export function Settings() {
                 </div>
                 <Switch
                   checked={notifications.weekly}
-                  onCheckedChange={(checked) => 
-                    setNotifications(prev => ({ ...prev, weekly: checked }))
+                  onCheckedChange={(checked) =>
+                    setNotifications((prev) => ({
+                      ...prev,
+                      weekly: checked,
+                    }))
                   }
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Exercise Reminders</Label>
@@ -229,23 +291,30 @@ export function Settings() {
                 </div>
                 <Switch
                   checked={notifications.exercises}
-                  onCheckedChange={(checked) => 
-                    setNotifications(prev => ({ ...prev, exercises: checked }))
+                  onCheckedChange={(checked) =>
+                    setNotifications((prev) => ({
+                      ...prev,
+                      exercises: checked,
+                    }))
                   }
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Community Updates</Label>
                   <p className="text-sm text-muted-foreground">
-                    Notify me about replies and community activity
+                    Notify me about replies and community
+                    activity
                   </p>
                 </div>
                 <Switch
                   checked={notifications.community}
-                  onCheckedChange={(checked) => 
-                    setNotifications(prev => ({ ...prev, community: checked }))
+                  onCheckedChange={(checked) =>
+                    setNotifications((prev) => ({
+                      ...prev,
+                      community: checked,
+                    }))
                   }
                 />
               </div>
@@ -261,50 +330,65 @@ export function Settings() {
                 <Shield className="w-5 h-5" />
                 <span>Privacy & Security</span>
               </CardTitle>
-              <CardDescription>Control your privacy and data sharing preferences</CardDescription>
+              <CardDescription>
+                Control your privacy and data sharing
+                preferences
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Anonymous Mode</Label>
                   <p className="text-sm text-muted-foreground">
-                    Post anonymously in community groups by default
+                    Post anonymously in community groups by
+                    default
                   </p>
                 </div>
                 <Switch
                   checked={privacy.anonymous}
-                  onCheckedChange={(checked) => 
-                    setPrivacy(prev => ({ ...prev, anonymous: checked }))
+                  onCheckedChange={(checked) =>
+                    setPrivacy((prev) => ({
+                      ...prev,
+                      anonymous: checked,
+                    }))
                   }
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Analytics</Label>
                   <p className="text-sm text-muted-foreground">
-                    Help improve the app by sharing anonymous usage data
+                    Help improve the app by sharing anonymous
+                    usage data
                   </p>
                 </div>
                 <Switch
                   checked={privacy.analytics}
-                  onCheckedChange={(checked) => 
-                    setPrivacy(prev => ({ ...prev, analytics: checked }))
+                  onCheckedChange={(checked) =>
+                    setPrivacy((prev) => ({
+                      ...prev,
+                      analytics: checked,
+                    }))
                   }
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <Label>Data Sharing</Label>
                   <p className="text-sm text-muted-foreground">
-                    Share aggregated data for mental health research
+                    Share aggregated data for mental health
+                    research
                   </p>
                 </div>
                 <Switch
                   checked={privacy.dataSharing}
-                  onCheckedChange={(checked) => 
-                    setPrivacy(prev => ({ ...prev, dataSharing: checked }))
+                  onCheckedChange={(checked) =>
+                    setPrivacy((prev) => ({
+                      ...prev,
+                      dataSharing: checked,
+                    }))
                   }
                 />
               </div>
@@ -320,31 +404,45 @@ export function Settings() {
                 <Palette className="w-5 h-5" />
                 <span>Appearance</span>
               </CardTitle>
-              <CardDescription>Customize how Neeva looks and feels</CardDescription>
+              <CardDescription>
+                Customize how Neeva looks and feels
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
                 <Label>Theme</Label>
                 <div className="grid grid-cols-3 gap-3">
                   <Button
-                    variant={state.theme === 'light' ? 'default' : 'outline'}
-                    onClick={() => handleThemeChange('light')}
+                    variant={
+                      state.theme === "light"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() => handleThemeChange("light")}
                     className="flex items-center space-x-2"
                   >
                     <Sun className="w-4 h-4" />
                     <span>Light</span>
                   </Button>
                   <Button
-                    variant={state.theme === 'dark' ? 'default' : 'outline'}
-                    onClick={() => handleThemeChange('dark')}
+                    variant={
+                      state.theme === "dark"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() => handleThemeChange("dark")}
                     className="flex items-center space-x-2"
                   >
                     <Moon className="w-4 h-4" />
                     <span>Dark</span>
                   </Button>
                   <Button
-                    variant={state.theme === 'auto' ? 'default' : 'outline'}
-                    onClick={() => handleThemeChange('auto')}
+                    variant={
+                      state.theme === "auto"
+                        ? "default"
+                        : "outline"
+                    }
+                    onClick={() => handleThemeChange("auto")}
                     className="flex items-center space-x-2"
                   >
                     <Smartphone className="w-4 h-4" />
@@ -352,7 +450,7 @@ export function Settings() {
                   </Button>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <Label>Language</Label>
                 <Select defaultValue="en">
@@ -380,13 +478,19 @@ export function Settings() {
                   <Download className="w-5 h-5" />
                   <span>Export Data</span>
                 </CardTitle>
-                <CardDescription>Download your personal data</CardDescription>
+                <CardDescription>
+                  Download your personal data
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Export all your mood entries, exercise history, and chat data in JSON format.
+                  Export all your mood entries, exercise
+                  history, and chat data in JSON format.
                 </p>
-                <Button onClick={handleExportData} className="w-full">
+                <Button
+                  onClick={handleExportData}
+                  className="w-full"
+                >
                   <Download className="w-4 h-4 mr-2" />
                   Export My Data
                 </Button>
@@ -399,22 +503,34 @@ export function Settings() {
                   <Trash2 className="w-5 h-5" />
                   <span>Danger Zone</span>
                 </CardTitle>
-                <CardDescription>Irreversible actions</CardDescription>
+                <CardDescription>
+                  Irreversible actions
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Button variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-50">
+                  <Button
+                    variant="outline"
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                  >
                     Clear All Mood Data
                   </Button>
-                  <Button variant="outline" className="w-full border-red-200 text-red-600 hover:bg-red-50">
+                  <Button
+                    variant="outline"
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                  >
                     Clear Chat History
                   </Button>
-                  <Button variant="destructive" className="w-full">
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                  >
                     Delete Account
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Account deletion is permanent and cannot be undone. All your data will be lost.
+                  Account deletion is permanent and cannot be
+                  undone. All your data will be lost.
                 </p>
               </CardContent>
             </Card>

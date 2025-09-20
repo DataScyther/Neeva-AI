@@ -5,7 +5,7 @@ import * as kv from "./kv_store.tsx";
 const app = new Hono();
 
 // Enable logger
-app.use('*', logger(console.log));
+app.use("*", logger(console.log));
 
 // Enable CORS for all routes and methods
 app.use(
