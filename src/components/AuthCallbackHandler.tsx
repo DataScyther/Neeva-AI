@@ -14,10 +14,17 @@ const AuthCallbackHandler: React.FC = () => {
         const hash = window.location.hash.substring(1);
         const params = new URLSearchParams(hash);
         
+        // Check if there's an error in the callback
+        const error = params.get('error');
+        const errorDescription = params.get('error_description');
+        
+        if (error) {
+          throw new Error(`Authentication error: ${error}${errorDescription ? ` - ${errorDescription}` : ''}`);
+        }
+        
         const accessToken = params.get('access_token');
         const refreshToken = params.get('refresh_token');
         const tokenType = params.get('token_type');
-        const expiresIn = params.get('expires_in');
         
         if (accessToken && refreshToken && tokenType) {
           // Set the session in Supabase
@@ -57,14 +64,6 @@ const AuthCallbackHandler: React.FC = () => {
             throw new Error('No user data received');
           }
         } else {
-          // Check if there's an error in the callback
-          const error = params.get('error');
-          const errorDescription = params.get('error_description');
-          
-          if (error) {
-            throw new Error(`Authentication error: ${error}${errorDescription ? ` - ${errorDescription}` : ''}`);
-          }
-          
           // If no tokens and no errors, redirect to login by clearing user state
           dispatch({ type: 'SET_USER', payload: null });
         }
