@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -24,14 +24,15 @@ import {
   Eye,
   EyeOff,
   Chrome,
+  Sparkles,
 } from "lucide-react";
 import { supabase } from "../lib/supabase/client";
-import { useEffect } from "react";
 
 export function Authentication() {
   const { dispatch } = useAppContext();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState("signin");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -165,56 +166,63 @@ export function Authentication() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-full">
-              <Heart className="w-8 h-8 text-white" />
+            <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-4 rounded-2xl shadow-lg">
+              <Heart className="w-8 h-8 text-white" fill="white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Neeva
-          </h1>
-          <p className="text-muted-foreground mt-2">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Neeva
+            </h1>
+            <Sparkles className="w-5 h-5 text-purple-500" />
+          </div>
+          <p className="text-muted-foreground mt-2 text-lg">
             Your companion for mental wellness
           </p>
         </div>
 
-        <Card className="backdrop-blur-sm bg-white/70 border-0 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-center">
-              Welcome
-            </CardTitle>
-            <CardDescription className="text-center">
+        <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-2xl rounded-3xl overflow-hidden">
+          <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 text-center">
+            <h2 className="text-2xl font-bold text-white">Welcome</h2>
+            <p className="text-indigo-100 mt-1">
               Sign in to continue your wellness journey
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="signin">
+            </p>
+          </div>
+          
+          <CardContent className="p-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6 bg-gray-100 p-1 rounded-xl">
+                <TabsTrigger 
+                  value="signin" 
+                  className="data-[state=active]:bg-white data-[state=active]:shadow rounded-lg"
+                >
                   Sign In
                 </TabsTrigger>
-                <TabsTrigger value="signup">
+                <TabsTrigger 
+                  value="signup" 
+                  className="data-[state=active]:bg-white data-[state=active]:shadow rounded-lg"
+                >
                   Sign Up
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="signin">
-                <form
-                  onSubmit={handleSignIn}
-                  className="space-y-4"
-                >
+                <form onSubmit={handleSignIn} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email" className="text-sm font-medium">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Mail className="h-5 w-5 text-muted-foreground" />
+                      </div>
                       <Input
                         id="email"
                         type="email"
                         placeholder="Enter your email"
-                        className="pl-10"
+                        className="pl-10 h-12 rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                         value={formData.email}
                         onChange={(e) =>
                           handleInputChange(
@@ -228,16 +236,16 @@ export function Authentication() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password" className="text-sm font-medium">Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Lock className="h-5 w-5 text-muted-foreground" />
+                      </div>
                       <Input
                         id="password"
-                        type={
-                          showPassword ? "text" : "password"
-                        }
+                        type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
-                        className="pl-10 pr-10"
+                        className="pl-10 pr-10 h-12 rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                         value={formData.password}
                         onChange={(e) =>
                           handleInputChange(
@@ -249,15 +257,13 @@ export function Authentication() {
                       />
                       <button
                         type="button"
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
                       >
                         {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
+                          <EyeOff className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                         ) : (
-                          <Eye className="w-4 h-4" />
+                          <Eye className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                         )}
                       </button>
                     </div>
@@ -265,16 +271,23 @@ export function Authentication() {
 
                   <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full h-12 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
                     disabled={isLoading}
                   >
-                    {isLoading ? "Signing in..." : "Sign In"}
+                    {isLoading ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Signing in...
+                      </div>
+                    ) : (
+                      "Sign In"
+                    )}
                   </Button>
                 </form>
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300" />
+                    <div className="w-full border-t border-gray-200" />
                   </div>
                   <div className="relative flex justify-center text-sm">
                     <span className="px-2 bg-white text-muted-foreground">
@@ -285,29 +298,28 @@ export function Authentication() {
 
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full h-12 rounded-xl border-gray-300 font-medium shadow hover:shadow-md transition-all duration-300 flex items-center justify-center"
                   onClick={handleGoogleSignIn}
                   disabled={isLoading}
                 >
-                  <Chrome className="mr-2 h-4 w-4" />
+                  <Chrome className="mr-2 h-5 w-5 text-red-500" />
                   Sign in with Google
                 </Button>
               </TabsContent>
 
               <TabsContent value="signup">
-                <form
-                  onSubmit={handleSignUp}
-                  className="space-y-4"
-                >
+                <form onSubmit={handleSignUp} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Name</Label>
+                    <Label htmlFor="name" className="text-sm font-medium">Full Name</Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <User className="h-5 w-5 text-muted-foreground" />
+                      </div>
                       <Input
                         id="name"
                         type="text"
-                        placeholder="Enter your name"
-                        className="pl-10"
+                        placeholder="Enter your full name"
+                        className="pl-10 h-12 rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                         value={formData.name}
                         onChange={(e) =>
                           handleInputChange(
@@ -321,14 +333,16 @@ export function Authentication() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
+                    <Label htmlFor="signup-email" className="text-sm font-medium">Email</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Mail className="h-5 w-5 text-muted-foreground" />
+                      </div>
                       <Input
                         id="signup-email"
                         type="email"
                         placeholder="Enter your email"
-                        className="pl-10"
+                        className="pl-10 h-12 rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                         value={formData.email}
                         onChange={(e) =>
                           handleInputChange(
@@ -342,18 +356,16 @@ export function Authentication() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="signup-password">
-                      Password
-                    </Label>
+                    <Label htmlFor="signup-password" className="text-sm font-medium">Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Lock className="h-5 w-5 text-muted-foreground" />
+                      </div>
                       <Input
                         id="signup-password"
-                        type={
-                          showPassword ? "text" : "password"
-                        }
+                        type={showPassword ? "text" : "password"}
                         placeholder="Create a password"
-                        className="pl-10 pr-10"
+                        className="pl-10 pr-10 h-12 rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                         value={formData.password}
                         onChange={(e) =>
                           handleInputChange(
@@ -365,31 +377,29 @@ export function Authentication() {
                       />
                       <button
                         type="button"
-                        onClick={() =>
-                          setShowPassword(!showPassword)
-                        }
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center"
                       >
                         {showPassword ? (
-                          <EyeOff className="w-4 h-4" />
+                          <EyeOff className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                         ) : (
-                          <Eye className="w-4 h-4" />
+                          <Eye className="h-5 w-5 text-muted-foreground hover:text-foreground" />
                         )}
                       </button>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="confirm-password">
-                      Confirm Password
-                    </Label>
+                    <Label htmlFor="confirm-password" className="text-sm font-medium">Confirm Password</Label>
                     <div className="relative">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <Lock className="h-5 w-5 text-muted-foreground" />
+                      </div>
                       <Input
                         id="confirm-password"
                         type="password"
                         placeholder="Confirm your password"
-                        className="pl-10"
+                        className="pl-10 h-12 rounded-xl border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                         value={formData.confirmPassword}
                         onChange={(e) =>
                           handleInputChange(
@@ -404,18 +414,23 @@ export function Authentication() {
 
                   <Button
                     type="submit"
-                    className="w-full"
+                    className="w-full h-12 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-300"
                     disabled={isLoading}
                   >
-                    {isLoading
-                      ? "Creating account..."
-                      : "Create Account"}
+                    {isLoading ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Creating account...
+                      </div>
+                    ) : (
+                      "Create Account"
+                    )}
                   </Button>
                 </form>
 
                 <div className="relative my-6">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300" />
+                    <div className="w-full border-t border-gray-200" />
                   </div>
                   <div className="relative flex justify-center text-sm">
                     <span className="px-2 bg-white text-muted-foreground">
@@ -426,11 +441,11 @@ export function Authentication() {
 
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full h-12 rounded-xl border-gray-300 font-medium shadow hover:shadow-md transition-all duration-300 flex items-center justify-center"
                   onClick={handleGoogleSignIn}
                   disabled={isLoading}
                 >
-                  <Chrome className="mr-2 h-4 w-4" />
+                  <Chrome className="mr-2 h-5 w-5 text-red-500" />
                   Sign up with Google
                 </Button>
               </TabsContent>
@@ -439,8 +454,10 @@ export function Authentication() {
         </Card>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          By continuing, you agree to our Terms of Service and
-          Privacy Policy
+          By continuing, you agree to our{" "}
+          <a href="#" className="text-purple-600 hover:underline">Terms of Service</a>
+          {" "}and{" "}
+          <a href="#" className="text-purple-600 hover:underline">Privacy Policy</a>
         </p>
       </div>
     </div>
