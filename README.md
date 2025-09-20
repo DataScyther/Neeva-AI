@@ -19,7 +19,7 @@ Neeva AI is an innovative mental health companion application designed to provid
 - **State Management**: React Context API
 - **AI Integration**: OpenRouter API for LLM capabilities
 - **Backend**: Supabase for authentication and data storage
-- **Deployment**: Vercel or Netlify
+- **Deployment**: Netlify
 
 ## Getting Started
 
@@ -82,18 +82,6 @@ npm run build
    - Connect your GitHub repository or drag and drop the `build` folder
    - Set the build command to `npm run build`
    - Set the publish directory to `build`
-   - Deploy!
-
-### Deploying to Vercel
-
-1. **Build the project**:
-   ```bash
-   npm run build
-   ```
-
-2. **Deploy to Vercel**:
-   - Go to [Vercel](https://vercel.com)
-   - Connect your GitHub repository
    - Deploy!
 
 ### Authentication Configuration

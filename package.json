@@ -58,6 +58,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy:netlify": "node scripts/deploy-netlify.js"
+    "deploy:netlify": "node scripts/deploy-netlify.js",
+    "verify:auth": "node scripts/verify-auth-config.js"
   }
 }
