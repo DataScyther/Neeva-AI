@@ -14,6 +14,12 @@ const logAuthError = (operation: string, error: any) => {
 // Authentication helper functions
 export const signUp = async (email: string, password: string, name?: string) => {
   try {
+    // Determine the redirect URL based on environment
+    const isLocalhost = window.location.hostname === 'localhost';
+    const redirectUrl = isLocalhost 
+      ? `${window.location.origin}/` 
+      : `${window.location.origin}/`;
+      
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -22,7 +28,7 @@ export const signUp = async (email: string, password: string, name?: string) => 
           name: name || email.split('@')[0],
         },
         // Email confirmation is enabled by default
-        emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        emailRedirectTo: redirectUrl,
       },
     })
     
@@ -112,8 +118,14 @@ export const getCurrentUser = async (): Promise<User | null> => {
 
 export const resetPassword = async (email: string) => {
   try {
+    // Determine the redirect URL based on environment
+    const isLocalhost = window.location.hostname === 'localhost';
+    const redirectUrl = isLocalhost 
+      ? `${window.location.origin}/` 
+      : `${window.location.origin}/`;
+      
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: redirectUrl,
     })
     
     if (error) {
@@ -130,10 +142,16 @@ export const resetPassword = async (email: string) => {
 // New function to handle Google sign in
 export const signInWithGoogle = async () => {
   try {
+    // Determine the redirect URL based on environment
+    const isLocalhost = window.location.hostname === 'localhost';
+    const redirectUrl = isLocalhost 
+      ? `${window.location.origin}/` 
+      : `${window.location.origin}/`;
+      
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: redirectUrl,
         skipBrowserRedirect: false,
       },
     })
