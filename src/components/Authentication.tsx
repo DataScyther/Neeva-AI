@@ -23,7 +23,10 @@ import {
   User,
   Eye,
   EyeOff,
+  Chrome,
 } from "lucide-react";
+import { supabase } from "../lib/supabase/client";
+import { useEffect } from "react";
 
 export function Authentication() {
   const { dispatch } = useAppContext();
@@ -36,6 +39,45 @@ export function Authentication() {
     confirmPassword: "",
   });
 
+  // Check for existing session on component mount
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        dispatch({
+          type: "SET_USER",
+          payload: {
+            id: session.user.id,
+            email: session.user.email || "",
+            name: session.user.user_metadata?.name || "User",
+          },
+        });
+      }
+    };
+    
+    checkSession();
+    
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        dispatch({
+          type: "SET_USER",
+          payload: {
+            id: session.user.id,
+            email: session.user.email || "",
+            name: session.user.user_metadata?.name || "User",
+          },
+        });
+      } else {
+        dispatch({ type: "LOGOUT" });
+      }
+    });
+    
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch]);
+
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -44,18 +86,27 @@ export function Authentication() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate authentication
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email,
+        password: formData.password,
+      });
+
+      if (error) throw error;
+
       dispatch({
         type: "SET_USER",
         payload: {
-          id: "1",
-          email: formData.email,
-          name: formData.name || "User",
+          id: data.user.id,
+          email: data.user.email || "",
+          name: data.user.user_metadata?.name || "User",
         },
       });
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -67,18 +118,50 @@ export function Authentication() {
 
     setIsLoading(true);
 
-    // Simulate registration
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            name: formData.name,
+          },
+        },
+      });
+
+      if (error) throw error;
+
       dispatch({
         type: "SET_USER",
         payload: {
-          id: "1",
-          email: formData.email,
+          id: data.user?.id || "",
+          email: data.user?.email || "",
           name: formData.name,
         },
       });
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      alert(error.message);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -188,6 +271,27 @@ export function Authentication() {
                     {isLoading ? "Signing in..." : "Sign In"}
                   </Button>
                 </form>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300" />
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoogleSignIn}
+                  disabled={isLoading}
+                >
+                  <Chrome className="mr-2 h-4 w-4" />
+                  Sign in with Google
+                </Button>
               </TabsContent>
 
               <TabsContent value="signup">
@@ -308,6 +412,27 @@ export function Authentication() {
                       : "Create Account"}
                   </Button>
                 </form>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300" />
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoogleSignIn}
+                  disabled={isLoading}
+                >
+                  <Chrome className="mr-2 h-4 w-4" />
+                  Sign up with Google
+                </Button>
               </TabsContent>
             </Tabs>
           </CardContent>
