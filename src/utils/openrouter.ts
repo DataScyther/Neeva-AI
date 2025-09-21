@@ -1,4 +1,6 @@
 // OpenRouter API integration for AI companion
+import { checkEnvVariables } from './env-check';
+
 export interface OpenRouterMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
@@ -28,6 +30,12 @@ const API_KEY = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
 const MODEL = (import.meta as any).env.VITE_OPENROUTER_MODEL || 'x-ai/grok-4-fast:free';
 const BASE_URL = (import.meta as any).env.VITE_OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
 
+// Check environment variables on module load
+const envCheck = checkEnvVariables();
+if (!envCheck.isValid) {
+  console.warn('OpenRouter API environment issues:', envCheck.errors.join(', '));
+}
+
 export class OpenRouterError extends Error {
   constructor(message: string, public statusCode?: number, public response?: any) {
     super(message);
@@ -37,7 +45,7 @@ export class OpenRouterError extends Error {
 
 export async function callOpenRouter(messages: OpenRouterMessage[]): Promise<string> {
   if (!API_KEY) {
-    throw new OpenRouterError('OpenRouter API key is not configured. Please set VITE_OPENROUTER_API_KEY in your environment.');
+    throw new OpenRouterError('OpenRouter API key is not configured. Please set VITE_OPENROUTER_API_KEY in your environment variables.');
   }
 
   try {

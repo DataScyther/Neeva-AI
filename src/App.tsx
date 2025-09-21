@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { callOpenRouter, convertChatHistory, OpenRouterError } from "./utils/openrouter";
+import { checkEnvVariables } from "./utils/env-check";
 import {
   AppProvider,
   useAppContext,
 } from "./components/AppContext";
-import { Authentication } from "./components/Authentication";
 import { Onboarding } from "./components/Onboarding";
 import { Navigation } from "./components/Navigation";
 import { CBTExercises } from "./components/CBTExercises";
@@ -593,6 +593,12 @@ function Chatbot() {
 
   const getAIResponse = async (userMessage: string): Promise<string> => {
     try {
+      // Check if API key is configured
+      const API_KEY = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
+      if (!API_KEY) {
+        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an API key. If you're the administrator, please set the VITE_OPENROUTER_API_KEY environment variable.";
+      }
+
       // Convert chat history to OpenRouter format
       const chatHistory = convertChatHistory(state.chatHistory.filter(msg => !msg.isUser || msg.content !== userMessage));
       
@@ -609,7 +615,7 @@ function Chatbot() {
       const lowerMessage = userMessage.toLowerCase();
       
       if (error instanceof OpenRouterError) {
-        return `⚠️ I'm having trouble connecting to my AI service. Here's some immediate support: ${getFallbackResponse(lowerMessage)}`;
+        return `⚠️ I'm having trouble connecting to my AI service. ${error.message}`;
       }
 
       if (
@@ -1380,6 +1386,15 @@ function MoodTracker() {
 
 function AppContent() {
   const { state } = useAppContext();
+
+  // Check environment variables on app start
+  useEffect(() => {
+    const envCheck = checkEnvVariables();
+    if (!envCheck.isValid) {
+      console.error('Environment configuration issues:', envCheck.errors);
+      // You could show a warning to the user here if needed
+    }
+  }, []);
 
   // Check if user has completed onboarding
   const hasCompletedOnboarding =

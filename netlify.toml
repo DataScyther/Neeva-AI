@@ -1,7 +1,7 @@
 [build]
   command = "npm run build"
-  publish = "build"
-  
+  publish = "dist"
+
 [build.environment]
   NODE_VERSION = "18"
 
@@ -9,3 +9,8 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Environment variables should be set in the Netlify dashboard
+# VITE_OPENROUTER_API_KEY = "your_openrouter_api_key_here"
+# VITE_OPENROUTER_MODEL = "x-ai/grok-4-fast:free"
+# VITE_OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
