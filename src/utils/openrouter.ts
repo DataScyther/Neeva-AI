@@ -25,7 +25,7 @@ export interface OpenRouterResponse {
 }
 
 const API_KEY = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
-const MODEL = (import.meta as any).env.VITE_OPENROUTER_MODEL || 'deepseek/deepseek-chat-v3.1:free';
+const MODEL = (import.meta as any).env.VITE_OPENROUTER_MODEL || 'x-ai/grok-4-fast:free';
 const BASE_URL = (import.meta as any).env.VITE_OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
 
 export class OpenRouterError extends Error {

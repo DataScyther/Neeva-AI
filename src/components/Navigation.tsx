@@ -364,7 +364,7 @@ export function Navigation() {
       <div className="lg:hidden fixed top-4 right-4 z-50">
         <Button
           size="sm"
-          className="bg-background/80 backdrop-blur-sm border border-border shadow-lg"
+          className="bg-background/80 backdrop-blur-sm border border-border shadow-lg text-foreground hover:bg-accent"
           onClick={() => setIsMobileMenuOpen(true)}
         >
           <Menu className="w-4 h-4" />
