@@ -21,13 +21,14 @@ import {
   X,
   User,
 } from "lucide-react";
+import { AppState } from "./AppContext";
 
 // Define proper types for navigation items
 type BaseNavigationItem = {
   id: string;
   label: string;
   icon: any;
-  view: string;
+  view: AppState["currentView"];
   color: string;
 };
 
@@ -53,14 +54,14 @@ export function Navigation() {
       id: "dashboard",
       label: "Dashboard",
       icon: Home,
-      view: "dashboard" as const,
+      view: "dashboard",
       color: "text-blue-500",
     },
     {
       id: "chatbot",
       label: "Neeva Chat",
       icon: MessageCircle,
-      view: "chatbot" as const,
+      view: "chatbot",
       color: "text-purple-500",
       badge: state.chatHistory.length > 0 ? null : "New",
     },
@@ -68,7 +69,7 @@ export function Navigation() {
       id: "mood",
       label: "Mood Tracker",
       icon: Heart,
-      view: "mood" as const,
+      view: "mood",
       color: "text-pink-500",
       badge:
         state.moodEntries.filter((entry) => {
@@ -83,7 +84,7 @@ export function Navigation() {
       id: "exercises",
       label: "CBT Exercises",
       icon: BookOpen,
-      view: "exercises" as const,
+      view: "exercises",
       color: "text-green-500",
       badge:
         state.exercises.filter((ex) => ex.completed).length ||
@@ -96,21 +97,21 @@ export function Navigation() {
       id: "meditation",
       label: "Guided Meditation",
       icon: Headphones,
-      view: "meditation" as const,
+      view: "meditation",
       color: "text-indigo-500",
     },
     {
       id: "insights",
       label: "Insights & Analytics",
       icon: BarChart3,
-      view: "insights" as const,
+      view: "insights",
       color: "text-cyan-500",
     },
     {
       id: "community",
       label: "Support Groups",
       icon: Users,
-      view: "community" as const,
+      view: "community",
       color: "text-orange-500",
     },
   ];
@@ -120,7 +121,7 @@ export function Navigation() {
       id: "crisis",
       label: "Crisis Support",
       icon: Shield,
-      view: "crisis" as const,
+      view: "crisis",
       color: "text-red-500",
       urgent: true,
     },
@@ -134,7 +135,7 @@ export function Navigation() {
     setIsMobileMenuOpen(false); // Close menu on logout
   };
 
-  const handleNavigation = (view: string) => {
+  const handleNavigation = (view: AppState["currentView"]) => {
     dispatch({ type: "SET_VIEW", payload: view });
     setIsMobileMenuOpen(false); // Close menu after navigation
   };
