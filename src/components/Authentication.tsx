@@ -80,12 +80,6 @@ export function Authentication() {
       const { data, error } = await signIn(formData.email, formData.password);
 
       if (error) {
-        // Handle CAPTCHA error specifically
-        if (error.message.includes('captcha')) {
-          alert("Authentication failed due to CAPTCHA verification. Please try again or contact support if the issue persists.");
-          return;
-        }
-        
         // Handle JWT expiration error
         if (error.message.includes('jwt')) {
           // Try to refresh the session
@@ -133,12 +127,6 @@ export function Authentication() {
       const { data, error } = await signUp(formData.email, formData.password, formData.name);
 
       if (error) {
-        // Handle CAPTCHA error specifically
-        if (error.message.includes('captcha')) {
-          alert("Registration failed due to CAPTCHA verification. Please try again or contact support if the issue persists.");
-          return;
-        }
-        
         // Handle JWT expiration error
         if (error.message.includes('jwt')) {
           // Try to refresh the session

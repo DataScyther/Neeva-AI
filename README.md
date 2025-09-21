@@ -96,11 +96,7 @@ This change ensures consistent authentication behavior and removes potential sec
 
 To permanently fix the Google authentication redirect issue (redirecting to localhost:3000), please follow the detailed guide in [docs/SUPABASE_GOOGLE_AUTH_FIX.md](docs/SUPABASE_GOOGLE_AUTH_FIX.md).
 
-Note: The client-side code has already been updated to use only the Netlify URL (`https://neevaai.netlify.app/`) for all authentication redirects.
-
-#### CAPTCHA Verification Issues
-
-If you encounter CAPTCHA verification failures during authentication, please refer to [docs/SUPABASE_CAPTCHA_ISSUES.md](docs/SUPABASE_CAPTCHA_ISSUES.md) for troubleshooting steps and solutions.
+Note: The client-side code has been updated to use only the Netlify URL (`https://neevaai.netlify.app/`) for all authentication redirects.
 
 ## Project Structure
 
@@ -117,7 +113,6 @@ src/
 docs/
 ├── SUPABASE_REDIRECT_URL_UPDATE.md   # Guide to update Supabase redirect URLs
 ├── SUPABASE_GOOGLE_AUTH_FIX.md       # Guide to fix Google auth redirect URLs
-├── SUPABASE_CAPTCHA_ISSUES.md        # Guide to fix CAPTCHA verification issues
 ```
 
 ## Contributing

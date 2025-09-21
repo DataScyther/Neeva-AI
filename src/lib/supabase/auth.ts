@@ -1,27 +1,9 @@
 import { supabase } from './client'
 import { User } from '@supabase/supabase-js'
 
-// Enhanced error logging function
-const logAuthError = (operation: string, error: any) => {
-  console.error(`[Supabase Auth] ${operation} failed:`, {
-    message: error.message,
-    code: error.code,
-    status: error.status,
-    details: error
-  });
-};
-
-// Function to get the correct redirect URL - now using only the Netlify URL
-export const getRedirectUrl = (): string => {
-  // Always use the Netlify deployment URL
-  return 'https://neevaai.netlify.app/';
-};
-
 // Authentication helper functions
 export const signUp = async (email: string, password: string, name?: string) => {
   try {
-    const redirectUrl = getRedirectUrl();
-      
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -29,18 +11,11 @@ export const signUp = async (email: string, password: string, name?: string) => 
         data: {
           name: name || email.split('@')[0],
         },
-        // Email confirmation is enabled by default
-        emailRedirectTo: redirectUrl,
       },
     })
     
-    if (error) {
-      logAuthError('signUp', error);
-    }
-    
     return { data, error }
   } catch (err) {
-    logAuthError('signUp (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -52,13 +27,8 @@ export const signIn = async (email: string, password: string) => {
       password
     })
     
-    if (error) {
-      logAuthError('signIn', error);
-    }
-    
     return { data, error }
   } catch (err) {
-    logAuthError('signIn (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -67,47 +37,18 @@ export const signOut = async () => {
   try {
     const { error } = await supabase.auth.signOut()
     
-    if (error) {
-      logAuthError('signOut', error);
-    }
-    
     return { error }
   } catch (err) {
-    logAuthError('signOut (exception)', err);
     return { error: err };
   }
 }
 
 export const getCurrentUser = async (): Promise<User | null> => {
   try {
-    // Refresh the session to ensure we have a valid token
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-    
-    if (sessionError) {
-      console.error('Error getting session:', sessionError)
-      return null
-    }
-    
-    if (!session) {
-      return null
-    }
-    
-    // Get user with refreshed session
     const { data: { user }, error } = await supabase.auth.getUser()
     
     if (error) {
       console.error('Error getting current user:', error)
-      // If it's a JWT error, try to refresh the session
-      if (error.message.includes('jwt') || error.message.includes('expired')) {
-        const { data: { session: refreshedSession }, error: refreshError } = await supabase.auth.refreshSession()
-        if (refreshError) {
-          console.error('Error refreshing session:', refreshError)
-          return null
-        }
-        if (refreshedSession?.user) {
-          return refreshedSession.user
-        }
-      }
       return null
     }
     
@@ -120,48 +61,26 @@ export const getCurrentUser = async (): Promise<User | null> => {
 
 export const resetPassword = async (email: string) => {
   try {
-    const redirectUrl = getRedirectUrl();
-      
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectUrl,
-    })
-    
-    if (error) {
-      logAuthError('resetPassword', error);
-    }
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email)
     
     return { data, error }
   } catch (err) {
-    logAuthError('resetPassword (exception)', err);
     return { data: null, error: err };
   }
 }
 
-// New function to handle Google sign in
+// Function to handle Google sign in
 export const signInWithGoogle = async () => {
   try {
-    const redirectUrl = getRedirectUrl();
-    console.log('[Supabase Auth] Google Sign In - Redirect URL:', redirectUrl);
-      
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: redirectUrl,
         skipBrowserRedirect: false,
       },
     })
     
-    if (error) {
-      logAuthError('signInWithGoogle', error);
-    }
-    
-    if (data?.url) {
-      console.log('[Supabase Auth] Google Sign In - Redirecting to:', data.url);
-    }
-    
     return { data, error }
   } catch (err) {
-    logAuthError('signInWithGoogle (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -171,13 +90,8 @@ export const refreshSession = async () => {
   try {
     const { data, error } = await supabase.auth.refreshSession()
     
-    if (error) {
-      logAuthError('refreshSession', error);
-    }
-    
     return { data, error }
   } catch (err) {
-    logAuthError('refreshSession (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -195,13 +109,8 @@ export const updateUserMetadata = async (metadata: object) => {
       data: metadata,
     })
     
-    if (error) {
-      logAuthError('updateUserMetadata', error);
-    }
-    
     return { data, error }
   } catch (err) {
-    logAuthError('updateUserMetadata (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -213,13 +122,8 @@ export const updateUserEmail = async (newEmail: string) => {
       email: newEmail,
     })
     
-    if (error) {
-      logAuthError('updateUserEmail', error);
-    }
-    
     return { data, error }
   } catch (err) {
-    logAuthError('updateUserEmail (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -231,13 +135,8 @@ export const updatePassword = async (newPassword: string) => {
       password: newPassword,
     })
     
-    if (error) {
-      logAuthError('updatePassword', error);
-    }
-    
     return { data, error }
   } catch (err) {
-    logAuthError('updatePassword (exception)', err);
     return { data: null, error: err };
   }
 }
