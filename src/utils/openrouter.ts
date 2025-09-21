@@ -33,7 +33,10 @@ const BASE_URL = (import.meta as any).env.VITE_OPENROUTER_BASE_URL || 'https://o
 // Check environment variables on module load
 const envCheck = checkEnvVariables();
 if (!envCheck.isValid) {
-  console.warn('OpenRouter API environment issues:', envCheck.errors.join(', '));
+  console.error('OpenRouter API environment errors:', envCheck.errors.join(', '));
+}
+if (envCheck.warnings.length > 0) {
+  console.warn('OpenRouter API environment warnings:', envCheck.warnings.join(', '));
 }
 
 export class OpenRouterError extends Error {
@@ -44,8 +47,14 @@ export class OpenRouterError extends Error {
 }
 
 export async function callOpenRouter(messages: OpenRouterMessage[]): Promise<string> {
+  // More detailed API key validation
   if (!API_KEY) {
     throw new OpenRouterError('OpenRouter API key is not configured. Please set VITE_OPENROUTER_API_KEY in your environment variables.');
+  }
+  
+  // Check if API key has the correct format
+  if (!API_KEY.startsWith('sk-or-v1-')) {
+    throw new OpenRouterError('OpenRouter API key format is invalid. It should start with "sk-or-v1-".');
   }
 
   try {
@@ -94,8 +103,19 @@ Remember: You're a companion, not a therapist. Your goal is to provide immediate
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      let errorMessage = `OpenRouter API error: ${response.status} ${response.statusText}`;
+      
+      // Provide more specific error messages for common status codes
+      if (response.status === 401) {
+        errorMessage = 'OpenRouter API authentication failed. Please check your API key.';
+      } else if (response.status === 403) {
+        errorMessage = 'OpenRouter API access forbidden. Your API key may not have permission to access this model.';
+      } else if (response.status === 429) {
+        errorMessage = 'OpenRouter API rate limit exceeded. Please wait before making more requests.';
+      }
+      
       throw new OpenRouterError(
-        `OpenRouter API error: ${response.status} ${response.statusText}`,
+        errorMessage,
         response.status,
         errorData
       );

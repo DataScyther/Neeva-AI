@@ -615,7 +615,16 @@ function Chatbot() {
       const lowerMessage = userMessage.toLowerCase();
       
       if (error instanceof OpenRouterError) {
-        return `⚠️ I'm having trouble connecting to my AI service. ${error.message}`;
+        // Provide more specific error messages
+        if (error.statusCode === 401) {
+          return `⚠️ Authentication failed. Please check that your OpenRouter API key is valid and properly configured.`;
+        } else if (error.statusCode === 403) {
+          return `⚠️ Access forbidden. Your API key may not have permission to access the selected model.`;
+        } else if (error.statusCode === 429) {
+          return `⚠️ Rate limit exceeded. Please wait before making more requests.`;
+        } else {
+          return `⚠️ I'm having trouble connecting to my AI service. ${error.message}`;
+        }
       }
 
       if (

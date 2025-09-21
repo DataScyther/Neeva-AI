@@ -17,3 +17,5 @@ src/utils/supabase/
 
 # Google OAuth client secret
 client_secret_*.json
+# Local Netlify folder
+.netlify
