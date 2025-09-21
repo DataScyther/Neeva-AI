@@ -53,6 +53,10 @@ export async function callOpenRouter(messages: OpenRouterMessage[]): Promise<str
   }
   
   // Check if API key has the correct format
+  if (typeof API_KEY !== 'string' || API_KEY.length < 20) {
+    throw new OpenRouterError('OpenRouter API key appears to be invalid (too short). Please check the value.');
+  }
+  
   if (!API_KEY.startsWith('sk-or-v1-')) {
     throw new OpenRouterError('OpenRouter API key format is invalid. It should start with "sk-or-v1-".');
   }
@@ -107,7 +111,7 @@ Remember: You're a companion, not a therapist. Your goal is to provide immediate
       
       // Provide more specific error messages for common status codes
       if (response.status === 401) {
-        errorMessage = 'OpenRouter API authentication failed. Please check your API key.';
+        errorMessage = 'OpenRouter API authentication failed. Please verify your API key is valid and properly configured.';
       } else if (response.status === 403) {
         errorMessage = 'OpenRouter API access forbidden. Your API key may not have permission to access this model.';
       } else if (response.status === 429) {

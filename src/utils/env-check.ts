@@ -6,9 +6,9 @@ export function checkEnvVariables(): { isValid: boolean; errors: string[]; warni
   // Check if OpenRouter API key is set
   const apiKey = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
   if (!apiKey) {
-    errors.push('VITE_OPENROUTER_API_KEY is not set. Please add it to your .env file or Netlify environment variables.');
-  } else if (typeof apiKey !== 'string' || apiKey.length < 10) {
-    errors.push('VITE_OPENROUTER_API_KEY appears to be invalid. Please check the value.');
+    errors.push('VITE_OPENROUTER_API_KEY is not set. Please add it to your Netlify environment variables.');
+  } else if (typeof apiKey !== 'string' || apiKey.length < 20) {
+    errors.push('VITE_OPENROUTER_API_KEY appears to be invalid (too short). Please check the value.');
   } else if (!apiKey.startsWith('sk-or-v1-')) {
     errors.push('VITE_OPENROUTER_API_KEY format is invalid. It should start with "sk-or-v1-".');
   }
@@ -28,6 +28,11 @@ export function checkEnvVariables(): { isValid: boolean; errors: string[]; warni
   // Log warnings to console
   if (warnings.length > 0) {
     console.warn('OpenRouter API environment warnings:', warnings.join(', '));
+  }
+  
+  // Log errors to console
+  if (errors.length > 0) {
+    console.error('OpenRouter API environment errors:', errors.join(', '));
   }
   
   return {

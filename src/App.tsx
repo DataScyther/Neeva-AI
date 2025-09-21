@@ -596,7 +596,7 @@ function Chatbot() {
       // Check if API key is configured
       const API_KEY = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
       if (!API_KEY) {
-        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an API key. If you're the administrator, please set the VITE_OPENROUTER_API_KEY environment variable.";
+        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an API key. If you're the administrator, please set the VITE_OPENROUTER_API_KEY environment variable in the Netlify dashboard.";
       }
 
       // Convert chat history to OpenRouter format
@@ -617,7 +617,7 @@ function Chatbot() {
       if (error instanceof OpenRouterError) {
         // Provide more specific error messages
         if (error.statusCode === 401) {
-          return `⚠️ Authentication failed. Please check that your OpenRouter API key is valid and properly configured.`;
+          return `⚠️ Authentication failed. Please verify your OpenRouter API key is valid and properly configured in the Netlify dashboard.`;
         } else if (error.statusCode === 403) {
           return `⚠️ Access forbidden. Your API key may not have permission to access the selected model.`;
         } else if (error.statusCode === 429) {
