@@ -30,6 +30,12 @@ const API_KEY = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
 const MODEL = (import.meta as any).env.VITE_OPENROUTER_MODEL || 'x-ai/grok-4-fast:free';
 const BASE_URL = (import.meta as any).env.VITE_OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
 
+// Debug logging
+console.log('=== OpenRouter Config Debug ===');
+console.log('API_KEY exists:', !!API_KEY);
+console.log('MODEL:', MODEL);
+console.log('BASE_URL:', BASE_URL);
+
 // Check environment variables on module load
 const envCheck = checkEnvVariables();
 if (!envCheck.isValid) {
