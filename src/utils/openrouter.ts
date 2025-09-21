@@ -26,13 +26,19 @@ export interface OpenRouterResponse {
   };
 }
 
-const API_KEY = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
-const MODEL = (import.meta as any).env.VITE_OPENROUTER_MODEL || 'x-ai/grok-4-fast:free';
-const BASE_URL = (import.meta as any).env.VITE_OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
+// More robust way to access environment variables
+const getEnvVar = (name: string): string | undefined => {
+  return (import.meta as any).env[name];
+};
+
+const API_KEY = getEnvVar('VITE_OPENROUTER_API_KEY');
+const MODEL = getEnvVar('VITE_OPENROUTER_MODEL') || 'x-ai/grok-4-fast:free';
+const BASE_URL = getEnvVar('VITE_OPENROUTER_BASE_URL') || 'https://openrouter.ai/api/v1';
 
 // Debug logging
 console.log('=== OpenRouter Config Debug ===');
 console.log('API_KEY exists:', !!API_KEY);
+console.log('API_KEY value:', API_KEY ? `${API_KEY.substring(0, 10)}...${API_KEY.substring(API_KEY.length - 5)}` : 'NOT SET');
 console.log('MODEL:', MODEL);
 console.log('BASE_URL:', BASE_URL);
 
@@ -150,6 +156,30 @@ Remember: You're a companion, not a therapist. Your goal is to provide immediate
     }
     
     throw new OpenRouterError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+// Test function to verify API key
+export async function testApiKey(): Promise<boolean> {
+  if (!API_KEY) {
+    console.error('API Key not found');
+    return false;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/auth/key`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log('API Key Test Response:', response.status);
+    return response.ok;
+  } catch (error) {
+    console.error('API Key Test Error:', error);
+    return false;
   }
 }
 

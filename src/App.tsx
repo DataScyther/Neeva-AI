@@ -50,6 +50,7 @@ import {
   Flame,
 } from "lucide-react";
 import { motion } from "motion/react";
+import ApiTestPage from './utils/api-test-page';
 
 // Inline Dashboard Component
 function Dashboard() {
@@ -1459,6 +1460,8 @@ function AppContent() {
         return <GuidedMeditation />;
       case "crisis":
         return <CrisisSupport />;
+      case "api-test":
+        return <ApiTestPage />;
       default:
         return <Dashboard />;
     }
