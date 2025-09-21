@@ -38,7 +38,8 @@ interface Exercise {
 
 interface AppState {
   user: User | null;
-  isAuthenticated: boolean;
+  // isAuthenticated is now always true since we're removing authentication
+  isAuthenticated: true;
   currentView:
     | "dashboard"
     | "chatbot"
@@ -66,8 +67,12 @@ type AppAction =
   | { type: "SET_LOADING"; payload: boolean };
 
 const initialState: AppState = {
-  user: null,
-  isAuthenticated: false,
+  user: {
+    id: "guest-user",
+    email: "guest@neeva.ai",
+    name: "Guest User"
+  },
+  isAuthenticated: true,
   currentView: "dashboard",
   moodEntries: [],
   chatHistory: [],
@@ -160,7 +165,8 @@ function appReducer(
       return {
         ...state,
         user: action.payload,
-        isAuthenticated: action.payload !== null,
+        // isAuthenticated is always true now
+        isAuthenticated: true,
       };
     case "SET_VIEW":
       return { ...state, currentView: action.payload };

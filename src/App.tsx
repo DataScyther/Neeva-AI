@@ -1401,10 +1401,6 @@ function AppContent() {
     }
   }, [state.theme]);
 
-  if (!state.isAuthenticated) {
-    return <Authentication />;
-  }
-
   if (!hasCompletedOnboarding) {
     return <Onboarding />;
   }

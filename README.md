@@ -18,7 +18,6 @@ Neeva AI is an innovative mental health companion application designed to provid
 - **UI Components**: Radix UI, Shadcn UI
 - **State Management**: React Context API
 - **AI Integration**: OpenRouter API for LLM capabilities
-- **Backend**: Supabase for authentication and data storage
 - **Deployment**: Netlify
 
 ## Getting Started
@@ -45,9 +44,9 @@ Neeva AI is an innovative mental health companion application designed to provid
    npm install
    ```
 
-4. Create a `.env` file in the root directory and add your Supabase service role key:
+4. Create a `.env` file in the root directory and add your OpenRouter API key:
    ```env
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
+   VITE_OPENROUTER_API_KEY=your_openrouter_api_key_here
    ```
    
    You can use the `.env.example` file as a template.
@@ -91,20 +90,6 @@ npm run build
    - Set the publish directory to `build`
    - Add your environment variables in the Netlify dashboard
    - Deploy!
-
-### Authentication Configuration
-
-#### Updating Redirect URLs
-
-To update your Supabase project to remove localhost URLs and use only the Netlify deployment URL, follow the guide in [docs/SUPABASE_REDIRECT_URL_UPDATE.md](docs/SUPABASE_REDIRECT_URL_UPDATE.md).
-
-This change ensures consistent authentication behavior and removes potential security risks associated with localhost redirects in production.
-
-#### Google Authentication Redirect URLs
-
-To permanently fix the Google authentication redirect issue (redirecting to localhost:3000), please follow the detailed guide in [docs/SUPABASE_GOOGLE_AUTH_FIX.md](docs/SUPABASE_GOOGLE_AUTH_FIX.md).
-
-Note: The client-side code has been updated to use only the Netlify URL (`https://neevaai.netlify.app/`) for all authentication redirects.
 
 ## Project Structure
 

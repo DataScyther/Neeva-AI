@@ -29,7 +29,6 @@
     "@radix-ui/react-toggle": "^1.1.2",
     "@radix-ui/react-toggle-group": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
-    "@supabase/supabase-js": "^2.57.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "*",
     "cmdk": "^1.1.1",
@@ -58,7 +57,6 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy:netlify": "node scripts/deploy-netlify.js",
-    "verify:auth": "node scripts/verify-auth-config.js"
+    "deploy:netlify": "node scripts/deploy-netlify.js"
   }
 }
