@@ -91,8 +91,8 @@ The build output will be in the `dist` directory.
    - Set the build command to `npm run build`
    - Set the publish directory to `dist`
    - Add your environment variables in the Netlify dashboard:
-     - `VITE_OPENROUTER_API_KEY` - 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
-     - `VITE_OPENROUTER_MODEL` - deepseek/deepseek-chat-v3.1:free
+     - `VITE_OPENROUTER_API_KEY` - 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
+     - `VITE_OPENROUTER_MODEL` - openai/gpt-oss-120b:free
      - `VITE_OPENROUTER_BASE_URL` - https://openrouter.ai/api/v1
    - Deploy!
 
