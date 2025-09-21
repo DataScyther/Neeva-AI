@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { callOpenRouter, convertChatHistory, OpenRouterError } from "./utils/openrouter";
 import { checkEnvVariables } from "./utils/env-check";
+import { callGemini, convertChatHistoryToGemini, GeminiError } from "./utils/gemini";
 import {
   AppProvider,
   useAppContext,
@@ -594,31 +595,38 @@ function Chatbot() {
 
   const getAIResponse = async (userMessage: string): Promise<string> => {
     try {
-      // Check if API key is configured
-      const API_KEY = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
-      if (!API_KEY) {
-        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an API key. If you're the administrator, please set the VITE_OPENROUTER_API_KEY environment variable in the Netlify dashboard.";
+      // Check if Gemini API key is configured
+      const GEMINI_API_KEY = (import.meta as any).env.VITE_GEMINI_API_KEY;
+      if (GEMINI_API_KEY) {
+        // Use Google Gemini API
+        const chatHistory = convertChatHistoryToGemini(state.chatHistory.filter(msg => !msg.isUser || msg.content !== userMessage));
+        const messages = [...chatHistory, { role: 'user' as const, parts: [{ text: userMessage }] }];
+        const response = await callGemini(messages);
+        return response;
       }
 
-      // Convert chat history to OpenRouter format
-      const chatHistory = convertChatHistory(state.chatHistory.filter(msg => !msg.isUser || msg.content !== userMessage));
-      
-      // Add the new user message
-      const messages = [...chatHistory, { role: 'user' as const, content: userMessage }];
-      
-      // Call OpenRouter API
-      const response = await callOpenRouter(messages);
-      return response;
+      // Fallback to OpenRouter if Gemini key is not set
+      const OPENROUTER_API_KEY = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
+      if (OPENROUTER_API_KEY) {
+        const chatHistory = convertChatHistory(state.chatHistory.filter(msg => !msg.isUser || msg.content !== userMessage));
+        const messages = [...chatHistory, { role: 'user' as const, content: userMessage }];
+        const response = await callOpenRouter(messages);
+        return response;
+      }
+
+      // If no API key is set, return a friendly error message
+      return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an API key. If you're the administrator, please set either VITE_GEMINI_API_KEY or VITE_OPENROUTER_API_KEY environment variable.";
+
     } catch (error) {
-      console.error('OpenRouter API Error:', error);
+      console.error('AI API Error:', error);
       
       // Fallback to hardcoded responses if API fails
       const lowerMessage = userMessage.toLowerCase();
       
-      if (error instanceof OpenRouterError) {
+      if (error instanceof GeminiError || error instanceof OpenRouterError) {
         // Provide more specific error messages
         if (error.statusCode === 401) {
-          return `⚠️ Authentication failed. Please verify your OpenRouter API key is valid and properly configured in the Netlify dashboard.`;
+          return `⚠️ Authentication failed. Please verify your API key is valid and properly configured.`;
         } else if (error.statusCode === 403) {
           return `⚠️ Access forbidden. Your API key may not have permission to access the selected model.`;
         } else if (error.statusCode === 429) {

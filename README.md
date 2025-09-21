@@ -91,9 +91,9 @@ The build output will be in the `dist` directory.
    - Set the build command to `npm run build`
    - Set the publish directory to `dist`
    - Add your environment variables in the Netlify dashboard:
-     - `VITE_OPENROUTER_API_KEY` - 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
-     - `VITE_OPENROUTER_MODEL` - google/gemma-2-9b-it:free
-     - `VITE_OPENROUTER_BASE_URL` - https://openrouter.ai/api/v1
+     - `VITE_GEMINI_API_KEY` - AIzaSyANh4_36zj4gDKFeCPi0xI_7NqBt-pZFGg
+     - `VITE_GEMINI_MODEL` - gemini-2.0-flash
+     - `VITE_GEMINI_BASE_URL` - https://generativelanguage.googleapis.com/v1beta
    - Deploy!
 
 ## Project Structure
