@@ -1,6 +1,16 @@
 import { supabase } from './client'
 import { User } from '@supabase/supabase-js'
 
+// Enhanced error logging function
+const logAuthError = (operation: string, error: any) => {
+  console.error(`[Supabase Auth] ${operation} failed:`, {
+    message: error.message,
+    code: error.code,
+    status: error.status,
+    details: error
+  });
+};
+
 // Authentication helper functions
 export const signUp = async (email: string, password: string, name?: string) => {
   try {
@@ -14,8 +24,13 @@ export const signUp = async (email: string, password: string, name?: string) => 
       },
     })
     
+    if (error) {
+      logAuthError('signUp', error);
+    }
+    
     return { data, error }
   } catch (err) {
+    logAuthError('signUp (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -27,8 +42,13 @@ export const signIn = async (email: string, password: string) => {
       password
     })
     
+    if (error) {
+      logAuthError('signIn', error);
+    }
+    
     return { data, error }
   } catch (err) {
+    logAuthError('signIn (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -37,8 +57,13 @@ export const signOut = async () => {
   try {
     const { error } = await supabase.auth.signOut()
     
+    if (error) {
+      logAuthError('signOut', error);
+    }
+    
     return { error }
   } catch (err) {
+    logAuthError('signOut (exception)', err);
     return { error: err };
   }
 }
@@ -63,8 +88,13 @@ export const resetPassword = async (email: string) => {
   try {
     const { data, error } = await supabase.auth.resetPasswordForEmail(email)
     
+    if (error) {
+      logAuthError('resetPassword', error);
+    }
+    
     return { data, error }
   } catch (err) {
+    logAuthError('resetPassword (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -79,8 +109,13 @@ export const signInWithGoogle = async () => {
       },
     })
     
+    if (error) {
+      logAuthError('signInWithGoogle', error);
+    }
+    
     return { data, error }
   } catch (err) {
+    logAuthError('signInWithGoogle (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -90,8 +125,13 @@ export const refreshSession = async () => {
   try {
     const { data, error } = await supabase.auth.refreshSession()
     
+    if (error) {
+      logAuthError('refreshSession', error);
+    }
+    
     return { data, error }
   } catch (err) {
+    logAuthError('refreshSession (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -109,8 +149,13 @@ export const updateUserMetadata = async (metadata: object) => {
       data: metadata,
     })
     
+    if (error) {
+      logAuthError('updateUserMetadata', error);
+    }
+    
     return { data, error }
   } catch (err) {
+    logAuthError('updateUserMetadata (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -122,8 +167,13 @@ export const updateUserEmail = async (newEmail: string) => {
       email: newEmail,
     })
     
+    if (error) {
+      logAuthError('updateUserEmail', error);
+    }
+    
     return { data, error }
   } catch (err) {
+    logAuthError('updateUserEmail (exception)', err);
     return { data: null, error: err };
   }
 }
@@ -135,8 +185,13 @@ export const updatePassword = async (newPassword: string) => {
       password: newPassword,
     })
     
+    if (error) {
+      logAuthError('updatePassword', error);
+    }
+    
     return { data, error }
   } catch (err) {
+    logAuthError('updatePassword (exception)', err);
     return { data: null, error: err };
   }
 }

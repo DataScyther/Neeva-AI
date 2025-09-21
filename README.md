@@ -45,6 +45,13 @@ Neeva AI is an innovative mental health companion application designed to provid
    npm install
    ```
 
+4. Create a `.env` file in the root directory and add your Supabase service role key:
+   ```env
+   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key_here
+   ```
+   
+   You can use the `.env.example` file as a template.
+
 ### Development
 
 To start the development server:
@@ -82,6 +89,7 @@ npm run build
    - Connect your GitHub repository or drag and drop the `build` folder
    - Set the build command to `npm run build`
    - Set the publish directory to `build`
+   - Add your environment variables in the Netlify dashboard
    - Deploy!
 
 ### Authentication Configuration

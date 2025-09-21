@@ -77,15 +77,18 @@ export function Authentication() {
     setIsLoading(true);
 
     try {
+      console.log("[Authentication] Attempting sign in for:", formData.email);
       const { data, error } = await signIn(formData.email, formData.password);
 
       if (error) {
+        console.error("[Authentication] Sign in error:", error);
         // Handle JWT expiration error
         if (error.message.includes('jwt')) {
           // Try to refresh the session
           const { error: refreshError } = await refreshSession();
           if (refreshError) {
             alert("Session expired. Please sign in again.");
+            setIsLoading(false);
             return;
           }
           // Retry sign in after refresh
@@ -105,9 +108,10 @@ export function Authentication() {
             name: data.user.user_metadata?.name || "User",
           },
         });
+        console.log("[Authentication] Sign in successful for user:", data.user.id);
       }
     } catch (error: any) {
-      console.error("Sign in error:", error);
+      console.error("[Authentication] Sign in exception:", error);
       alert(error.message || "An error occurred during sign in. Please try again.");
     } finally {
       setIsLoading(false);
@@ -124,15 +128,18 @@ export function Authentication() {
     setIsLoading(true);
 
     try {
+      console.log("[Authentication] Attempting sign up for:", formData.email);
       const { data, error } = await signUp(formData.email, formData.password, formData.name);
 
       if (error) {
+        console.error("[Authentication] Sign up error:", error);
         // Handle JWT expiration error
         if (error.message.includes('jwt')) {
           // Try to refresh the session
           const { error: refreshError } = await refreshSession();
           if (refreshError) {
             alert("Session expired. Please try again.");
+            setIsLoading(false);
             return;
           }
           // Retry sign up after refresh
@@ -153,11 +160,12 @@ export function Authentication() {
           },
         });
         alert("Account created successfully! Please check your email to confirm your account.");
+        console.log("[Authentication] Sign up successful for user:", data.user.id);
       } else {
         alert("Account created successfully! Please check your email to confirm your account.");
       }
     } catch (error: any) {
-      console.error("Sign up error:", error);
+      console.error("[Authentication] Sign up exception:", error);
       alert(error.message || "An error occurred during sign up. Please try again.");
     } finally {
       setIsLoading(false);
@@ -194,7 +202,7 @@ export function Authentication() {
       // We don't need to do anything else here
       console.log("[Authentication] Google Sign In initiated successfully");
     } catch (error: any) {
-      console.error("Google sign in error:", error);
+      console.error("[Authentication] Google Sign In exception:", error);
       alert(error.message || "An error occurred during Google sign in. Please try again.");
       setIsLoading(false);
     }
