@@ -1,8 +1,3 @@
-<center>
-<img src="https://via.placeholder.com/1200x400/4F46E5/FFFFFF?text=Neeva+AI+-+Empowering+Mental+Wellness+Through+AI" alt="Neeva AI Banner">
-<br>
-<img src="https://img.icons8.com/3d-fluency/94/mental-health.png" alt="Logo" width="100">
-</center>
 
 # Neeva AI: Next-Gen Mental Health Companion
 
