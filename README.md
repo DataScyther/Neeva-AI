@@ -18,10 +18,10 @@ Neeva AI revolutionizes mental health support by marrying cutting-edge AI with e
 
 
 ### Key Technologies
-- **Frontend:** React, TypeScript, Vite
+- **Frontend:** React Native, Expo CLI, TypeScript, Vite
 - **UI:** Tailwind CSS, Radix UI, Shadcn UI
 - **AI:** OpenRouter API, Google Gemini
-- **Backend:** Node.js, PostgreSQL, Hasura
+- **Backend:** Node.js, PostgreSQL, Supabase
 - **Deployment:** Netlify
 
 ---
