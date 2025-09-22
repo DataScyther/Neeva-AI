@@ -95,39 +95,6 @@ Visit `http://localhost:5173` to experience Neeva AI locally.
 
 ---
 
-## 💡 Usage Examples
-
-**AI Service Integration**
-interface TherapeuticAction {
-type: string;
-suggestion: string;
-}
-
-interface AIResponse {
-message: string;
-emotionScore: number;
-suggestedActions: TherapeuticAction[];
-}
-
-const handleAIRequest = async (input: string): Promise<AIResponse> => {
-const response = await openRouterAPI.generateResponse(input);
-return processClinicalResponse(response);
-};
-
-async function main() {
-const userInput = "I'm feeling anxious and overwhelmed.";
-const aiResult = await handleAIRequest(userInput);
-
-console.log("AI Message:", aiResult.message);
-console.log("Emotion Score:", aiResult.emotionScore);
-aiResult.suggestedActions.forEach(action =>
-console.log(Action: ${action.type} – ${action.suggestion})
-);
-}
-
-main();
-
-
 **Conversation Workflow (Mermaid)**
 graph LR
 A[User Input] --> B(NLP Processing)
