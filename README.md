@@ -4,7 +4,6 @@
 [![GitHub Release](https://img.shields.io/github/v/release/DataScyther/Neeva-AI?color=4F46E5&style=for-the-badge)](https://github.com/DataScyther/Neeva-AI/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-4F46E5.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-4F46E5.svg?style=for-the-badge)](http://makeapullrequest.com)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/12345678-1234-1234-1234-123456789012/deploy-status?style=for-the-badge)](https://app.netlify.com/sites/neeva-ai/deploys)
 
 ---
 
@@ -167,7 +166,7 @@ Licensed under MIT. See [`LICENSE`](LICENSE) for use, modification, and distribu
 - For questions and discussions, join our [GitHub Discussions](https://github.com/DataScyther/Neeva-AI/discussions)
 - **Professional contact:**  
   - Email: support@neeva-ai.com *(or your preferred contact)*
-  - LinkedIn: [Nishant Kumar](https://linkedin.com/in/yourprofile)
+  - LinkedIn: [Nishant Kumar](https://www.linkedin.com/in/datascyther/)
 
 *If you’re in crisis, contact local helplines (e.g., India: 9152987821) or emergency services.*
 
