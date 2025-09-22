@@ -16,8 +16,6 @@ Neeva AI revolutionizes mental health support by marrying cutting-edge AI with e
 - 🧠 Clinically-validated CBT exercises
 - 🔒 Military-grade encryption for all user data
 
-> “The most human-like mental health AI I’ve encountered.”  
-> – *Dr. Sarah Lin, Clinical Psychologist (Advisor)*
 
 ### Key Technologies
 - **Frontend:** React, TypeScript, Vite
