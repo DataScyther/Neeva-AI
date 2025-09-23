@@ -10,7 +10,7 @@
 
 ---
 
-## 🌟 Vision
+## Vision
 
 > *"Empowering minds through AI-driven mental wellness – where technology meets compassion."*
 
@@ -18,21 +18,21 @@ Neeva AI represents the future of mental health support, seamlessly blending cut
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [🌟 Vision](#vision)
-- [✨ Core Features](#core-features)
-- [🛠 Technology Stack](#technology-stack)
-- [🚀 Quick Start](#quick-start)
-- [📖 Usage Guide](#usage-guide)
-- [🔧 Development](#development)
-- [🤝 Contributing](#contributing)
-- [📄 License](#license)
-- [📞 Support](#support)
+- Vision
+- Core Features
+- Technology Stack
+- Quick Start
+- Usage Guide
+- Development
+- Contributing
+- License
+- Support
 
 ---
 
-## ✨ Core Features
+## Core Features
 
 | Feature | Description | Impact |
 |---------|-------------|---------|
@@ -50,6 +50,7 @@ Neeva AI represents the future of mental health support, seamlessly blending cut
 ## 🛠 Technology Stack
 
 ### Frontend Architecture
+
 - **⚡ Vite 6.0** - Lightning-fast build tool and dev server
 - **⚛️ React 18** - Modern component-based UI framework
 - **🔷 TypeScript 5.0** - Type-safe JavaScript for robust development
@@ -58,6 +59,7 @@ Neeva AI represents the future of mental health support, seamlessly blending cut
 - **✨ Shadcn/ui** - Beautiful, customizable component library
 
 ### AI & Backend Infrastructure
+
 - **🧠 OpenRouter API** - Unified access to cutting-edge language models
 - **🌟 Google Gemini** - Advanced multimodal AI capabilities
 - **🗄️ Supabase** - Real-time database with built-in authentication
@@ -65,6 +67,7 @@ Neeva AI represents the future of mental health support, seamlessly blending cut
 - **🐘 PostgreSQL** - Advanced relational database management
 
 ### Cross-Platform Deployment
+
 - **📱 Capacitor** - Native mobile app development
 - **☁️ Netlify** - Global CDN with automated deployments
 - **🔄 CI/CD** - Automated testing and deployment pipelines
@@ -119,11 +122,13 @@ Neeva AI represents the future of mental health support, seamlessly blending cut
 ## 📖 Usage Guide
 
 ### First-Time Setup
+
 1. **Complete Onboarding** - Personalized mental health assessment
 2. **Configure Preferences** - Customize your wellness journey
 3. **Grant Permissions** - Enable notifications and data access
 
 ### Daily Workflow
+
 ```mermaid
 graph TD
     A[Daily Check-in] --> B{Mood Tracking}
@@ -136,6 +141,7 @@ graph TD
 ```
 
 ### Key Interactions
+
 - **💬 Chat Interface**: Natural conversations with Neeva AI
 - **❤️ Mood Logging**: Quick emotional state recording
 - **📈 Dashboard**: Visual analytics and trend analysis
@@ -147,7 +153,8 @@ graph TD
 ## 🔧 Development
 
 ### Project Structure
-```
+
+```text
 Neeva-AI/
 ├── src/
 │   ├── components/     # React components
@@ -162,6 +169,7 @@ Neeva-AI/
 ```
 
 ### Available Scripts
+
 ```bash
 npm run dev          # Start development server
 npm run build        # Build for production
@@ -170,6 +178,7 @@ npm run deploy:netlify # Deploy to Netlify
 ```
 
 ### Environment Variables
+
 ```env
 VITE_OPENROUTER_API_KEY=your_openrouter_key
 VITE_GEMINI_API_KEY=your_gemini_key
@@ -179,11 +188,12 @@ VITE_SUPABASE_ANON_KEY=your_supabase_key
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions from developers, mental health professionals, and AI researchers!
 
 ### How to Contribute
+
 1. **Fork** the repository
 2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
 3. **Commit** your changes: `git commit -m 'Add amazing feature'`
@@ -191,6 +201,7 @@ We welcome contributions from developers, mental health professionals, and AI re
 5. **Open** a Pull Request
 
 ### Development Guidelines
+
 - 🔒 **Security First**: All contributions undergo security review
 - 🧪 **Testing**: Write tests for new features
 - 📚 **Documentation**: Update docs for API changes
@@ -215,16 +226,19 @@ copies of the Software...
 
 ---
 
-## 📞 Support & Community
+## Support & Community
 
 ### Get Help
+
 - 🐛 **Bug Reports**: [GitHub Issues](https://github.com/DataScyther/Neeva-AI/issues)
 - 💡 **Feature Requests**: [GitHub Discussions](https://github.com/DataScyther/Neeva-AI/discussions)
 - 💬 **Community Chat**: Join our Discord server
 - 📧 **Professional Support**: [support@neeva-ai.com](mailto:support@neeva-ai.com)
 
 ### Crisis Resources
+
 If you're experiencing a mental health crisis:
+
 - 🇮🇳 **India**: Call 9152987821 (AASRA)
 - 🌍 **International**: Contact local emergency services
 - 🚨 **Neeva Crisis Mode**: Available 24/7 within the app
@@ -235,8 +249,8 @@ If you're experiencing a mental health crisis:
 
 Built with ❤️ by passionate developers, mental health advocates, and AI researchers committed to making mental wellness accessible to everyone.
 
-*"Technology should serve humanity's deepest needs – emotional well-being is fundamental."*
+"Technology should serve humanity's deepest needs – emotional well-being is fundamental."
 
 ---
 
-*Experience the future of mental health care. Download Neeva AI today and start your journey toward better mental wellness.* 🌟
+Experience the future of mental health care. Download Neeva AI today and start your journey toward better mental wellness. 🌟
