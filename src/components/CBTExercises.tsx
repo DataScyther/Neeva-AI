@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "./ui/card";
@@ -18,11 +17,9 @@ import {
 import { Textarea } from "./ui/textarea";
 import { Slider } from "./ui/slider";
 import { useAppContext } from "./AppContext";
-import { useAudioManager, audioProfiles } from "./AudioManager";
+import { useAudioManager } from "./AudioManager";
 import {
   Brain,
-  Heart,
-  BookOpen,
   Clock,
   Play,
   Pause,
@@ -35,13 +32,9 @@ import {
   Headphones,
   PenTool,
   Gamepad2,
-  Timer,
   Target,
   Sparkles,
   Rainbow,
-  Focus,
-  MemoryStick,
-  Shuffle,
   Save,
   Volume2,
   VolumeX,
@@ -51,7 +44,7 @@ import {
   Volume1,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { Exercise, ADHDGameExercise, JournalingExercise } from "../types/exercise.types";
+import { ADHDGameExercise, JournalingExercise } from "../types/exercise.types";
 
 interface ExerciseTimer {
   isActive: boolean;
@@ -289,15 +282,14 @@ const exerciseCategories = {
 export function CBTExercises() {
   const { state, dispatch } = useAppContext();
   const {
+    isEnabled: audioEnabled,
     isPlaying: audioIsPlaying,
     currentProfile,
     volume,
-    isEnabled: audioEnabled,
     playProfile,
     stopAudio,
     setVolume,
     toggleAudio,
-    availableProfiles,
   } = useAudioManager();
 
   const [activeExercise, setActiveExercise] = useState<
@@ -321,7 +313,7 @@ export function CBTExercises() {
   });
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
 
     if (timer.isActive && timer.timeLeft > 0) {
       interval = setInterval(() => {
@@ -810,7 +802,7 @@ export function CBTExercises() {
                           <Volume1 className="w-3 h-3" />
                           <Slider
                             value={[volume]}
-                            onValueChange={(value) =>
+                            onValueChange={(value: number[]) =>
                               setVolume(value[0])
                             }
                             max={1}
@@ -952,8 +944,13 @@ export function CBTExercises() {
                         <p className="text-muted-foreground text-lg">
                           Step {currentStep + 1} of{" "}
                           {
-                            getExerciseById(activeExercise)
-                              ?.exercise.instructions.length
+                            (() => {
+                              const ex = getExerciseById(activeExercise)?.exercise;
+                              if (ex && 'instructions' in ex) {
+                                return ex.instructions.length;
+                              }
+                              return 0;
+                            })()
                           }
                         </p>
                       </div>
@@ -962,10 +959,13 @@ export function CBTExercises() {
                         <CardContent className="p-6">
                           <p className="text-center text-lg font-medium leading-relaxed">
                             {
-                              getExerciseById(activeExercise)
-                                ?.exercise.instructions[
-                                currentStep
-                              ]
+                              (() => {
+                                const ex = getExerciseById(activeExercise)?.exercise;
+                                if (ex && 'instructions' in ex) {
+                                  return ex.instructions[currentStep];
+                                }
+                                return '';
+                              })()
                             }
                           </p>
                         </CardContent>
@@ -1003,8 +1003,13 @@ export function CBTExercises() {
                     {getExerciseById(activeExercise)?.exercise
                       .type !== "journal" &&
                       currentStep <
-                        (getExerciseById(activeExercise)
-                          ?.exercise.instructions.length || 1) -
+                        ((() => {
+                          const ex = getExerciseById(activeExercise)?.exercise;
+                          if (ex && 'instructions' in ex) {
+                            return ex.instructions.length;
+                          }
+                          return 1;
+                        })() || 1) -
                           1 && (
                         <Button
                           onClick={() =>
@@ -1148,7 +1153,7 @@ export function CBTExercises() {
                                   <div className="flex items-center space-x-1">
                                     <PenTool className="w-4 h-4" />
                                     <span>
-                                      {exercise.prompts?.length}{" "}
+                                      {'prompts' in exercise ? exercise.prompts.length : 0}{" "}
                                       prompts
                                     </span>
                                   </div>
@@ -1160,7 +1165,7 @@ export function CBTExercises() {
                                     <span>Focus training</span>
                                   </div>
                                 )}
-                                {exercise.audioGuided && (
+                                {'audioGuided' in exercise && exercise.audioGuided && (
                                   <div className="flex items-center space-x-1">
                                     <Headphones className="w-4 h-4" />
                                     <span>Audio guided</span>
