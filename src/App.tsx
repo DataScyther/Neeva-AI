@@ -1,16 +1,17 @@
 import React, { useEffect, useState, useRef } from "react";
 import { checkEnvVariables } from "./utils/env-check";
 import { callGemini, convertChatHistoryToGemini, GeminiError } from "./utils/gemini";
+import { authService } from "./lib/auth";
 import {
   AppProvider,
   useAppContext,
 } from "./components/AppContext";
 import AuthComponent from "./components/AuthComponent";
 import { Onboarding } from "./components/Onboarding";
-import { Navigation } from "./components/Navigation";
-import { CBTExercises } from "./components/CBTExercises";
 import { CommunityGroups } from "./components/CommunityGroups";
+import { CBTExercises } from "./components/CBTExercises";
 import { Settings } from "./components/Settings";
+import { Navigation } from "./components/Navigation";
 import { InsightsDashboard } from "./components/InsightsDashboard";
 import { GuidedMeditation } from "./components/GuidedMeditation";
 import { CrisisSupport } from "./components/CrisisSupport";
@@ -1406,9 +1407,23 @@ function AppContent() {
   }, [state.theme]);
 
   // Show authentication screen if user is not authenticated
-  if (!state.isAuthenticated) {
+  const isUserAuthenticated = () => {
+    // Check multiple authentication indicators
+    const hasValidUser = state.user &&
+      ((state.user as any).email && (state.user as any).uid) &&
+      state.isAuthenticated;
+
+    // Additional validation with Firebase auth service
+    const hasValidProfile = authService.getCurrentUserProfile();
+
+    // All conditions must be met for user to be considered authenticated
+    return hasValidUser && hasValidProfile;
+  };
+
+  if (!isUserAuthenticated()) {
     return <AuthComponent onAuthSuccess={() => {
-      dispatch({ type: 'SET_AUTHENTICATED', payload: true });
+      // Authentication will be handled by the auth service listener
+      // No need to manually dispatch here
     }} />;
   }
 

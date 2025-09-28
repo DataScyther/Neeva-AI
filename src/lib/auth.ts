@@ -264,6 +264,21 @@ class AuthService {
     }
   }
 
+  // Get current user profile
+  getCurrentUserProfile(): UserProfile | null {
+    return this.userProfile;
+  }
+
+  // Sign out
+  async signOut(): Promise<void> {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Sign out error:', error);
+      throw error;
+    }
+  }
+
   // Listen to auth state changes
   onAuthStateChange(listener: (user: User | null) => void): () => void {
     this.authStateListeners.push(listener);

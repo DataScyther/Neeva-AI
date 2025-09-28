@@ -5,8 +5,7 @@ import React, {
   ReactNode,
 } from "react";
 
-// Import UserProfile from auth service
-import { UserProfile } from '../lib/auth';
+import { authService, UserProfile } from '../lib/auth';
 
 // Types
 interface User {
@@ -239,6 +238,20 @@ export function AppProvider({
     appReducer,
     initialState,
   );
+
+  // Sync authentication state from auth service on app start
+  React.useEffect(() => {
+    const unsubscribe = authService.onAuthStateChange((firebaseUser) => {
+      if (firebaseUser) {
+        const profile = authService.getCurrentUserProfile();
+        dispatch({ type: 'SET_USER', payload: profile });
+      } else {
+        dispatch({ type: 'CLEAR_USER' });
+      }
+    });
+
+    return unsubscribe;
+  }, []);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
