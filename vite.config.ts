@@ -51,11 +51,17 @@ export default defineConfig({
   build: {
     target: 'esnext',
     outDir: 'dist',
+    rollupOptions: {
+      external: [],
+      output: {
+        manualChunks: undefined,
+      },
+    },
   },
   server: {
     port: 3000,
     open: true,
   },
-  // Add base path for Netlify deployment
+  // Base path for deployment
   base: '/',
 })

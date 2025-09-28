@@ -2,6 +2,7 @@
   "name": "Neeva",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -64,5 +65,12 @@
     "build": "vite build",
     "preview": "vite preview",
     "deploy:netlify": "node scripts/deploy-netlify.js"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.9.6",
+    "@rollup/rollup-darwin-x64": "4.9.6",
+    "@rollup/rollup-darwin-arm64": "4.9.6",
+    "@rollup/rollup-win32-x64-msvc": "4.9.6",
+    "@rollup/rollup-linux-arm64-gnu": "4.9.6"
   }
 }
