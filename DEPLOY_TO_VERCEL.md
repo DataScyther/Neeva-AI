@@ -3,7 +3,8 @@
 ## Step 1: Deploy via GitHub Integration
 
 ### Option A: Use the Import Link (Recommended)
-1. **Click this link**: https://vercel.com/new/import?buildCommand=npm%20install%20--legacy-peer-deps%20%26%26%20npm%20run%20build&framework=vite&hasTrialAvailable=1&outputDirectory=dist&project-name=neeva-ai&remainingProjects=1&s=https%3A%2F%2Fgithub.com%2FDataScyther%2FNeeva-AI&teamSlug=datascythers-projects&totalProjects=1
+
+1. **Click this link**: <https://vercel.com/new/import?buildCommand=npm%20install%20--legacy-peer-deps%20%26%26%20npm%20run%20build&framework=vite&hasTrialAvailable=1&outputDirectory=dist&project-name=neeva-ai&remainingProjects=1&s=https%3A%2F%2Fgithub.com%2FDataScyther%2FNeeva-AI&teamSlug=datascythers-projects&totalProjects=1>
 
 2. **Vercel will auto-detect** your repository settings:
    - ✅ Framework: Vite
@@ -12,7 +13,8 @@
    - ✅ Root Directory: `./` (project root)
 
 ### Option B: Manual Setup
-1. Go to https://vercel.com/new?teamSlug=datascythers-projects
+
+1. Go to <https://vercel.com/new?teamSlug=datascythers-projects>
 2. Click **"Import Git Repository"**
 3. Connect your GitHub account
 4. Select `DataScyther/Neeva-AI` repository
@@ -27,7 +29,7 @@
 
 After importing, go to your project settings and add these environment variables:
 
-### Required Variables:
+### Required Variables
 
 ```
 # Firebase Configuration (Required for Authentication)
@@ -56,6 +58,7 @@ VITE_GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta
 ### How to Get Environment Variables
 
 #### Firebase
+
 1. Go to [https://console.firebase.google.com/](https://console.firebase.google.com/)
 2. Select your `neeva-ai` project
 3. Go to **Project Settings** → **General** → **Your apps**
@@ -63,6 +66,7 @@ VITE_GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta
 5. Copy the `firebaseConfig` object values
 
 #### Supabase
+
 *Note: Supabase is currently optional and not actively used in the app. You can skip this for now.*
 
 1. Go to [https://supabase.com/dashboard](https://supabase.com/dashboard)
@@ -87,24 +91,28 @@ VITE_GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta
 
 ## Troubleshooting
 
-### Build Errors:
+### Build Errors
+
 - **Dependency conflicts**: Already handled with `--legacy-peer-deps`
 - **Missing environment variables**: Double-check all variables are set
 - **Port issues**: Not applicable for Vercel (serverless)
 
-### Runtime Errors:
+### Runtime Errors
+
 - **Firebase auth**: Ensure Firebase project allows your Vercel domain
 - **Supabase CORS**: Add your Vercel domain to Supabase CORS settings
 - **API rate limits**: Monitor usage on OpenRouter dashboard
 
-### Performance:
+### Performance
+
 - Your app is optimized for production
 - All bundles are code-split and optimized
 - Images and assets are properly handled
 
-## What's Deployed:
+## What's Deployed
 
 ✅ **Complete Mental Health App**
+
 - AI Chat with DeepSeek model
 - Mood tracking and analytics
 - CBT exercises and meditation
@@ -113,12 +121,12 @@ VITE_GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta
 - Responsive design (mobile + desktop)
 - Dark/light theme support
 
-## Support:
+## Support
 
-- **Vercel Dashboard**: https://vercel.com/dashboard
-- **GitHub Repository**: https://github.com/DataScyther/Neeva-AI
-- **Firebase Console**: https://console.firebase.google.com/
-- **Supabase Dashboard**: https://supabase.com/dashboard
+- **Vercel Dashboard**: <https://vercel.com/dashboard>
+- **GitHub Repository**: <https://github.com/DataScyther/Neeva-AI>
+- **Firebase Console**: <https://console.firebase.google.com/>
+- **Supabase Dashboard**: <https://supabase.com/dashboard>
 
 ---
 
