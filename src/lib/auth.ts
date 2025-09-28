@@ -1,12 +1,13 @@
 // src/lib/auth.ts
 import {
-  GoogleAuthProvider,
   signInWithPopup,
-  signInWithEmailAndPassword,
+  signInWithRedirect,
   createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  User
+  GoogleAuthProvider,
+  User,
 } from 'firebase/auth';
 import {
   doc,
@@ -57,50 +58,68 @@ class AuthService {
       if (user) {
         await this.loadUserProfile(user.uid);
       } else {
-        this.userProfile = null;
       }
       this.notifyAuthStateListeners(user);
     });
   }
 
-  // Google Sign-In
+  // Sign in with Google using redirect instead of popup
   async signInWithGoogle(): Promise<UserProfile> {
     try {
+      // Use redirect instead of popup to avoid popup blockers
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
-
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      if (!user) {
-        throw new Error('No user returned from Google Sign-In');
+      
+      // Try popup first, fallback to redirect if blocked
+      let result;
+      try {
+        result = await signInWithPopup(auth, provider);
+      } catch (popupError: any) {
+        if (popupError.code === 'auth/popup-blocked') {
+          console.log('Popup blocked, using redirect method');
+          await signInWithRedirect(auth, provider);
+          return this.userProfile!; // Will be handled by redirect result
+        }
+        throw popupError;
       }
 
-      // Check if user exists in Firestore, create if not
-      const userProfile = await this.ensureUserProfile(user);
+      const user = result.user;
+      if (!user) {
+        throw new Error('No user returned from Google sign-in');
+      }
+
+      // Create user profile
+      const userProfile: UserProfile = {
+        uid: user.uid,
+        email: user.email!,
+        name: user.displayName || 'User',
+        photoURL: user.photoURL,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        lastLoginAt: new Date(),
+        preferences: {
+          theme: 'light',
+          notifications: true,
+          language: 'en',
+        },
+        stats: {
+          totalSessions: 1,
+          totalMinutes: 0,
+          streakDays: 1,
+          lastActivityDate: new Date(),
+        },
+      };
+
+      // Save to Firestore
+      await setDoc(doc(db, 'users', user.uid), userProfile);
+      
+      this.userProfile = userProfile;
+      this.notifyAuthStateListeners(user);
+      
       return userProfile;
     } catch (error) {
       console.error('Google Sign-In error:', error);
-      throw error;
-    }
-  }
-  // Email/Password Sign In
-  async signInWithEmail(email: string, password: string): Promise<UserProfile> {
-    try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      const user = result.user;
-
-      if (!user) {
-        throw new Error('No user returned from email sign-in');
-      }
-
-      // Check if user exists in Firestore, create if not
-      const userProfile = await this.ensureUserProfile(user);
-
-      return userProfile;
-    } catch (error) {
-      console.error('Email sign-in error:', error);
       throw error;
     }
   }
@@ -121,6 +140,35 @@ class AuthService {
       return userProfile;
     } catch (error) {
       console.error('Email sign-up error:', error);
+      throw error;
+    }
+  }
+
+  // Email/Password Sign In
+  async signInWithEmail(email: string, password: string): Promise<UserProfile> {
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const user = result.user;
+
+      if (!user) {
+        throw new Error('No user returned from email sign-in');
+      }
+
+      // Load existing user profile
+      await this.loadUserProfile(user.uid);
+      
+      if (!this.userProfile) {
+        throw new Error('User profile not found');
+      }
+
+      // Update last login
+      await this.updateUserProfile({ lastLoginAt: new Date() });
+      
+      this.notifyAuthStateListeners(user);
+      
+      return this.userProfile;
+    } catch (error) {
+      console.error('Email Sign-In error:', error);
       throw error;
     }
   }

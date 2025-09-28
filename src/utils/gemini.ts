@@ -20,7 +20,7 @@ const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
 
 const env = ((import.meta as unknown as { env?: Record<string, string> })?.env) ?? {};
-const API_KEY = env.VITE_OPENROUTER_API_KEY || "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";
+const API_KEY = env.VITE_OPENROUTER_API_KEY || "";
 const MODEL = env.VITE_OPENROUTER_MODEL || DEFAULT_MODEL;
 const BASE_URL = env.VITE_OPENROUTER_BASE_URL || DEFAULT_BASE_URL;
 
@@ -33,7 +33,7 @@ export class GeminiError extends Error {
 
 export async function callGemini(messages: GeminiMessage[]): Promise<string> {
   if (!API_KEY) {
-    throw new GeminiError('OpenRouter API key is not configured. Please set VITE_OPENROUTER_API_KEY in your environment variables.');
+    throw new GeminiError('AI chat features are currently unavailable. OpenRouter API is not configured. You can still use other features like mood tracking, exercises, and meditation.');
   }
 
   const maxRetries = 3;

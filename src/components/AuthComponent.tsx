@@ -212,6 +212,13 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   };
 
   if (user) {
+    // Auto-trigger onAuthSuccess when user is authenticated
+    React.useEffect(() => {
+      if (user && onAuthSuccess) {
+        onAuthSuccess();
+      }
+    }, [user, onAuthSuccess]);
+
     return (
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
@@ -222,44 +229,13 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
             Welcome back, {user.name}!
           </CardTitle>
           <CardDescription>
-            You're successfully signed in to Neeva AI
+            Redirecting to your dashboard...
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-3 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border">
-            <div className="flex items-center gap-3">
-              <Mail className="w-4 h-4 text-blue-600" />
-              <span className="text-sm text-gray-600">{user.email}</span>
-            </div>
-            {user.phoneNumber && (
-              <div className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-blue-600" />
-                <span className="text-sm text-gray-600">{user.phoneNumber}</span>
-              </div>
-            )}
-            <div className="flex items-center gap-3">
-              <CheckCircle className="w-4 h-4 text-green-600" />
-              <span className="text-sm text-gray-600">
-                Member since {user.createdAt.toLocaleDateString()}
-              </span>
-            </div>
+          <div className="flex items-center justify-center">
+            <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
           </div>
-
-          <Button
-            onClick={handleSignOut}
-            disabled={isLoading}
-            variant="outline"
-            className="w-full"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Signing out...
-              </>
-            ) : (
-              'Sign Out'
-            )}
-          </Button>
         </CardContent>
       </Card>
     );

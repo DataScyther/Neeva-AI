@@ -1422,8 +1422,8 @@ function AppContent() {
 
   if (!isUserAuthenticated()) {
     return <AuthComponent onAuthSuccess={() => {
-      // Authentication will be handled by the auth service listener
-      // No need to manually dispatch here
+      // Set onboarding as completed for existing users
+      localStorage.setItem("onboardingCompleted", "true");
     }} />;
   }
 

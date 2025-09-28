@@ -114,13 +114,6 @@ export function Navigation() {
       view: "community",
       color: "text-orange-500",
     },
-    {
-      id: "api-test",
-      label: "API Test",
-      icon: Sparkles,
-      view: "api-test",
-      color: "text-purple-500",
-    },
   ];
 
   const supportNavigationItems: SupportNavigationItem[] = [

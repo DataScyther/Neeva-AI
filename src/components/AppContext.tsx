@@ -66,8 +66,7 @@ interface AppState {
     | "settings"
     | "insights"
     | "meditation"
-    | "crisis"
-    | "api-test";
+    | "crisis";
   moodEntries: MoodEntry[];
   chatHistory: ChatMessage[];
   exercises: Exercise[];
