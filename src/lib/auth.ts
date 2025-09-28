@@ -15,10 +15,6 @@ import {
   setDoc,
   updateDoc,
   serverTimestamp,
-  collection,
-  query,
-  where,
-  getDocs
 } from 'firebase/firestore';
 import { auth, db } from './firebase';
 
@@ -94,7 +90,7 @@ class AuthService {
         uid: user.uid,
         email: user.email!,
         name: user.displayName || 'User',
-        photoURL: user.photoURL,
+        photoURL: user.photoURL || undefined,
         createdAt: new Date(),
         updatedAt: new Date(),
         lastLoginAt: new Date(),

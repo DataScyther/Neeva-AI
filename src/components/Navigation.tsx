@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
@@ -14,12 +14,9 @@ import {
   BarChart3,
   Headphones,
   Shield,
-  Bell,
   ChevronDown,
-  Sparkles,
   Menu,
   X,
-  User,
 } from "lucide-react";
 import { AppState } from "./AppContext";
 
