@@ -5,11 +5,30 @@ import React, {
   ReactNode,
 } from "react";
 
+// Import UserProfile from auth service
+import { UserProfile } from '../lib/auth';
+
 // Types
 interface User {
   id: string;
   email: string;
   name: string;
+  phoneNumber?: string;
+  photoURL?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  lastLoginAt?: Date;
+  preferences?: {
+    theme: 'light' | 'dark' | 'auto';
+    notifications: boolean;
+    language: string;
+  };
+  stats?: {
+    totalSessions: number;
+    totalMinutes: number;
+    streakDays: number;
+    lastActivityDate: Date;
+  };
 }
 
 interface MoodEntry {
@@ -37,9 +56,8 @@ interface Exercise {
 }
 
 interface AppState {
-  user: User | null;
-  // isAuthenticated is now always true since we're removing authentication
-  isAuthenticated: true;
+  user: User | UserProfile | null;
+  isAuthenticated: boolean;
   currentView:
     | "dashboard"
     | "chatbot"
@@ -50,7 +68,7 @@ interface AppState {
     | "insights"
     | "meditation"
     | "crisis"
-    | "api-test"; // Add this for testing
+    | "api-test";
   moodEntries: MoodEntry[];
   chatHistory: ChatMessage[];
   exercises: Exercise[];
@@ -59,7 +77,9 @@ interface AppState {
 }
 
 type AppAction =
-  | { type: "SET_USER"; payload: User | null }
+  | { type: "SET_USER"; payload: User | UserProfile | null }
+  | { type: "CLEAR_USER" }
+  | { type: "SET_AUTHENTICATED"; payload: boolean }
   | { type: "SET_VIEW"; payload: AppState["currentView"] }
   | { type: "ADD_MOOD_ENTRY"; payload: MoodEntry }
   | { type: "ADD_CHAT_MESSAGE"; payload: ChatMessage }
@@ -68,12 +88,8 @@ type AppAction =
   | { type: "SET_LOADING"; payload: boolean };
 
 const initialState: AppState = {
-  user: {
-    id: "guest-user",
-    email: "guest@neeva.ai",
-    name: "Guest User"
-  },
-  isAuthenticated: true,
+  user: null,
+  isAuthenticated: false,
   currentView: "dashboard",
   moodEntries: [],
   chatHistory: [],
@@ -166,8 +182,18 @@ function appReducer(
       return {
         ...state,
         user: action.payload,
-        // isAuthenticated is always true now
-        isAuthenticated: true,
+        isAuthenticated: !!action.payload,
+      };
+    case "CLEAR_USER":
+      return {
+        ...state,
+        user: null,
+        isAuthenticated: false,
+      };
+    case "SET_AUTHENTICATED":
+      return {
+        ...state,
+        isAuthenticated: action.payload,
       };
     case "SET_VIEW":
       return { ...state, currentView: action.payload };

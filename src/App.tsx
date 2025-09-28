@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
-import { callOpenRouter, convertChatHistory, OpenRouterError } from "./utils/openrouter";
 import { checkEnvVariables } from "./utils/env-check";
 import { callGemini, convertChatHistoryToGemini, GeminiError } from "./utils/gemini";
 import {
   AppProvider,
   useAppContext,
 } from "./components/AppContext";
+import AuthComponent from "./components/AuthComponent";
 import { Onboarding } from "./components/Onboarding";
 import { Navigation } from "./components/Navigation";
 import { CBTExercises } from "./components/CBTExercises";
@@ -51,7 +51,6 @@ import {
   Flame,
 } from "lucide-react";
 import { motion } from "motion/react";
-import ApiTestPage from './utils/api-test-page';
 
 // Inline Dashboard Component
 function Dashboard() {
@@ -595,73 +594,39 @@ function Chatbot() {
 
   const getAIResponse = async (userMessage: string): Promise<string> => {
     try {
-      // Check if Gemini API key is configured
       const GEMINI_API_KEY = (import.meta as any).env.VITE_GEMINI_API_KEY;
-      if (GEMINI_API_KEY) {
-        // Use Google Gemini API
-        const chatHistory = convertChatHistoryToGemini(state.chatHistory.filter(msg => !msg.isUser || msg.content !== userMessage));
-        const messages = [...chatHistory, { role: 'user' as const, parts: [{ text: userMessage }] }];
-        const response = await callGemini(messages);
-        return response;
+      if (!GEMINI_API_KEY) {
+        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with a Gemini API key. If you're the administrator, please set VITE_GEMINI_API_KEY in the environment.";
       }
 
-      // Fallback to OpenRouter if Gemini key is not set
-      const OPENROUTER_API_KEY = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
-      if (OPENROUTER_API_KEY) {
-        const chatHistory = convertChatHistory(state.chatHistory.filter(msg => !msg.isUser || msg.content !== userMessage));
-        const messages = [...chatHistory, { role: 'user' as const, content: userMessage }];
-        const response = await callOpenRouter(messages);
-        return response;
-      }
-
-      // If no API key is set, return a friendly error message
-      return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an API key. If you're the administrator, please set either VITE_GEMINI_API_KEY or VITE_OPENROUTER_API_KEY environment variable.";
-
+      const chatHistory = convertChatHistoryToGemini(
+        state.chatHistory.filter(
+          (msg) => !msg.isUser || msg.content !== userMessage,
+        ),
+      );
+      const messages = [
+        ...chatHistory,
+        { role: "user" as const, parts: [{ text: userMessage }] },
+      ];
+      return await callGemini(messages);
     } catch (error) {
-      console.error('AI API Error:', error);
-      
-      // Fallback to hardcoded responses if API fails
+      console.error("AI API Error:", error);
       const lowerMessage = userMessage.toLowerCase();
-      
-      if (error instanceof GeminiError || error instanceof OpenRouterError) {
-        // Provide more specific error messages
+
+      if (error instanceof GeminiError) {
         if (error.statusCode === 401) {
-          return `⚠️ Authentication failed. Please verify your API key is valid and properly configured.`;
-        } else if (error.statusCode === 403) {
-          return `⚠️ Access forbidden. Your API key may not have permission to access the selected model.`;
-        } else if (error.statusCode === 429) {
-          return `⚠️ Rate limit exceeded. Please wait before making more requests.`;
-        } else {
-          return `⚠️ I'm having trouble connecting to my AI service. ${error.message}`;
+          return "⚠️ Authentication failed. Please verify your Gemini API key is valid and properly configured.";
         }
+        if (error.statusCode === 403) {
+          return "⚠️ Access forbidden. Your Gemini API key may not have permission to access the selected model.";
+        }
+        if (error.statusCode === 429) {
+          return "⚠️ Rate limit exceeded. Please wait before making more requests.";
+        }
+        return `⚠️ I'm having trouble connecting to my AI service. ${error.message}`;
       }
 
-      if (
-        lowerMessage.includes("anxious") ||
-        lowerMessage.includes("anxiety")
-      ) {
-        return "I understand you're feeling anxious. Let's try a simple breathing exercise together. Take a deep breath in for 4 counts, hold for 7, and exhale for 8. 🌱 Remember, you're stronger than your anxiety.";
-      }
-      if (
-        lowerMessage.includes("breath") ||
-        lowerMessage.includes("breathing")
-      ) {
-        return "Great choice! Breathing exercises are excellent for managing stress. Let's start with the 4-7-8 technique. 🌬️ Breathe in through your nose for 4, hold for 7, exhale through your mouth for 8.";
-      }
-      if (
-        lowerMessage.includes("sleep") ||
-        lowerMessage.includes("tired")
-      ) {
-        return "Sleep troubles can really affect our wellbeing. Try creating a bedtime routine: dim lights 1 hour before bed, avoid screens, and consider some gentle stretching. 🌙 Sweet dreams are within reach!";
-      }
-      if (
-        lowerMessage.includes("motivation") ||
-        lowerMessage.includes("motivated")
-      ) {
-        return "You're already showing motivation by being here! 🌟 Remember: progress isn't always linear, but every small step counts. You've got this! What's one tiny thing you can do today?";
-      }
-
-      return "I'm here to support you on your mental health journey. What's on your mind today? 💙 Remember, every conversation is a step toward wellness.";
+      return getFallbackResponse(lowerMessage);
     }
   };
 
@@ -1424,12 +1389,8 @@ function AppContent() {
     }
   }, []);
 
-  // Check if user has completed onboarding
-  const hasCompletedOnboarding =
-    localStorage.getItem("onboardingCompleted") === "true";
-
+  // Apply theme on mount
   useEffect(() => {
-    // Apply theme on mount
     const theme = state.theme;
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
@@ -1443,6 +1404,17 @@ function AppContent() {
       document.documentElement.classList.toggle("dark", isDark);
     }
   }, [state.theme]);
+
+  // Show authentication screen if user is not authenticated
+  if (!state.isAuthenticated) {
+    return <AuthComponent onAuthSuccess={() => {
+      dispatch({ type: 'SET_AUTHENTICATED', payload: true });
+    }} />;
+  }
+
+  // Check if user has completed onboarding
+  const hasCompletedOnboarding =
+    localStorage.getItem("onboardingCompleted") === "true";
 
   if (!hasCompletedOnboarding) {
     return <Onboarding />;
@@ -1468,8 +1440,6 @@ function AppContent() {
         return <GuidedMeditation />;
       case "crisis":
         return <CrisisSupport />;
-      case "api-test":
-        return <ApiTestPage />;
       default:
         return <Dashboard />;
     }

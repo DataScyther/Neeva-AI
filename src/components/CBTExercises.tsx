@@ -51,6 +51,7 @@ import {
   Volume1,
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { Exercise, ADHDGameExercise, JournalingExercise } from "../types/exercise.types";
 
 interface ExerciseTimer {
   isActive: boolean;
@@ -382,7 +383,8 @@ export function CBTExercises() {
 
     const exercise = getExerciseById(exerciseId);
     if (exercise?.exercise.type === "adhd_game") {
-      initializeGame(exercise.exercise.gameType);
+      const adhdExercise = exercise.exercise as ADHDGameExercise;
+      initializeGame(adhdExercise.gameType);
     }
 
     // Start appropriate audio profile
@@ -447,20 +449,23 @@ export function CBTExercises() {
   };
 
   const saveJournalEntry = () => {
+    if (!activeExercise) return;
     const exercise = getExerciseById(activeExercise);
     if (
-      exercise?.exercise.prompts &&
-      currentStep < exercise.exercise.prompts.length
+      exercise?.exercise.type === 'journal'
     ) {
-      const newEntry: JournalEntry = {
-        prompt: exercise.exercise.prompts[currentStep],
-        response: currentJournalResponse,
-      };
-      setJournalEntries((prev) => [...prev, newEntry]);
-      setCurrentJournalResponse("");
+      const journalExercise = exercise.exercise as JournalingExercise;
+      if (currentStep < journalExercise.prompts.length) {
+        const newEntry: JournalEntry = {
+          prompt: journalExercise.prompts[currentStep],
+          response: currentJournalResponse,
+        };
+        setJournalEntries((prev) => [...prev, newEntry]);
+        setCurrentJournalResponse("");
 
-      if (currentStep < exercise.exercise.prompts.length - 1) {
-        setCurrentStep((prev) => prev + 1);
+        if (currentStep < journalExercise.prompts.length - 1) {
+          setCurrentStep((prev) => prev + 1);
+        }
       }
     }
   };
@@ -853,18 +858,16 @@ export function CBTExercises() {
                         <h3 className="text-2xl font-bold mb-4">
                           Prompt {currentStep + 1} of{" "}
                           {
-                            getExerciseById(activeExercise)
-                              ?.exercise.prompts?.length
+                            (getExerciseById(activeExercise)?.exercise.type === 'journal' ? (getExerciseById(activeExercise)?.exercise as JournalingExercise).prompts.length : 0)
                           }
                         </h3>
                         <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-800">
                           <CardContent className="p-6">
                             <p className="text-lg font-medium text-center">
                               {
-                                getExerciseById(activeExercise)
-                                  ?.exercise.prompts?.[
-                                  currentStep
-                                ]
+                                getExerciseById(activeExercise)?.exercise.type === 'journal' 
+                                  ? (getExerciseById(activeExercise)?.exercise as JournalingExercise).prompts[currentStep]
+                                  : ''
                               }
                             </p>
                           </CardContent>
@@ -928,12 +931,10 @@ export function CBTExercises() {
                   {getExerciseById(activeExercise)?.exercise
                     .type === "adhd_game" && (
                     <div className="space-y-6">
-                      {getExerciseById(activeExercise)?.exercise
-                        .gameType === "color_focus" && (
+                      {getExerciseById(activeExercise)?.exercise.type === 'adhd_game' && (getExerciseById(activeExercise)?.exercise as ADHDGameExercise).gameType === 'color_focus' && (
                         <ColorFocusGame />
                       )}
-                      {getExerciseById(activeExercise)?.exercise
-                        .gameType === "memory_sequence" && (
+                      {getExerciseById(activeExercise)?.exercise.type === 'adhd_game' && (getExerciseById(activeExercise)?.exercise as ADHDGameExercise).gameType === 'memory_sequence' && (
                         <MemorySequenceGame />
                       )}
                     </div>

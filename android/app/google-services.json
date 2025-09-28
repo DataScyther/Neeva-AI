@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "164484584995",
+    "project_id": "neeva-ai",
+    "storage_bucket": "neeva-ai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:164484584995:android:ac4514b46c1d51b5610396",
+        "android_client_info": {
+          "package_name": "com.mentalhealth.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "164484584995-063ur4pesvjdqkrhmm7mh10hb164p1r0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mentalhealth.app",
+            "certificate_hash": "d616db7040a47e68a646375f4836685e8f6f1b37"
+          }
+        },
+        {
+          "client_id": "164484584995-nabtvh7th2bup67nk2mrc992uar4cq2h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArYw_5H4KEXyQKs789SJZjwkHSPnBGe2s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "164484584995-nabtvh7th2bup67nk2mrc992uar4cq2h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
