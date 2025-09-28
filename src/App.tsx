@@ -611,7 +611,12 @@ function Chatbot() {
       ];
       return await callGemini(messages);
     } catch (error) {
-      console.error("AI API Error:", error);
+      // Only log non-expected errors
+      if (error instanceof GeminiError && !error.statusCode) {
+        // Expected error when API is not configured - don't log
+      } else {
+        console.error("AI API Error:", error);
+      }
       const lowerMessage = userMessage.toLowerCase();
 
       if (error instanceof GeminiError) {
@@ -624,7 +629,7 @@ function Chatbot() {
         if (error.statusCode === 429) {
           return "⚠️ Rate limit exceeded. Please wait before making more requests.";
         }
-        return `⚠️ I'm having trouble connecting to my AI service. ${error.message}`;
+        return `⚠️ ${error.message}`;
       }
 
       return getFallbackResponse(lowerMessage);

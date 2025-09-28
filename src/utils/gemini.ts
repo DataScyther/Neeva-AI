@@ -19,10 +19,14 @@ export interface GeminiResponse {
 const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
 const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
 
-const env = ((import.meta as unknown as { env?: Record<string, string> })?.env) ?? {};
-const API_KEY = env.VITE_OPENROUTER_API_KEY || "";
-const MODEL = env.VITE_OPENROUTER_MODEL || DEFAULT_MODEL;
-const BASE_URL = env.VITE_OPENROUTER_BASE_URL || DEFAULT_BASE_URL;
+// Properly access Vite environment variables
+const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || "";
+const MODEL = import.meta.env.VITE_OPENROUTER_MODEL || DEFAULT_MODEL;
+const BASE_URL = import.meta.env.VITE_OPENROUTER_BASE_URL || DEFAULT_BASE_URL;
+
+// Debug log to check if API key is loaded
+console.log('OpenRouter API Key loaded:', API_KEY ? 'Yes' : 'No');
+console.log('Using model:', MODEL);
 
 export class GeminiError extends Error {
   constructor(message: string, public statusCode?: number, public response?: any) {
@@ -33,7 +37,7 @@ export class GeminiError extends Error {
 
 export async function callGemini(messages: GeminiMessage[]): Promise<string> {
   if (!API_KEY) {
-    throw new GeminiError('AI chat features are currently unavailable. OpenRouter API is not configured. You can still use other features like mood tracking, exercises, and meditation.');
+    throw new GeminiError('AI chat is temporarily unavailable. You can still use mood tracking, exercises, and meditation features!');
   }
 
   const maxRetries = 3;
