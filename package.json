@@ -64,7 +64,6 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "postinstall": "npm config set optional false && npm config set fund false && npm config set audit false"
+    "preview": "vite preview"
   }
 }

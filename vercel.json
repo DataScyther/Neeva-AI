@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm install --no-optional && npm run build",
+  "buildCommand": "npm install --omit=optional && npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
@@ -10,7 +10,6 @@
   ],
   "env": {
     "NODE_OPTIONS": "--max-old-space-size=4096",
-    "NPM_CONFIG_OPTIONAL": "false",
     "NPM_CONFIG_FUND": "false",
     "NPM_CONFIG_AUDIT": "false"
   }
