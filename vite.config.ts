@@ -50,10 +50,17 @@ export default defineConfig({
   build: {
     target: 'esnext',
     outDir: 'dist',
+    chunkSizeWarningLimit: 1000, // Increase chunk size limit to reduce warnings
     rollupOptions: {
       external: [],
       output: {
-        manualChunks: undefined,
+        manualChunks: {
+          // Split vendor libraries into separate chunks for better caching
+          'react-vendor': ['react', 'react-dom'],
+          'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tabs'],
+          'motion-vendor': ['framer-motion'],
+        },
       },
     },
   },
