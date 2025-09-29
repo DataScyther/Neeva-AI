@@ -5,6 +5,70 @@ body {
   background-color: white !important;
 }
 
+/* Override input field backgrounds to white for both light and dark modes */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+textarea,
+select {
+  background-color: white !important;
+  color: #374151 !important; /* gray-700 */
+  border-color: #d1d5db !important; /* gray-300 */
+}
+
+/* Override dark mode input backgrounds */
+@media (prefers-color-scheme: dark) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  textarea,
+  select {
+    background-color: white !important;
+    color: #374151 !important; /* gray-700 */
+    border-color: #d1d5db !important; /* gray-300 */
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus,
+  input[type="tel"]:focus,
+  input[type="number"]:focus,
+  textarea:focus,
+  select:focus {
+    border-color: #3b82f6 !important; /* blue-500 */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  }
+}
+
+/* Force white background on all input-like elements */
+input[data-slot="input"] {
+  background-color: white !important;
+  color: #374151 !important;
+}
+
+input[data-slot="input"]:focus {
+  background-color: white !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* Override Tailwind input background classes */
+.bg-input {
+  background-color: white !important;
+}
+
+.dark\:bg-input\/30 {
+  background-color: white !important;
+}
+
+.bg-input-background {
+  background-color: white !important;
+}
+
 /* Prevent zoom on input focus on iOS */
 @supports (-webkit-touch-callout: none) {
   input[type="text"],
