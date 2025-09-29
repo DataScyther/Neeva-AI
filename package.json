@@ -67,3 +67,4 @@
     "preview": "vite preview",
     "postinstall": "npm config set optional false && npm config set fund false && npm config set audit false"
   }
+}
