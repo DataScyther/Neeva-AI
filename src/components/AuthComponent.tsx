@@ -63,6 +63,13 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     return unsubscribe;
   }, [dispatch, onAuthSuccess]);
 
+  // Effect to call onAuthSuccess when user changes
+  useEffect(() => {
+    if (user && onAuthSuccess) {
+      onAuthSuccess();
+    }
+  }, [user, onAuthSuccess]);
+
   // Email validation
   const isValidEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -217,13 +224,6 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   // };
 
   if (user) {
-    // Auto-trigger onAuthSuccess when user is authenticated
-    React.useEffect(() => {
-      if (user && onAuthSuccess) {
-        onAuthSuccess();
-      }
-    }, [user, onAuthSuccess]);
-
     return (
       <Card className="w-full max-w-md mx-auto shadow-xl border border-gray-200 bg-white">
         <CardHeader className="text-center">
