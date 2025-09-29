@@ -8,6 +8,7 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   User,
+  updateProfile,
 } from 'firebase/auth';
 import {
   doc,
@@ -121,13 +122,18 @@ class AuthService {
   }
 
   // Email/Password Sign Up
-  async signUpWithEmail(email: string, password: string): Promise<UserProfile> {
+  async signUpWithEmail(email: string, password: string, displayName?: string): Promise<UserProfile> {
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
       const user = result.user;
 
       if (!user) {
         throw new Error('No user returned from email sign-up');
+      }
+
+      // Update the user's display name if provided
+      if (displayName) {
+        await updateProfile(user, { displayName });
       }
 
       // Check if user exists in Firestore, create if not

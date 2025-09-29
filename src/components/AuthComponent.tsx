@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { authService, UserProfile } from '../lib/auth';
 import { useAppContext } from './AppContext';
+import '../styles/mobile-auth.css';
 import {
   Card,
   CardContent,
@@ -15,10 +16,7 @@ import {
   Heart,
   Sparkles,
   User,
-  Mail,
-  Phone,
   Loader2,
-  CheckCircle,
   Eye,
   EyeOff,
 } from 'lucide-react';
@@ -37,6 +35,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   // Form state
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -131,8 +130,13 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   };
 
   const handleEmailSignUp = async () => {
-    if (!email || !password) {
+    if (!name || !email || !password) {
       setError('Please fill in all fields');
+      return;
+    }
+
+    if (name.trim().length < 2) {
+      setError('Name must be at least 2 characters long');
       return;
     }
 
@@ -150,7 +154,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     setError(null);
 
     try {
-      const userProfile = await authService.signUpWithEmail(email, password);
+      const userProfile = await authService.signUpWithEmail(email, password, name.trim());
       setUser(userProfile);
       // onAuthSuccess will be called via the useEffect listener
     } catch (err: any) {
@@ -195,21 +199,22 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     }
   };
 
-  const handleSignOut = async () => {
-    setIsLoading(true);
-    setError(null);
+  // Sign out function - kept for potential future use
+  // const handleSignOut = async () => {
+  //   setIsLoading(true);
+  //   setError(null);
 
-    try {
-      await authService.signOut();
-      setUser(null);
-      dispatch({ type: 'CLEAR_USER' });
-    } catch (err) {
-      console.error('Sign-out error:', err);
-      setError(err instanceof Error ? err.message : 'Sign-out failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //   try {
+  //     await authService.signOut();
+  //     setUser(null);
+  //     dispatch({ type: 'CLEAR_USER' });
+  //   } catch (err) {
+  //     console.error('Sign-out error:', err);
+  //     setError(err instanceof Error ? err.message : 'Sign-out failed');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   if (user) {
     // Auto-trigger onAuthSuccess when user is authenticated
@@ -242,8 +247,8 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md mx-auto shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+    <div className="min-h-screen min-h-[100dvh] bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4 overflow-y-auto">
+      <Card className="w-full max-w-md mx-auto shadow-xl border-0 bg-white/95 backdrop-blur-sm my-auto">
         <CardHeader className="text-center space-y-6">
           <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
             <Heart className="w-10 h-10 text-white" />
@@ -268,6 +273,26 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
 
           {/* Email/Password Form */}
           <div className="space-y-4">
+            {authMode === 'signup' && (
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium text-gray-700">
+                  Full Name
+                </label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={isLoading}
+                  className="h-12 text-base"
+                  autoComplete="name"
+                  autoCapitalize="words"
+                  inputMode="text"
+                />
+              </div>
+            )}
+            
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium text-gray-700">
                 Email
@@ -279,7 +304,11 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
-                className="h-12"
+                className="h-12 text-base"
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                inputMode="email"
               />
             </div>
 
@@ -295,13 +324,17 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
-                  className="h-12 pr-12"
+                  className="h-12 pr-12 text-base"
+                  autoComplete={authMode === 'signin' ? 'current-password' : 'new-password'}
+                  autoCapitalize="none"
+                  autoCorrect="off"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 touch-manipulation p-1"
                   disabled={isLoading}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -311,8 +344,8 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
             <div className="space-y-3">
               <Button
                 onClick={authMode === 'signin' ? handleEmailSignIn : handleEmailSignUp}
-                disabled={isLoading || !email || !password}
-                className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                disabled={isLoading || !email || !password || (authMode === 'signup' && !name)}
+                className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 touch-manipulation text-base font-medium"
               >
                 {isLoading ? (
                   <>
@@ -325,10 +358,17 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
               </Button>
 
               <Button
-                onClick={() => setAuthMode(authMode === 'signin' ? 'signup' : 'signin')}
+                onClick={() => {
+                  setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+                  setError(null);
+                  // Clear form when switching modes
+                  if (authMode === 'signin') {
+                    setName('');
+                  }
+                }}
                 variant="ghost"
                 disabled={isLoading}
-                className="w-full text-sm text-gray-600 hover:text-gray-900"
+                className="w-full text-sm text-gray-600 hover:text-gray-900 touch-manipulation"
               >
                 {authMode === 'signin'
                   ? "Don't have an account? Sign Up"
@@ -349,7 +389,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
           <Button
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 shadow-sm"
+            className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 shadow-sm touch-manipulation text-base font-medium"
           >
             {isLoading ? (
               <>
