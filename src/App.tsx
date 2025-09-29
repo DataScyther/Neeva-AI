@@ -595,7 +595,7 @@ function Chatbot() {
 
   const getAIResponse = async (userMessage: string): Promise<string> => {
     try {
-      const GEMINI_API_KEY = (import.meta as any).env.VITE_GEMINI_API_KEY;
+      const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
       if (!GEMINI_API_KEY) {
         return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with a Gemini API key. If you're the administrator, please set VITE_GEMINI_API_KEY in the environment.";
       }

@@ -1,4 +1,4 @@
-// OpenRouter API integration for AI companion (formerly Gemini)
+// Google Gemini API integration for AI companion
 import { checkEnvVariables } from './env-check';
 
 export interface GeminiMessage {
@@ -9,24 +9,45 @@ export interface GeminiMessage {
 }
 
 export interface GeminiResponse {
-  choices: Array<{
-    message: {
-      content: string;
+  candidates: Array<{
+    content: {
+      parts: Array<{
+        text: string;
+      }>;
+      role: string;
     };
+    finishReason: string;
+    index: number;
+    safetyRatings: Array<{
+      category: string;
+      probability: string;
+    }>;
   }>;
+  promptFeedback?: {
+    safetyRatings: Array<{
+      category: string;
+      probability: string;
+    }>;
+  };
 }
 
-const DEFAULT_MODEL = 'google/gemini-2.0-flash-exp:free';
-const DEFAULT_BASE_URL = 'https://openrouter.ai/api/v1';
+// Properly access Vite environment variables for Gemini
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
+const GEMINI_MODEL = import.meta.env.VITE_GEMINI_MODEL || "gemini-2.0-flash";
+const GEMINI_BASE_URL = import.meta.env.VITE_GEMINI_BASE_URL || "https://generativelanguage.googleapis.com/v1beta";
 
-// Properly access Vite environment variables
-const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || "";
-const MODEL = import.meta.env.VITE_OPENROUTER_MODEL || DEFAULT_MODEL;
-const BASE_URL = import.meta.env.VITE_OPENROUTER_BASE_URL || DEFAULT_BASE_URL;
+// Fallback to OpenRouter if Gemini is not configured
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || "";
+const OPENROUTER_MODEL = import.meta.env.VITE_OPENROUTER_MODEL || "google/gemini-2.0-flash-exp:free";
+const OPENROUTER_BASE_URL = import.meta.env.VITE_OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1";
+
+// Determine which API to use
+const USE_GEMINI = !!GEMINI_API_KEY;
+const API_KEY = USE_GEMINI ? GEMINI_API_KEY : OPENROUTER_API_KEY;
 
 // Debug log to check if API key is loaded
-console.log('OpenRouter API Key loaded:', API_KEY ? 'Yes' : 'No');
-console.log('Using model:', MODEL);
+console.log('Using API:', USE_GEMINI ? 'Google Gemini' : (OPENROUTER_API_KEY ? 'OpenRouter' : 'None'));
+console.log('API Key loaded:', API_KEY ? 'Yes' : 'No');
 
 export class GeminiError extends Error {
   constructor(message: string, public statusCode?: number, public response?: any) {
@@ -43,18 +64,8 @@ export async function callGemini(messages: GeminiMessage[]): Promise<string> {
   const maxRetries = 3;
   let lastError: GeminiError | null = null;
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      // Convert messages to OpenRouter format
-      const openRouterMessages = messages.map(msg => ({
-        role: msg.role,
-        content: msg.parts[0]?.text || ''
-      }));
-
-      // Add system prompt as first user message
-      const systemPrompt = {
-        role: 'user',
-        content: `You are Neeva, a compassionate AI mental health companion. Your role is to:
+  // System prompt for the AI
+  const systemPrompt = `You are Neeva, a compassionate AI mental health companion. Your role is to:
 
 1. Provide emotional support and active listening
 2. Offer evidence-based coping strategies and techniques
@@ -72,90 +83,182 @@ Guidelines:
 - Focus on practical, actionable advice
 - Validate user feelings while encouraging positive steps
 
-Remember: You're a companion, not a therapist. Your goal is to provide immediate support and guide users toward professional help when needed.`
-      };
+Remember: You're a companion, not a therapist. Your goal is to provide immediate support and guide users toward professional help when needed.`;
 
-      const fullMessages = [systemPrompt, ...openRouterMessages];
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      let response: Response;
+      
+      if (USE_GEMINI) {
+        // Use Google Gemini API
+        const geminiMessages = [
+          {
+            role: 'user' as const,
+            parts: [{ text: systemPrompt }]
+          },
+          {
+            role: 'model' as const,
+            parts: [{ text: "I understand. I'm Neeva, your compassionate AI companion, here to provide emotional support and guidance. How can I help you today? 💜" }]
+          },
+          ...messages
+        ];
 
-      const response = await fetch(`${BASE_URL}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'Neeva AI'
-        },
-        body: JSON.stringify({
-          model: MODEL,
-          messages: fullMessages,
-          max_tokens: 300,
-          temperature: 0.7,
-          top_p: 0.9
-        })
-      });
+        const url = `${GEMINI_BASE_URL}/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+        
+        response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: geminiMessages,
+            generationConfig: {
+              temperature: 0.7,
+              topK: 40,
+              topP: 0.9,
+              maxOutputTokens: 300,
+            },
+            safetySettings: [
+              {
+                category: "HARM_CATEGORY_HARASSMENT",
+                threshold: "BLOCK_ONLY_HIGH"
+              },
+              {
+                category: "HARM_CATEGORY_HATE_SPEECH",
+                threshold: "BLOCK_ONLY_HIGH"
+              },
+              {
+                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                threshold: "BLOCK_ONLY_HIGH"
+              },
+              {
+                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                threshold: "BLOCK_ONLY_HIGH"
+              }
+            ]
+          })
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        let errorMessage = `OpenRouter API error: ${response.status} ${response.statusText}`;
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          let errorMessage = `Gemini API error: ${response.status} ${response.statusText}`;
 
-        // Provide more specific error messages for common status codes
-        if (response.status === 401) {
-          errorMessage = 'OpenRouter API authentication failed. Please verify your API key is valid and properly configured.';
-        } else if (response.status === 403) {
-          errorMessage = 'OpenRouter API access forbidden. Your API key may not have permission to access this model.';
-        } else if (response.status === 404) {
-          errorMessage = `OpenRouter model '${MODEL}' not found. Please check the model name or try a different model.`;
-        } else if (response.status === 429) {
-          errorMessage = 'OpenRouter API rate limit exceeded. Please wait before making more requests.';
-        } else if (response.status === 503) {
-          errorMessage = 'OpenRouter API service temporarily unavailable. This may be a temporary issue.';
-        }
+          if (response.status === 401 || response.status === 403) {
+            errorMessage = 'Gemini API authentication failed. Please verify your API key is valid.';
+          } else if (response.status === 429) {
+            errorMessage = 'Gemini API rate limit exceeded. Please wait before making more requests.';
+          }
 
-        const error = new GeminiError(
-          errorMessage,
-          response.status,
-          errorData
-        );
-
-        // Don't retry on authentication or permission errors
-        if (response.status === 401 || response.status === 403) {
+          const error = new GeminiError(errorMessage, response.status, errorData);
+          
+          if (response.status === 401 || response.status === 403) {
+            throw error;
+          }
+          
+          lastError = error;
+          
+          if (attempt < maxRetries) {
+            const delay = Math.pow(2, attempt - 1) * 1000;
+            console.warn(`Gemini API attempt ${attempt} failed, retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          }
+          
           throw error;
         }
 
-        lastError = error;
+        const data: GeminiResponse = await response.json();
+        
+        if (!data.candidates || data.candidates.length === 0) {
+          throw new GeminiError('No response generated from Gemini API');
+        }
+        
+        const candidate = data.candidates[0];
+        if (!candidate.content || !candidate.content.parts || candidate.content.parts.length === 0) {
+          throw new GeminiError('Empty response from Gemini API');
+        }
+        
+        return candidate.content.parts[0].text.trim();
+        
+      } else if (OPENROUTER_API_KEY) {
+        // Use OpenRouter API as fallback
+        const openRouterMessages = [
+          { role: 'user', content: systemPrompt },
+          { role: 'assistant', content: "I understand. I'm Neeva, your compassionate AI companion, here to provide emotional support and guidance. How can I help you today? 💜" },
+          ...messages.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'assistant',
+            content: msg.parts[0]?.text || ''
+          }))
+        ];
 
-        // If this isn't the last attempt, wait before retrying
-        if (attempt < maxRetries) {
-          const delay = Math.pow(2, attempt - 1) * 1000; // Exponential backoff
-          console.warn(`OpenRouter API attempt ${attempt} failed with ${response.status}, retrying in ${delay}ms...`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-          continue;
+        response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': window.location.origin,
+            'X-Title': 'Neeva AI'
+          },
+          body: JSON.stringify({
+            model: OPENROUTER_MODEL,
+            messages: openRouterMessages,
+            max_tokens: 300,
+            temperature: 0.7,
+            top_p: 0.9
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          let errorMessage = `OpenRouter API error: ${response.status} ${response.statusText}`;
+
+          if (response.status === 401) {
+            errorMessage = 'OpenRouter API authentication failed. Please verify your API key.';
+          } else if (response.status === 429) {
+            errorMessage = 'OpenRouter API rate limit exceeded. Please wait before making more requests.';
+          }
+
+          const error = new GeminiError(errorMessage, response.status, errorData);
+          
+          if (response.status === 401 || response.status === 403) {
+            throw error;
+          }
+          
+          lastError = error;
+          
+          if (attempt < maxRetries) {
+            const delay = Math.pow(2, attempt - 1) * 1000;
+            console.warn(`OpenRouter API attempt ${attempt} failed, retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          }
+          
+          throw error;
         }
 
-        throw error;
+        const data: any = await response.json();
+        
+        if (!data.choices || data.choices.length === 0 || !data.choices[0].message.content) {
+          throw new GeminiError('No response generated from OpenRouter API');
+        }
+        
+        return data.choices[0].message.content.trim();
+        
+      } else {
+        throw new GeminiError('No API configured. Please set either VITE_GEMINI_API_KEY or VITE_OPENROUTER_API_KEY.');
       }
-
-      const data: GeminiResponse = await response.json();
-
-      if (!data.choices || data.choices.length === 0 || !data.choices[0].message.content) {
-        throw new GeminiError('No response generated from OpenRouter API');
-      }
-
-      return data.choices[0].message.content.trim();
 
     } catch (error) {
       if (error instanceof GeminiError) {
         lastError = error;
-        // Don't retry on authentication errors
         if (error.statusCode === 401 || error.statusCode === 403) {
           throw error;
         }
       }
 
-      // If this isn't the last attempt, wait before retrying
       if (attempt < maxRetries) {
         const delay = Math.pow(2, attempt - 1) * 1000;
-        console.warn(`OpenRouter API attempt ${attempt} failed, retrying in ${delay}ms...`, error);
+        console.warn(`API attempt ${attempt} failed, retrying in ${delay}ms...`, error);
         await new Promise(resolve => setTimeout(resolve, delay));
         continue;
       }
@@ -164,16 +267,14 @@ Remember: You're a companion, not a therapist. Your goal is to provide immediate
         throw error;
       }
 
-      // Handle network errors
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new GeminiError('Network error: Unable to connect to OpenRouter API. Please check your internet connection.');
+        throw new GeminiError('Network error: Unable to connect to API. Please check your internet connection.');
       }
 
       throw new GeminiError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
-  // This should never be reached, but TypeScript requires it
   throw lastError || new GeminiError('Unknown error occurred');
 }
 

@@ -4,7 +4,7 @@ export function checkEnvVariables(): { isValid: boolean; errors: string[]; warni
   const warnings: string[] = [];
 
   // Check if OpenRouter API key is set (optional now)
-  const apiKey = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
+  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
   if (!apiKey) {
     warnings.push('VITE_OPENROUTER_API_KEY is not set. OpenRouter features will be disabled.');
   } else if (typeof apiKey !== 'string' || apiKey.length < 20) {
@@ -14,13 +14,13 @@ export function checkEnvVariables(): { isValid: boolean; errors: string[]; warni
   }
 
   // Check if model is set (optional, but good to know)
-  const model = (import.meta as any).env.VITE_OPENROUTER_MODEL;
+  const model = import.meta.env.VITE_OPENROUTER_MODEL;
   if (!model && apiKey) {
     warnings.push('VITE_OPENROUTER_MODEL is not set. Using default model.');
   }
 
   // Check if base URL is set (optional, but good to know)
-  const baseUrl = (import.meta as any).env.VITE_OPENROUTER_BASE_URL;
+  const baseUrl = import.meta.env.VITE_OPENROUTER_BASE_URL;
   if (!baseUrl && apiKey) {
     warnings.push('VITE_OPENROUTER_BASE_URL is not set. Using default URL.');
   }

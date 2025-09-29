@@ -49,9 +49,9 @@ VITE_OPENROUTER_API_KEY=sk-or-v1-f3834087d387797a66fbfdf90a0ca42c7790e1429754212
 VITE_OPENROUTER_MODEL=deepseek/deepseek-chat-v3.1:free
 VITE_OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 
-# Gemini AI Configuration (Optional - fallback)
-VITE_GEMINI_API_KEY=AIzaSyCTwOt4YHmK0qrQigN_P3hvRspJ-zUNX2I
-VITE_GEMINI_MODEL=gemini-1.0-pro
+# Gemini AI Configuration (REQUIRED - Primary AI)
+VITE_GEMINI_API_KEY=AIzaSyDuGk6eephMZOla7-NjvQnuV4NLlHTDuyA
+VITE_GEMINI_MODEL=gemini-2.0-flash
 VITE_GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta
 ```
 
