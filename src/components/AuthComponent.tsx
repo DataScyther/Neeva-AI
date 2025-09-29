@@ -225,7 +225,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     }, [user, onAuthSuccess]);
 
     return (
-      <Card className="w-full max-w-md mx-auto">
+      <Card className="w-full max-w-md mx-auto shadow-xl border border-gray-200 bg-white">
         <CardHeader className="text-center">
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
             <User className="w-8 h-8 text-white" />
@@ -247,8 +247,8 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   }
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4 overflow-y-auto">
-      <Card className="w-full max-w-md mx-auto shadow-xl border-0 bg-white/95 backdrop-blur-sm my-auto">
+    <div className="min-h-screen min-h-[100dvh] bg-white dark:bg-white flex items-center justify-center p-4 overflow-y-auto">
+      <Card className="w-full max-w-md mx-auto shadow-xl border border-gray-200 bg-white my-auto">
         <CardHeader className="text-center space-y-6">
           <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
             <Heart className="w-10 h-10 text-white" />

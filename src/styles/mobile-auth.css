@@ -1,5 +1,10 @@
 /* Mobile-specific optimizations for AuthComponent */
 
+/* Ensure consistent white background for both light and dark modes */
+body {
+  background-color: white !important;
+}
+
 /* Prevent zoom on input focus on iOS */
 @supports (-webkit-touch-callout: none) {
   input[type="text"],
