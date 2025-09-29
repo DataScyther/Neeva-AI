@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { authService, UserProfile } from '../lib/auth';
 import { useAppContext } from './AppContext';
+import '../styles/mobile-auth.css';
 import {
   Card,
   CardContent,
@@ -18,9 +19,6 @@ import {
   Loader2,
   Eye,
   EyeOff,
-  Mail,
-  ArrowLeft,
-  CheckCircle,
 } from 'lucide-react';
 
 import { Alert, AlertDescription } from './ui/alert';
@@ -35,16 +33,8 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | 'forgot'>('signin');
   const [showPassword, setShowPassword] = useState(false);
-  const [forgotPasswordSent, setForgotPasswordSent] = useState(false);
-
-  // Form state
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   const { dispatch } = useAppContext();
-
-  useEffect(() => {
     // Listen to auth state changes
     const unsubscribe = authService.onAuthStateChange((firebaseUser) => {
       if (firebaseUser) {
@@ -65,6 +55,13 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
 
     return unsubscribe;
   }, [dispatch, onAuthSuccess]);
+
+  // Effect to call onAuthSuccess when user changes
+  useEffect(() => {
+    if (user && onAuthSuccess) {
+      onAuthSuccess();
+    }
+  }, [user, onAuthSuccess]);
 
   // Email validation
   const isValidEmail = (email: string): boolean => {
@@ -201,8 +198,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     setError(null);
 
     try {
-      // Note: We need to add resetPassword method to authService
-      // For now, we'll show a message that the feature is coming
+      await authService.resetPassword(email);
       setForgotPasswordSent(true);
     } catch (err: any) {
       console.error('Password reset error:', err);
@@ -229,21 +225,22 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    setError(null);
+  // Sign out function - kept for potential future use
+  // const handleSignOut = async () => {
+  //   setIsLoading(true);
+  //   setError(null);
 
-    try {
-      const userProfile = await authService.signInWithGoogle();
-      setUser(userProfile);
-      // onAuthSuccess will be called via the useEffect listener
-    } catch (err) {
-      console.error('Sign-in error:', err);
-      setError(err instanceof Error ? err.message : 'Sign-in failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //   try {
+  //     await authService.signOut();
+  //     setUser(null);
+  //     dispatch({ type: 'CLEAR_USER' });
+  //   } catch (err) {
+  //     console.error('Sign-out error:', err);
+  //     setError(err instanceof Error ? err.message : 'Sign-out failed');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   if (user) {
     return (
@@ -293,220 +290,111 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
             </Alert>
           )}
 
-          {/* Forgot Password Success State */}
-          {forgotPasswordSent ? (
-            <div className="text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-8 h-8 text-green-600" />
+          {/* Email/Password Form */}
+          <div className="space-y-4">
+            {authMode === 'signup' && (
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium text-gray-700">
+                  Full Name
+                </label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={isLoading}
+                  className="h-12 text-base"
+                  autoComplete="name"
+                  autoCapitalize="words"
+                  inputMode="text"
+                />
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  Check Your Email
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  We've sent a password reset link to <strong>{email}</strong>
-                </p>
-                <p className="text-sm text-gray-500 mb-4">
-                  Click the link in the email to reset your password. The link will expire in 1 hour.
-                </p>
-                <Button
-                  onClick={() => {
-                    setForgotPasswordSent(false);
-                    setAuthMode('signin');
-                    setError(null);
-                  }}
-                  variant="outline"
-                  className="w-full"
+            )}
+            
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="your.email@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+                className="h-12 text-base"
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
+                inputMode="email"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                  className="h-12 pr-12 text-base"
+                  autoComplete={authMode === 'signin' ? 'current-password' : 'new-password'}
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 touch-manipulation p-1"
+                  disabled={isLoading}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Sign In
-                </Button>
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
               </div>
             </div>
-          ) : (
-            <>
-              {/* Forgot Password Mode */}
-              {authMode === 'forgot' ? (
-                <div className="space-y-4">
-                  <div className="text-center mb-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      Reset Your Password
-                    </h3>
-                    <p className="text-gray-600 text-sm">
-                      Enter your email address and we'll send you a link to reset your password.
-                    </p>
-                  </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                      Email
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your.email@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading}
-                      className="h-12 text-base"
-                      autoComplete="email"
-                      autoCapitalize="none"
-                      autoCorrect="off"
-                      inputMode="email"
-                    />
-                  </div>
+            <div className="space-y-3">
+              <Button
+                onClick={authMode === 'signin' ? handleEmailSignIn : handleEmailSignUp}
+                disabled={isLoading || !email || !password || (authMode === 'signup' && !name)}
+                className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 touch-manipulation text-base font-medium"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    {authMode === 'signin' ? 'Signing in...' : 'Creating account...'}
+                  </>
+                ) : (
+                  authMode === 'signin' ? 'Sign In' : 'Sign Up'
+                )}
+              </Button>
 
-                  <Button
-                    onClick={handleForgotPassword}
-                    disabled={isLoading || !email}
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 touch-manipulation text-base font-medium"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        Sending Reset Email...
-                      </>
-                    ) : (
-                      'Send Reset Email'
-                    )}
-                  </Button>
-
-                  <Button
-                    onClick={() => {
-                      setAuthMode('signin');
-                      setError(null);
-                      setForgotPasswordSent(false);
-                    }}
-                    variant="ghost"
-                    disabled={isLoading}
-                    className="w-full text-sm text-gray-600 hover:text-gray-900 touch-manipulation"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Sign In
-                  </Button>
-                </div>
-              ) : (
-                /* Sign In/Sign Up Form */
-                <div className="space-y-4">
-                  {authMode === 'signup' && (
-                    <div className="space-y-2">
-                      <label htmlFor="name" className="text-sm font-medium text-gray-700">
-                        Full Name
-                      </label>
-                      <Input
-                        id="name"
-                        type="text"
-                        placeholder="John Doe"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        disabled={isLoading}
-                        className="h-12 text-base"
-                        autoComplete="name"
-                        autoCapitalize="words"
-                        inputMode="text"
-                      />
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                      Email
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your.email@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading}
-                      className="h-12 text-base"
-                      autoComplete="email"
-                      autoCapitalize="none"
-                      autoCorrect="off"
-                      inputMode="email"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                        Password
-                      </label>
-                      {authMode === 'signin' && (
-                        <button
-                          type="button"
-                          onClick={() => setAuthMode('forgot')}
-                          className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                          disabled={isLoading}
-                        >
-                          Forgot Password?
-                        </button>
-                      )}
-                    </div>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        disabled={isLoading}
-                        className="h-12 pr-12 text-base"
-                        autoComplete={authMode === 'signin' ? 'current-password' : 'new-password'}
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 touch-manipulation p-1"
-                        disabled={isLoading}
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                      >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <Button
-                      onClick={authMode === 'signin' ? handleEmailSignIn : handleEmailSignUp}
-                      disabled={isLoading || !email || !password || (authMode === 'signup' && !name)}
-                      className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 touch-manipulation text-base font-medium"
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                          {authMode === 'signin' ? 'Signing in...' : 'Creating account...'}
-                        </>
-                      ) : (
-                        authMode === 'signin' ? 'Sign In' : 'Sign Up'
-                      )}
-                    </Button>
-
-                    <Button
-                      onClick={() => {
-                        setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
-                        setError(null);
-                        setForgotPasswordSent(false);
-                        // Clear form when switching modes
-                        if (authMode === 'signin') {
-                          setName('');
-                        }
-                      }}
-                      variant="ghost"
-                      disabled={isLoading}
-                      className="w-full text-sm text-gray-600 hover:text-gray-900 touch-manipulation"
-                    >
-                      {authMode === 'signin'
-                        ? "Don't have an account? Sign Up"
-                        : "Already have an account? Sign In"}
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
+              <Button
+                onClick={() => {
+                  setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+                  setError(null);
+                  // Clear form when switching modes
+                  if (authMode === 'signin') {
+                    setName('');
+                  }
+                }}
+                variant="ghost"
+                disabled={isLoading}
+                className="w-full text-sm text-gray-600 hover:text-gray-900 touch-manipulation"
+              >
+                {authMode === 'signin'
+                  ? "Don't have an account? Sign Up"
+                  : "Already have an account? Sign In"}
+              </Button>
+            </div>
+          </div>
 
           <div className="relative">
             <Separator className="my-6" />

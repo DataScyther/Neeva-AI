@@ -9,6 +9,7 @@ import {
   GoogleAuthProvider,
   User,
   updateProfile,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import {
   doc,
@@ -325,6 +326,16 @@ class AuthService {
       await signOut(auth);
     } catch (error) {
       console.error('Sign out error:', error);
+      throw error;
+    }
+  }
+
+  // Reset password
+  async resetPassword(email: string): Promise<void> {
+    try {
+      await sendPasswordResetEmail(auth, email);
+    } catch (error) {
+      console.error('Password reset error:', error);
       throw error;
     }
   }
