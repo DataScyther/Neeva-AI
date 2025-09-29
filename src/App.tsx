@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { checkEnvVariables } from "./utils/env-check";
 import { callGemini, convertChatHistoryToGemini, GeminiError } from "./utils/gemini";
 import { authService } from "./lib/auth";
@@ -33,9 +33,7 @@ import {
   BookOpen,
   Users,
   TrendingUp,
-  Calendar,
   Target,
-  Award,
   ChevronRight,
   Send,
   Bot,
@@ -1374,7 +1372,7 @@ function MoodTracker() {
 }
 
 function AppContent() {
-  const { state } = useAppContext();
+  const { state, dispatch } = useAppContext();
 
   // Debug environment variables
   useEffect(() => {
@@ -1412,24 +1410,52 @@ function AppContent() {
   }, [state.theme]);
 
   // Show authentication screen if user is not authenticated
-  const isUserAuthenticated = () => {
-    // Check multiple authentication indicators
-    const hasValidUser = state.user &&
-      ((state.user as any).email && (state.user as any).uid) &&
-      state.isAuthenticated;
+  const hasValidUser = state.user &&
+    ((state.user as any).email && (state.user as any).uid) &&
+    state.isAuthenticated;
 
+  if (!hasValidUser) {
     // Additional validation with Firebase auth service
     const hasValidProfile = authService.getCurrentUserProfile();
 
-    // All conditions must be met for user to be considered authenticated
-    return hasValidUser && hasValidProfile;
-  };
+    // Debug logging for mobile authentication issues
+    if (typeof window !== 'undefined' && 'ontouchstart' in window) {
+      console.log('Mobile auth check:', {
+        hasValidUser,
+        hasValidProfile,
+        stateUser: state.user,
+        firebaseUser: authService.getCurrentUserProfile(),
+        isAuthenticated: state.isAuthenticated
+      });
+    }
 
-  if (!isUserAuthenticated()) {
-    return <AuthComponent onAuthSuccess={() => {
-      // Set onboarding as completed for existing users
-      localStorage.setItem("onboardingCompleted", "true");
-    }} />;
+    // All conditions must be met for user to be considered authenticated
+    if (!(hasValidUser && hasValidProfile)) {
+      return <AuthComponent onAuthSuccess={() => {
+        console.log('Auth success callback triggered');
+
+        // Set onboarding as completed for existing users
+        localStorage.setItem("onboardingCompleted", "true");
+
+        // Force immediate context update to ensure authentication state is recognized
+        const currentUser = authService.getCurrentUserProfile();
+        if (currentUser) {
+          console.log('Updating context with user:', currentUser);
+          dispatch({ type: 'SET_USER', payload: currentUser });
+        } else {
+          console.log('No current user found in auth service');
+        }
+
+        // Additional check after a short delay for mobile devices
+        setTimeout(() => {
+          const delayedUser = authService.getCurrentUserProfile();
+          if (delayedUser && (!state.user || (state.user as any).uid !== (delayedUser as any).uid)) {
+            console.log('Delayed auth update for mobile:', delayedUser);
+            dispatch({ type: 'SET_USER', payload: delayedUser });
+          }
+        }, 1000);
+      }} />;
+    }
   }
 
   // Check if user has completed onboarding

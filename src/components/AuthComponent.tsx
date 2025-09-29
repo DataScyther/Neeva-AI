@@ -18,7 +18,6 @@ import {
   Loader2,
   Eye,
   EyeOff,
-  Mail,
   ArrowLeft,
   CheckCircle,
 } from 'lucide-react';
@@ -45,10 +44,22 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   const { dispatch } = useAppContext();
 
   useEffect(() => {
+    console.log('AuthComponent: Setting up auth state listener');
+
     // Listen to auth state changes
     const unsubscribe = authService.onAuthStateChange((firebaseUser) => {
+      console.log('AuthComponent: Auth state changed:', {
+        firebaseUser: firebaseUser ? {
+          uid: firebaseUser.uid,
+          email: firebaseUser.email,
+          displayName: firebaseUser.displayName
+        } : null,
+        currentProfile: authService.getCurrentUserProfile()
+      });
+
       if (firebaseUser) {
         const profile = authService.getCurrentUserProfile();
+        console.log('AuthComponent: User authenticated, profile:', profile);
         setUser(profile);
         if (profile) {
           // Update app context
@@ -56,9 +67,11 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
             type: 'SET_USER',
             payload: profile,
           });
+          console.log('AuthComponent: Triggering onAuthSuccess callback');
           onAuthSuccess?.();
         }
       } else {
+        console.log('AuthComponent: User logged out');
         setUser(null);
       }
     });
@@ -201,8 +214,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     setError(null);
 
     try {
-      // Note: We need to add resetPassword method to authService
-      // For now, we'll show a message that the feature is coming
+      await authService.resetPassword(email);
       setForgotPasswordSent(true);
     } catch (err: any) {
       console.error('Password reset error:', err);
@@ -234,11 +246,29 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     setError(null);
 
     try {
+      console.log('Starting Google sign-in process...');
       const userProfile = await authService.signInWithGoogle();
+
+      console.log('Google sign-in successful:', userProfile);
       setUser(userProfile);
-      // onAuthSuccess will be called via the useEffect listener
+
+      // Additional mobile-specific handling
+      if (typeof window !== 'undefined' && 'ontouchstart' in window) {
+        console.log('Mobile device detected, applying mobile-specific auth handling');
+
+        // Force a page reload on mobile to ensure proper state synchronization
+        // This helps with mobile browsers that may cache authentication state
+        setTimeout(() => {
+          if (authService.getCurrentUserProfile()) {
+            console.log('Mobile auth state verified, triggering callback');
+            onAuthSuccess?.();
+          }
+        }, 500);
+      } else {
+        // onAuthSuccess will be called via the useEffect listener
+      }
     } catch (err) {
-      console.error('Sign-in error:', err);
+      console.error('Google Sign-in error:', err);
       setError(err instanceof Error ? err.message : 'Sign-in failed');
     } finally {
       setIsLoading(false);
