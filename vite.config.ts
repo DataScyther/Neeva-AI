@@ -30,6 +30,7 @@ export default defineConfig({
   base: '/',
   optimizeDeps: {
     include: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore'],
+    exclude: ['@radix-ui/react-slot'], // Let Vite handle this dynamically
   },
   define: {
     global: 'globalThis',

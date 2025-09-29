@@ -19,3 +19,4 @@ src/utils/supabase/
 client_secret_*.json
 # Local Netlify folder
 .netlify
+.vercel
