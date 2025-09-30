@@ -1,0 +1,73 @@
+================================================================================
+  VERCEL ENVIRONMENT VARIABLES - COPY & PASTE READY
+  Neeva AI v0.2.0
+================================================================================
+
+INSTRUCTIONS:
+1. Go to Vercel Dashboard → Import Project → Environment Variables section
+2. For each variable below, add it with all 3 environments checked:
+   ✅ Production  ✅ Preview  ✅ Development
+3. Copy the Name and Value exactly as shown (no quotes needed)
+
+Total: 12 variables (6 Firebase + 3 Gemini + 3 OpenRouter)
+
+================================================================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ FIREBASE AUTHENTICATION (6 variables)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Name: VITE_FIREBASE_API_KEY
+   Value: AIzaSyArYw_5H4KEXyQKs789SJZjwkHSPnBGe2s
+
+2. Name: VITE_FIREBASE_AUTH_DOMAIN
+   Value: neeva-ai.firebaseapp.com
+
+3. Name: VITE_FIREBASE_PROJECT_ID
+   Value: neeva-ai
+
+4. Name: VITE_FIREBASE_STORAGE_BUCKET
+   Value: neeva-ai.firebasestorage.app
+
+5. Name: VITE_FIREBASE_MESSAGING_SENDER_ID
+   Value: 164484584995
+
+6. Name: VITE_FIREBASE_APP_ID
+   Value: 1:164484584995:web:neeva-ai-web
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ GOOGLE GEMINI AI (3 variables) - Primary AI Service
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+7. Name: VITE_GEMINI_API_KEY
+   Value: AIzaSyDuGk6eephMZOla7-NjvQnuV4NLlHTDuyA
+
+8. Name: VITE_GEMINI_MODEL
+   Value: gemini-2.0-flash
+
+9. Name: VITE_GEMINI_BASE_URL
+   Value: https://generativelanguage.googleapis.com/v1beta
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ OPENROUTER AI (3 variables) - Fallback AI Service
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+10. Name: VITE_OPENROUTER_API_KEY
+    Value: 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
+
+11. Name: VITE_OPENROUTER_MODEL
+    Value: deepseek/deepseek-chat-v3.1:free
+
+12. Name: VITE_OPENROUTER_BASE_URL
+    Value: https://openrouter.ai/api/v1
+
+================================================================================
+
+CHECKLIST:
+□ All 12 variables added
+□ All variables have all 3 environments checked
+□ No typos in variable names (case-sensitive!)
+□ Values pasted without quotes
+□ Ready to click "Deploy"
+
+================================================================================
