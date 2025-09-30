@@ -1,14 +1,45 @@
 [build]
-  command = "npm run build"
+  command = "npm install --legacy-peer-deps && npm run build"
   publish = "dist"
 
 [build.environment]
-  NODE_VERSION = "18"
-  VITE_GEMINI_API_KEY = "AIzaSyANh4_36zj4gDKFeCPi0xI_7NqBt-pZFGg"
+  NODE_VERSION = "20"
+
+# Firebase Configuration
+  VITE_FIREBASE_API_KEY = "AIzaSyArYw_5H4KEXyQKs789SJZjwkHSPnBGe2s"
+  VITE_FIREBASE_AUTH_DOMAIN = "neeva-ai.firebaseapp.com"
+  VITE_FIREBASE_PROJECT_ID = "neeva-ai"
+  VITE_FIREBASE_STORAGE_BUCKET = "neeva-ai.firebasestorage.app"
+  VITE_FIREBASE_MESSAGING_SENDER_ID = "164484584995"
+  VITE_FIREBASE_APP_ID = "1:164484584995:web:neeva-ai-web"
+
+# Google Gemini AI Configuration
+  VITE_GEMINI_API_KEY = "AIzaSyDuGk6eephMZOla7-NjvQnuV4NLlHTDuyA"
   VITE_GEMINI_MODEL = "gemini-2.0-flash"
   VITE_GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
+
+# OpenRouter AI Configuration
+  VITE_OPENROUTER_API_KEY = "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"
+  VITE_OPENROUTER_MODEL = "deepseek/deepseek-chat-v3.1:free"
+  VITE_OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[functions]
+  directory = "netlify/functions"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
