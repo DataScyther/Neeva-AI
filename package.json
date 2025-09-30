@@ -1,10 +1,10 @@
 {
-  "name": "Neeva",
-  "version": "0.1.0",
+  "name": "neeva-ai",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "engines": {
-    "node": "20.x"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",
@@ -34,15 +34,15 @@
     "@radix-ui/react-toggle-group": "^1.1.2",
     "@radix-ui/react-tooltip": "^1.1.8",
     "class-variance-authority": "^0.7.1",
-    "clsx": "*",
+    "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
-    "dotenv": "^17.2.2",
+    "dotenv": "^16.4.7",
     "embla-carousel-react": "^8.6.0",
-    "firebase": "^10.7.0",
-    "hono": "*",
+    "firebase": "^11.2.0",
+    "hono": "^4.6.17",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.487.0",
-    "motion": "*",
+    "motion": "^11.19.2",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.3.1",
@@ -50,19 +50,24 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "^2.15.2",
     "sonner": "^2.0.3",
-    "tailwind-merge": "*",
+    "tailwind-merge": "^2.7.0",
     "vaul": "^1.1.2"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "@types/react": "^18.3.0",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^3.4.0",
-    "typescript": "^5.3.3",
-    "vite": "^6.3.6"
+    "@types/node": "^20.17.17",
+    "@types/react": "^18.3.20",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3",
+    "vite": "^5.4.11"
+  },
+  "overrides": {
+    "vite": {
+      "rollup": "^4.9.0"
+    }
   },
   "scripts": {
     "dev": "vite",
