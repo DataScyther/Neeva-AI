@@ -48,11 +48,14 @@ export async function callOpenRouter(messages: OpenRouterMessage[]): Promise<str
     throw new OpenRouterError('AI chat is temporarily unavailable. Please check your OpenRouter API configuration.');
   }
 
-  const maxRetries = 3;
-  let lastError: OpenRouterError | null = null;
+  // For now, return a fallback response if API key issues persist
+  // This allows the chatbot to work while API issues are resolved
+  try {
+    const maxRetries = 1; // Reduced retries for faster fallback
+    let lastError: OpenRouterError | null = null;
 
-  // System prompt for the AI
-  const systemPrompt = `You are Neeva, a compassionate AI mental health companion. Your role is to:
+    // System prompt for the AI
+    const systemPrompt = `You are Neeva, a compassionate AI mental health companion. Your role is to:
 
 1. Provide emotional support and active listening
 2. Offer evidence-based coping strategies and techniques
@@ -72,103 +75,101 @@ Guidelines:
 
 Remember: You're a companion, not a therapist. Your goal is to provide immediate support and guide users toward professional help when needed.`;
 
-  // Prepare messages for OpenRouter API
-  const openRouterMessages = [
-    { role: 'user' as const, content: systemPrompt },
-    { role: 'assistant' as const, content: "I understand. I'm Neeva, your compassionate AI companion, here to provide emotional support and guidance. How can I help you today? 💜" },
-    ...messages
-  ];
+    // Prepare messages for OpenRouter API
+    const openRouterMessages = [
+      { role: 'user' as const, content: systemPrompt },
+      { role: 'assistant' as const, content: "I understand. I'm Neeva, your compassionate AI companion, here to provide emotional support and guidance. How can I help you today? 💜" },
+      ...messages
+    ];
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      console.log(`Trying OpenRouter xAI Grok API (attempt ${attempt}/${maxRetries})`);
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Trying OpenRouter xAI Grok API (attempt ${attempt}/${maxRetries})`);
 
-      const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'Neeva AI Mental Health Companion'
-        },
-        body: JSON.stringify({
-          model: OPENROUTER_MODEL,
-          messages: openRouterMessages,
-          max_tokens: 300,
-          temperature: 0.7,
-          top_p: 0.9
-        })
-      });
+        const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': window.location.origin,
+            'X-Title': 'Neeva AI Mental Health Companion'
+          },
+          body: JSON.stringify({
+            model: OPENROUTER_MODEL,
+            messages: openRouterMessages,
+            max_tokens: 300,
+            temperature: 0.7,
+            top_p: 0.9
+          })
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        let errorMessage = `OpenRouter API error: ${response.status} ${response.statusText}`;
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          let errorMessage = `OpenRouter API error: ${response.status} ${response.statusText}`;
 
-        if (response.status === 401) {
-          errorMessage = 'OpenRouter API authentication failed. Please verify your API key is valid.';
-        } else if (response.status === 429) {
-          errorMessage = 'OpenRouter API rate limit exceeded. Please wait before making more requests.';
-        } else if (response.status === 400) {
-          errorMessage = 'OpenRouter API request failed. Please check your configuration.';
-        }
+          if (response.status === 401) {
+            errorMessage = 'OpenRouter API authentication failed. Please verify your API key is valid.';
+          } else if (response.status === 429) {
+            errorMessage = 'OpenRouter API rate limit exceeded. Please wait before making more requests.';
+          } else if (response.status === 400) {
+            errorMessage = 'OpenRouter API request failed. Please check your configuration.';
+          }
 
-        const error = new OpenRouterError(errorMessage, response.status, errorData);
+          const error = new OpenRouterError(errorMessage, response.status, errorData);
 
-        if (response.status === 401 || response.status === 403) {
+          if (response.status === 401 || response.status === 403) {
+            throw error;
+          }
+
+          // For other errors, throw immediately to trigger fallback
           throw error;
         }
 
-        lastError = error;
+        const data: OpenRouterResponse = await response.json();
+
+        if (!data.choices || data.choices.length === 0 || !data.choices[0].message.content) {
+          throw new OpenRouterError('No response generated from OpenRouter API');
+        }
+
+        console.log('✅ OpenRouter xAI Grok API response received successfully');
+        console.log(`Tokens used: ${data.usage?.total_tokens || 'unknown'}`);
+
+        return data.choices[0].message.content.trim();
+
+      } catch (error) {
+        if (error instanceof OpenRouterError) {
+          lastError = error;
+          if (error.statusCode === 401 || error.statusCode === 403) {
+            throw error;
+          }
+        }
 
         if (attempt < maxRetries) {
           const delay = Math.pow(2, attempt - 1) * 1000;
-          console.warn(`OpenRouter API attempt ${attempt} failed, retrying in ${delay}ms...`);
+          console.warn(`OpenRouter API attempt ${attempt} failed, retrying in ${delay}ms...`, error);
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }
 
-        throw error;
-      }
-
-      const data: OpenRouterResponse = await response.json();
-
-      if (!data.choices || data.choices.length === 0 || !data.choices[0].message.content) {
-        throw new OpenRouterError('No response generated from OpenRouter API');
-      }
-
-      console.log('✅ OpenRouter xAI Grok API response received successfully');
-      console.log(`Tokens used: ${data.usage?.total_tokens || 'unknown'}`);
-
-      return data.choices[0].message.content.trim();
-
-    } catch (error) {
-      if (error instanceof OpenRouterError) {
-        lastError = error;
-        if (error.statusCode === 401 || error.statusCode === 403) {
+        if (error instanceof OpenRouterError) {
           throw error;
         }
-      }
 
-      if (attempt < maxRetries) {
-        const delay = Math.pow(2, attempt - 1) * 1000;
-        console.warn(`OpenRouter API attempt ${attempt} failed, retrying in ${delay}ms...`, error);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        continue;
-      }
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+          throw new OpenRouterError('Network error: Unable to connect to OpenRouter API. Please check your internet connection.');
+        }
 
-      if (error instanceof OpenRouterError) {
-        throw error;
+        throw new OpenRouterError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
-
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new OpenRouterError('Network error: Unable to connect to OpenRouter API. Please check your internet connection.');
-      }
-
-      throw new OpenRouterError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-  }
 
-  throw lastError || new OpenRouterError('Unknown error occurred');
+    throw lastError || new OpenRouterError('Unknown error occurred');
+
+  } catch (error) {
+    // Provide a helpful fallback response for users
+    console.warn('OpenRouter API unavailable, using fallback response');
+    return "I'm experiencing some technical difficulties right now. Please try again in a moment, or you can use the mood tracking and exercise features while I get back online. 💙";
+  }
 }
 
 // Backward compatibility function (for any existing code that calls callGemini)
