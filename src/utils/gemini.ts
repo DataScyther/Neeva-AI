@@ -42,6 +42,7 @@ console.log('Base URL: https://openrouter.ai/api/v1');
 const openai = new OpenAI({
   baseURL: OPENROUTER_BASE_URL,
   apiKey: OPENROUTER_API_KEY,
+  dangerouslyAllowBrowser: true, // Required for client-side usage
   defaultHeaders: {
     'HTTP-Referer': window.location.origin,
     'X-Title': 'Neeva AI Mental Health Companion'
