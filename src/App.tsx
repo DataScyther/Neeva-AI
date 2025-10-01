@@ -49,7 +49,7 @@ import {
   Rainbow,
   Flame,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 
 // Inline Dashboard Component
 function Dashboard() {

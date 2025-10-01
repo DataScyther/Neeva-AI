@@ -43,7 +43,7 @@ import {
   Waves,
   Volume1,
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { ADHDGameExercise, JournalingExercise } from "../types/exercise.types";
 
 interface ExerciseTimer {
