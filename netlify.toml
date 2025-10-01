@@ -18,9 +18,9 @@
   VITE_GEMINI_MODEL = "gemini-2.0-flash"
   VITE_GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
 
-# OpenRouter AI Configuration
-  VITE_OPENROUTER_API_KEY = "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"
-  VITE_OPENROUTER_MODEL = "deepseek/deepseek-chat-v3.1:free"
+# OpenRouter AI Configuration (xAI Grok 4 Fast - Free)
+  VITE_OPENROUTER_API_KEY = "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"
+  VITE_OPENROUTER_MODEL = "x-ai/grok-4-fast:free"
   VITE_OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 [[redirects]]
