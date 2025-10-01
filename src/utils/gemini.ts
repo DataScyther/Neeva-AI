@@ -38,16 +38,18 @@ const GEMINI_BASE_URL = import.meta.env.VITE_GEMINI_BASE_URL || "https://generat
 
 // Fallback to OpenRouter if Gemini is not configured
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || "";
-const OPENROUTER_MODEL = import.meta.env.VITE_OPENROUTER_MODEL || "google/gemini-2.0-flash-exp:free";
+const OPENROUTER_MODEL = import.meta.env.VITE_OPENROUTER_MODEL || "x-ai/grok-4-fast:free";
 const OPENROUTER_BASE_URL = import.meta.env.VITE_OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1";
 
-// Determine which API to use
-const USE_GEMINI = !!GEMINI_API_KEY;
-const API_KEY = USE_GEMINI ? GEMINI_API_KEY : OPENROUTER_API_KEY;
+// Determine which API to use - PRIORITIZE xAI Grok for better limits and context
+const USE_OPENROUTER_PRIMARY = !!OPENROUTER_API_KEY;
+const USE_GEMINI_FALLBACK = !!GEMINI_API_KEY;
 
-// Debug log to check if API key is loaded
-console.log('Using API:', USE_GEMINI ? 'Google Gemini' : (OPENROUTER_API_KEY ? 'OpenRouter' : 'None'));
-console.log('API Key loaded:', API_KEY ? 'Yes' : 'No');
+// Debug log to check API configuration
+console.log('xAI Grok API loaded:', OPENROUTER_API_KEY ? 'Yes' : 'No');
+console.log('Gemini API loaded:', GEMINI_API_KEY ? 'Yes' : 'No');
+console.log('Primary API: xAI Grok (2M context, higher limits)');
+console.log('Fallback API: Google Gemini (1M context, 60 req/min)');
 
 export class GeminiError extends Error {
   constructor(message: string, public statusCode?: number, public response?: any) {
@@ -57,7 +59,7 @@ export class GeminiError extends Error {
 }
 
 export async function callGemini(messages: GeminiMessage[]): Promise<string> {
-  if (!API_KEY) {
+  if (!USE_OPENROUTER_PRIMARY && !USE_GEMINI_FALLBACK) {
     throw new GeminiError('AI chat is temporarily unavailable. You can still use mood tracking, exercises, and meditation features!');
   }
 
@@ -85,12 +87,109 @@ Guidelines:
 
 Remember: You're a companion, not a therapist. Your goal is to provide immediate support and guide users toward professional help when needed.`;
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      let response: Response;
-      
-      if (USE_GEMINI) {
-        // Use Google Gemini API
+  // Try xAI Grok first (primary API with better limits)
+  if (USE_OPENROUTER_PRIMARY) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Trying xAI Grok API (attempt ${attempt}/${maxRetries})`);
+
+        const openRouterMessages = [
+          { role: 'user', content: systemPrompt },
+          { role: 'assistant', content: "I understand. I'm Neeva, your compassionate AI companion, here to provide emotional support and guidance. How can I help you today? 💜" },
+          ...messages.map(msg => ({
+            role: msg.role === 'user' ? 'user' : 'assistant',
+            content: msg.parts[0]?.text || ''
+          }))
+        ];
+
+        const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': window.location.origin,
+            'X-Title': 'Neeva AI'
+          },
+          body: JSON.stringify({
+            model: OPENROUTER_MODEL,
+            messages: openRouterMessages,
+            max_tokens: 300,
+            temperature: 0.7,
+            top_p: 0.9
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          let errorMessage = `xAI Grok API error: ${response.status} ${response.statusText}`;
+
+          if (response.status === 401) {
+            errorMessage = 'xAI Grok API authentication failed. Please verify your API key.';
+          } else if (response.status === 429) {
+            errorMessage = 'xAI Grok API rate limit exceeded. Please wait before making more requests.';
+          }
+
+          const error = new GeminiError(errorMessage, response.status, errorData);
+
+          if (response.status === 401 || response.status === 403) {
+            throw error;
+          }
+
+          lastError = error;
+
+          if (attempt < maxRetries) {
+            const delay = Math.pow(2, attempt - 1) * 1000;
+            console.warn(`xAI Grok API attempt ${attempt} failed, retrying in ${delay}ms...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            continue;
+          }
+
+          throw error;
+        }
+
+        const data: any = await response.json();
+
+        if (!data.choices || data.choices.length === 0 || !data.choices[0].message.content) {
+          throw new GeminiError('No response generated from xAI Grok API');
+        }
+
+        console.log('✅ xAI Grok API response received successfully');
+        return data.choices[0].message.content.trim();
+
+      } catch (error) {
+        if (error instanceof GeminiError) {
+          lastError = error;
+          if (error.statusCode === 401 || error.statusCode === 403) {
+            throw error;
+          }
+        }
+
+        if (attempt < maxRetries) {
+          const delay = Math.pow(2, attempt - 1) * 1000;
+          console.warn(`xAI Grok API attempt ${attempt} failed, retrying in ${delay}ms...`, error);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+
+        if (error instanceof GeminiError) {
+          throw error;
+        }
+
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+          throw new GeminiError('Network error: Unable to connect to xAI Grok API. Please check your internet connection.');
+        }
+
+        throw new GeminiError(`Unexpected error with xAI Grok API: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    }
+  }
+
+  // Fallback to Gemini if xAI Grok fails or isn't configured
+  if (USE_GEMINI_FALLBACK) {
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Trying Gemini API as fallback (attempt ${attempt}/${maxRetries})`);
+
         const geminiMessages = [
           {
             role: 'user' as const,
@@ -104,8 +203,8 @@ Remember: You're a companion, not a therapist. Your goal is to provide immediate
         ];
 
         const url = `${GEMINI_BASE_URL}/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
-        
-        response = await fetch(url, {
+
+        const response = await fetch(url, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -150,132 +249,66 @@ Remember: You're a companion, not a therapist. Your goal is to provide immediate
           }
 
           const error = new GeminiError(errorMessage, response.status, errorData);
-          
+
           if (response.status === 401 || response.status === 403) {
             throw error;
           }
-          
+
           lastError = error;
-          
+
           if (attempt < maxRetries) {
             const delay = Math.pow(2, attempt - 1) * 1000;
             console.warn(`Gemini API attempt ${attempt} failed, retrying in ${delay}ms...`);
             await new Promise(resolve => setTimeout(resolve, delay));
             continue;
           }
-          
+
           throw error;
         }
 
         const data: GeminiResponse = await response.json();
-        
+
         if (!data.candidates || data.candidates.length === 0) {
           throw new GeminiError('No response generated from Gemini API');
         }
-        
+
         const candidate = data.candidates[0];
         if (!candidate.content || !candidate.content.parts || candidate.content.parts.length === 0) {
           throw new GeminiError('Empty response from Gemini API');
         }
-        
+
+        console.log('✅ Gemini API response received successfully');
         return candidate.content.parts[0].text.trim();
-        
-      } else if (OPENROUTER_API_KEY) {
-        // Use OpenRouter API as fallback
-        const openRouterMessages = [
-          { role: 'user', content: systemPrompt },
-          { role: 'assistant', content: "I understand. I'm Neeva, your compassionate AI companion, here to provide emotional support and guidance. How can I help you today? 💜" },
-          ...messages.map(msg => ({
-            role: msg.role === 'user' ? 'user' : 'assistant',
-            content: msg.parts[0]?.text || ''
-          }))
-        ];
 
-        response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': window.location.origin,
-            'X-Title': 'Neeva AI'
-          },
-          body: JSON.stringify({
-            model: OPENROUTER_MODEL,
-            messages: openRouterMessages,
-            max_tokens: 300,
-            temperature: 0.7,
-            top_p: 0.9
-          })
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          let errorMessage = `OpenRouter API error: ${response.status} ${response.statusText}`;
-
-          if (response.status === 401) {
-            errorMessage = 'OpenRouter API authentication failed. Please verify your API key.';
-          } else if (response.status === 429) {
-            errorMessage = 'OpenRouter API rate limit exceeded. Please wait before making more requests.';
-          }
-
-          const error = new GeminiError(errorMessage, response.status, errorData);
-          
-          if (response.status === 401 || response.status === 403) {
+      } catch (error) {
+        if (error instanceof GeminiError) {
+          lastError = error;
+          if (error.statusCode === 401 || error.statusCode === 403) {
             throw error;
           }
-          
-          lastError = error;
-          
-          if (attempt < maxRetries) {
-            const delay = Math.pow(2, attempt - 1) * 1000;
-            console.warn(`OpenRouter API attempt ${attempt} failed, retrying in ${delay}ms...`);
-            await new Promise(resolve => setTimeout(resolve, delay));
-            continue;
-          }
-          
+        }
+
+        if (attempt < maxRetries) {
+          const delay = Math.pow(2, attempt - 1) * 1000;
+          console.warn(`Gemini API attempt ${attempt} failed, retrying in ${delay}ms...`, error);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+
+        if (error instanceof GeminiError) {
           throw error;
         }
 
-        const data: any = await response.json();
-        
-        if (!data.choices || data.choices.length === 0 || !data.choices[0].message.content) {
-          throw new GeminiError('No response generated from OpenRouter API');
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+          throw new GeminiError('Network error: Unable to connect to Gemini API. Please check your internet connection.');
         }
-        
-        return data.choices[0].message.content.trim();
-        
-      } else {
-        throw new GeminiError('No API configured. Please set either VITE_GEMINI_API_KEY or VITE_OPENROUTER_API_KEY.');
-      }
 
-    } catch (error) {
-      if (error instanceof GeminiError) {
-        lastError = error;
-        if (error.statusCode === 401 || error.statusCode === 403) {
-          throw error;
-        }
+        throw new GeminiError(`Unexpected error with Gemini API: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
-
-      if (attempt < maxRetries) {
-        const delay = Math.pow(2, attempt - 1) * 1000;
-        console.warn(`API attempt ${attempt} failed, retrying in ${delay}ms...`, error);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        continue;
-      }
-
-      if (error instanceof GeminiError) {
-        throw error;
-      }
-
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new GeminiError('Network error: Unable to connect to API. Please check your internet connection.');
-      }
-
-      throw new GeminiError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
-  throw lastError || new GeminiError('Unknown error occurred');
+  throw lastError || new GeminiError('All AI APIs failed or are not configured');
 }
 
 // Utility function to convert chat history to Gemini format
