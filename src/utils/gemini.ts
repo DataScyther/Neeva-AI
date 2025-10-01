@@ -214,10 +214,10 @@ export class GeminiError extends OpenRouterError {
   }
 }
 
-// Utility function to convert chat history to OpenRouter format
-export function convertChatHistoryToOpenRouter(chatHistory: Array<{content: string, isUser: boolean}>): OpenRouterMessage[] {
+// Utility function to convert chat history to Gemini format (for backward compatibility)
+export function convertChatHistoryToGemini(chatHistory: Array<{content: string, isUser: boolean}>): GeminiMessage[] {
   return chatHistory.map(msg => ({
-    role: msg.isUser ? 'user' : 'assistant',
-    content: msg.content
+    role: msg.isUser ? 'user' : 'model',
+    parts: [{ text: msg.content }]
   }));
 }

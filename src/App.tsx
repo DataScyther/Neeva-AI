@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { checkEnvVariables } from "./utils/env-check";
-import { callGemini, convertChatHistoryToGemini, GeminiError } from "./utils/gemini";
+import { callGemini, convertChatHistoryToGemini, OpenRouterError } from "./utils/gemini";
 import { authService } from "./lib/auth";
 import {
   AppProvider,
@@ -593,9 +593,9 @@ function Chatbot() {
 
   const getAIResponse = async (userMessage: string): Promise<string> => {
     try {
-      const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-      if (!GEMINI_API_KEY) {
-        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with a Gemini API key. If you're the administrator, please set VITE_GEMINI_API_KEY in the environment.";
+      const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+      if (!OPENROUTER_API_KEY) {
+        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an OpenRouter API key. If you're the administrator, please set VITE_OPENROUTER_API_KEY in the environment.";
       }
 
       const chatHistory = convertChatHistoryToGemini(
@@ -610,19 +610,19 @@ function Chatbot() {
       return await callGemini(messages);
     } catch (error) {
       // Only log non-expected errors
-      if (error instanceof GeminiError && !error.statusCode) {
+      if (error instanceof OpenRouterError && !error.statusCode) {
         // Expected error when API is not configured - don't log
       } else {
         console.error("AI API Error:", error);
       }
       const lowerMessage = userMessage.toLowerCase();
 
-      if (error instanceof GeminiError) {
+      if (error instanceof OpenRouterError) {
         if (error.statusCode === 401) {
-          return "⚠️ Authentication failed. Please verify your Gemini API key is valid and properly configured.";
+          return "⚠️ Authentication failed. Please verify your OpenRouter API key is valid and properly configured.";
         }
         if (error.statusCode === 403) {
-          return "⚠️ Access forbidden. Your Gemini API key may not have permission to access the selected model.";
+          return "⚠️ Access forbidden. Your OpenRouter API key may not have permission to access the selected model.";
         }
         if (error.statusCode === 429) {
           return "⚠️ Rate limit exceeded. Please wait before making more requests.";
