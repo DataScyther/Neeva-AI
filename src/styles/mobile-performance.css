@@ -1,0 +1,276 @@
+/* Mobile Performance Optimizations CSS */
+/* Seamless and refined mobile experience */
+
+/* GPU Acceleration for smooth animations */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Optimize scrolling performance */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  will-change: scroll-position;
+}
+
+/* Prevent layout shifts */
+img, video, iframe {
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: attr(width) / attr(height);
+}
+
+/* Optimize touch interactions */
+button, 
+a, 
+.clickable,
+.touch-target {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  min-height: 48px;
+  min-width: 48px;
+  position: relative;
+}
+
+/* Smooth transitions with GPU acceleration */
+.smooth-transition {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+}
+
+/* Optimize animations */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-smooth {
+    animation-duration: 200ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    animation-fill-mode: both;
+  }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Optimize text rendering */
+body {
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Optimize input fields for mobile */
+input,
+textarea,
+select {
+  font-size: 16px !important; /* Prevents zoom on iOS */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Faster tap response */
+.fast-tap {
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+}
+
+.fast-tap:active {
+  transform: scale(0.98);
+  -webkit-transform: scale(0.98);
+}
+
+/* Optimize chat messages */
+.chat-message {
+  contain: layout style paint;
+  will-change: transform;
+}
+
+/* Virtual scrolling optimization */
+.virtual-scroll-item {
+  contain: strict;
+  content-visibility: auto;
+}
+
+/* Loading states */
+.skeleton-loader {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Network-aware styles */
+@media (prefers-reduced-data: reduce) {
+  img,
+  video {
+    content-visibility: auto;
+  }
+  
+  .decorative-image {
+    display: none;
+  }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  /* Reduce shadow complexity on mobile */
+  .shadow-lg {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Simplify gradients for performance */
+  .gradient-complex {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+  }
+  
+  /* Optimize backdrop filters */
+  .backdrop-blur {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* iOS-specific fixes */
+@supports (-webkit-touch-callout: none) {
+  /* iOS momentum scrolling */
+  .scroll-y {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Fix iOS rubber band scrolling */
+  body {
+    position: fixed;
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .main-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Android-specific optimizations */
+@media (hover: none) and (pointer: coarse) {
+  /* Optimize for touch devices */
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+  
+  /* Remove hover effects on touch devices */
+  .hover-effect:hover {
+    background: inherit;
+  }
+}
+
+/* Optimize modals and overlays */
+.modal-overlay {
+  will-change: opacity;
+  contain: layout style;
+}
+
+.modal-content {
+  will-change: transform, opacity;
+  contain: layout style paint;
+}
+
+/* Lazy loading placeholders */
+.lazy-load-placeholder {
+  background: linear-gradient(
+    to right,
+    #f0f0f0 0%,
+    #f8f8f8 50%,
+    #f0f0f0 100%
+  );
+  background-size: 200% 100%;
+  animation: lazy-load-animation 1.5s ease-in-out infinite;
+}
+
+@keyframes lazy-load-animation {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Optimize keyboard appearance */
+.keyboard-open {
+  transition: transform 0.3s ease-out;
+}
+
+/* Prevent FOUC (Flash of Unstyled Content) */
+.no-fouc {
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.no-fouc.loaded {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Performance monitoring indicator */
+.perf-indicator {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 10px;
+  border-radius: 4px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+/* Optimize list rendering */
+.optimized-list {
+  contain: layout style;
+}
+
+.optimized-list-item {
+  contain: layout style paint;
+  content-visibility: auto;
+}

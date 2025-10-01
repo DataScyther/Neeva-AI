@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { checkEnvVariables } from "./utils/env-check";
 import { callGemini, convertChatHistoryToGemini, OpenRouterError } from "./utils/gemini";
 import { authService } from "./lib/auth";
+import { isMobileDevice, measurePerformance, triggerHapticFeedback } from "./utils/mobile-optimizations";
 import {
   AppProvider,
   useAppContext,
@@ -591,7 +592,10 @@ function Chatbot() {
     },
   ];
 
-  const getAIResponse = async (userMessage: string): Promise<string> => {
+  const getAIResponse = useCallback(async (userMessage: string): Promise<string> => {
+    const perf = measurePerformance('ai-response');
+    perf.start();
+    
     try {
       const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
       if (!OPENROUTER_API_KEY) {
@@ -607,7 +611,12 @@ function Chatbot() {
         ...chatHistory,
         { role: "user" as const, parts: [{ text: userMessage }] },
       ];
-      return await callGemini(messages);
+      const response = await callGemini(messages);
+      
+      const duration = perf.end();
+      console.log(`AI response generated in ${duration}ms`);
+      
+      return response;
     } catch (error) {
       // Only log non-expected errors
       if (error instanceof OpenRouterError && !error.statusCode) {
@@ -632,9 +641,9 @@ function Chatbot() {
 
       return getFallbackResponse(lowerMessage);
     }
-  };
+  }, [state.chatHistory]);
 
-  const getFallbackResponse = (lowerMessage: string): string => {
+  const getFallbackResponse = useCallback((lowerMessage: string): string => {
     if (lowerMessage.includes("anxious") || lowerMessage.includes("anxiety")) {
       return "Try the 4-7-8 breathing technique: breathe in for 4, hold for 7, exhale for 8. 🌱";
     }
@@ -645,11 +654,16 @@ function Chatbot() {
       return "Your feelings are valid. Try gentle movement or call a friend. 💙";
     }
     return "I'm here to listen and support you through this. 💜";
-  };
+  }, []);
 
-  const sendMessage = async (messageText?: string) => {
+  const sendMessage = useCallback(async (messageText?: string) => {
     const textToSend = messageText || message;
     if (!textToSend.trim()) return;
+
+    // Haptic feedback for mobile
+    if (isMobileDevice()) {
+      triggerHapticFeedback('light');
+    }
 
     const userMessage = {
       id: Date.now().toString(),
@@ -664,37 +678,40 @@ function Chatbot() {
     });
     setMessage("");
     setIsTyping(true);
+    
+    // Use requestAnimationFrame for smooth UI update
+    requestAnimationFrame(async () => {
+      try {
+        const aiResponseContent = await getAIResponse(textToSend);
+        const aiResponse = {
+          id: (Date.now() + 1).toString(),
+          content: aiResponseContent,
+          isUser: false,
+          timestamp: new Date(),
+        };
 
-    try {
-      const aiResponseContent = await getAIResponse(textToSend);
-      const aiResponse = {
-        id: (Date.now() + 1).toString(),
-        content: aiResponseContent,
-        isUser: false,
-        timestamp: new Date(),
-      };
+        dispatch({
+          type: "ADD_CHAT_MESSAGE",
+          payload: aiResponse,
+        });
+        setIsTyping(false);
+      } catch (error) {
+        console.error('Error getting AI response:', error);
+        const fallbackResponse = {
+          id: (Date.now() + 1).toString(),
+          content: "I'm having trouble responding right now. Please try again in a moment. 💙",
+          isUser: false,
+          timestamp: new Date(),
+        };
 
-      dispatch({
-        type: "ADD_CHAT_MESSAGE",
-        payload: aiResponse,
-      });
-      setIsTyping(false);
-    } catch (error) {
-      console.error('Error getting AI response:', error);
-      const fallbackResponse = {
-        id: (Date.now() + 1).toString(),
-        content: "I'm having trouble responding right now. Please try again in a moment. 💙",
-        isUser: false,
-        timestamp: new Date(),
-      };
-
-      dispatch({
-        type: "ADD_CHAT_MESSAGE",
-        payload: fallbackResponse,
-      });
-      setIsTyping(false);
-    }
-  };
+        dispatch({
+          type: "ADD_CHAT_MESSAGE",
+          payload: fallbackResponse,
+        });
+        setIsTyping(false);
+      }
+    });
+  }, [message, getAIResponse, dispatch]);
 
   useEffect(() => {
     if (state.chatHistory.length === 0) {
@@ -1432,28 +1449,32 @@ function AppContent() {
     // All conditions must be met for user to be considered authenticated
     if (!(hasValidUser && hasValidProfile)) {
       return <AuthComponent onAuthSuccess={() => {
+        const perf = measurePerformance('auth-success');
+        perf.start();
+        
         console.log('Auth success callback triggered');
 
         // Set onboarding as completed for existing users
         localStorage.setItem("onboardingCompleted", "true");
 
-        // Force immediate context update to ensure authentication state is recognized
-        const currentUser = authService.getCurrentUserProfile();
-        if (currentUser) {
-          console.log('Updating context with user:', currentUser);
-          dispatch({ type: 'SET_USER', payload: currentUser });
-        } else {
-          console.log('No current user found in auth service');
-        }
-
-        // Additional check after a short delay for mobile devices
-        setTimeout(() => {
-          const delayedUser = authService.getCurrentUserProfile();
-          if (delayedUser && (!state.user || (state.user as any).uid !== (delayedUser as any).uid)) {
-            console.log('Delayed auth update for mobile:', delayedUser);
-            dispatch({ type: 'SET_USER', payload: delayedUser });
+        // Optimized auth update - use requestAnimationFrame for smooth UI update
+        requestAnimationFrame(() => {
+          const currentUser = authService.getCurrentUserProfile();
+          if (currentUser) {
+            console.log('Updating context with user:', currentUser);
+            dispatch({ type: 'SET_USER', payload: currentUser });
+            
+            // Haptic feedback on mobile for successful auth
+            if (isMobileDevice()) {
+              triggerHapticFeedback('light');
+            }
+          } else {
+            console.log('No current user found in auth service');
           }
-        }, 1000);
+          
+          const duration = perf.end();
+          console.log(`Auth update completed in ${duration}ms`);
+        });
       }} />;
     }
   }
@@ -1495,8 +1516,8 @@ function AppContent() {
     <div className="min-h-screen bg-background text-foreground">
       <Navigation />
 
-      {/* Main Content */}
-      <main className="lg:pl-64 pb-16 lg:pb-0">
+      {/* Main Content - Added safe padding for navigation */}
+      <main className="lg:pl-64 pb-20 lg:pb-0 main-content">
         <div className="min-h-screen">
           {renderCurrentView()}
         </div>

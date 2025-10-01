@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { useAppContext } from "./AppContext";
+import "../styles/navigation-optimize.css";
 import {
   Home,
   MessageCircle,
@@ -43,8 +44,41 @@ type NavigationItem = MainNavigationItem | SupportNavigationItem | ToolsNavigati
 
 export function Navigation() {
   const { state, dispatch } = useAppContext();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] =
-    useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  // Smart hide/show navigation on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Always show when at the top or scrolling up
+      if (currentScrollY < 10 || currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Hide when scrolling down after 100px
+        setIsVisible(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    // Throttle scroll events for performance
+    let ticking = false;
+    const scrollListener = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', scrollListener, { passive: true });
+    return () => window.removeEventListener('scroll', scrollListener);
+  }, [lastScrollY]);
 
   const mainNavigationItems: MainNavigationItem[] = [
     {
@@ -300,9 +334,20 @@ export function Navigation() {
         </div>
       </div>
 
-      {/* Mobile Bottom Navigation */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 bg-background border-t border-border shadow-lg">
-        <div className="grid grid-cols-5 h-16">
+      {/* Mobile Bottom Navigation - Optimized for smooth scrolling */}
+      <div 
+        className={`lg:hidden fixed bottom-0 inset-x-0 navigation-mobile navigation-glass navigation-shadow transition-transform duration-300 ease-in-out ${
+          isVisible ? 'translate-y-0' : 'translate-y-full'
+        }`}
+        style={{
+          background: 'rgba(255, 255, 255, 0.98)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          borderTop: '1px solid rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.1)'
+        }}
+      >
+        <div className="grid grid-cols-5 h-16 relative">
           {[
             ...mainNavigationItems.slice(0, 4),
             supportNavigationItems[0], // Crisis item with urgent property
@@ -317,40 +362,35 @@ export function Navigation() {
             return (
               <button
                 key={item.id}
-                className={`flex flex-col items-center justify-center space-y-1 relative ${
+                className={`nav-item flex flex-col items-center justify-center space-y-1 relative transition-all duration-200 ease-in-out ${
                   isActive
-                    ? "text-blue-600"
+                    ? "text-blue-600 font-semibold"
                     : hasUrgent
                       ? "text-red-500"
-                      : "text-muted-foreground"
+                      : "text-gray-600 hover:text-gray-900"
                 }`}
-                onClick={() =>
+                onClick={() => {
                   dispatch({
                     type: "SET_VIEW",
                     payload: item.view,
-                  })
-                }
+                  });
+                  // Haptic feedback on mobile
+                  if ('vibrate' in navigator) {
+                    navigator.vibrate(10);
+                  }
+                }}
               >
-                <IconComponent className="w-5 h-5" />
-                <span className="text-xs font-medium">
+                <IconComponent className="nav-icon w-5 h-5 transition-transform duration-200" />
+                <span className="nav-label text-xs font-medium">
                   {item.label.split(" ")[0]}
                 </span>
-                {hasBadge && (
-                  <div className="absolute -top-1 right-3">
-                    <div className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-semibold">
-                      {typeof item.badge === "number"
-                        ? item.badge > 99 ? "99+" : item.badge
-                        : item.badge === "New" ? "N" : "!"}
-                    </div>
-                  </div>
-                )}
                 {hasUrgent && !isActive && (
                   <div className="absolute top-1 right-2">
                     <div className="w-2 h-2 bg-red-500 rounded-full" />
                   </div>
                 )}
                 {isActive && (
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-blue-600 rounded-t-full" />
+                  <div className="nav-active-indicator" />
                 )}
               </button>
             );
