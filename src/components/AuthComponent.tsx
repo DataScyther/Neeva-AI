@@ -299,14 +299,14 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   }
 
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-white dark:bg-white flex items-center justify-center p-4 overflow-y-auto">
-      <Card className="w-full max-w-md mx-auto shadow-xl border border-gray-200 bg-white my-auto">
-        <CardHeader className="text-center space-y-6">
+    <div className="min-h-screen min-h-[100dvh] bg-white flex items-center justify-center p-4 overflow-y-auto">
+      <Card className="w-full max-w-md mx-auto shadow-xl border border-gray-200 bg-white">
+        <CardHeader className="text-center space-y-4">
           <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
             <Heart className="w-10 h-10 text-white" />
           </div>
-          <div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          <div className="space-y-2">
+            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Welcome to Neeva AI
             </CardTitle>
             <CardDescription className="text-lg text-gray-600">
@@ -314,6 +314,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
             </CardDescription>
           </div>
         </CardHeader>
+
         <CardContent className="space-y-6">
           {error && (
             <Alert className="border-red-200 bg-red-50">
@@ -329,14 +330,14 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
               <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold text-gray-900">
                   Check Your Email
                 </h3>
-                <p className="text-gray-600 mb-4">
+                <p className="text-gray-600">
                   We've sent a password reset link to <strong>{email}</strong>
                 </p>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-gray-500">
                   Click the link in the email to reset your password. The link will expire in 1 hour.
                 </p>
                 <Button
@@ -346,7 +347,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                     setError(null);
                   }}
                   variant="outline"
-                  className="w-full"
+                  className="w-full mt-4"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Sign In
@@ -358,8 +359,8 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
               {/* Forgot Password Mode */}
               {authMode === 'forgot' ? (
                 <div className="space-y-4">
-                  <div className="text-center mb-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  <div className="text-center space-y-2">
+                    <h3 className="text-xl font-semibold text-gray-900">
                       Reset Your Password
                     </h3>
                     <p className="text-gray-600 text-sm">
@@ -389,7 +390,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                   <Button
                     onClick={handleForgotPassword}
                     disabled={isLoading || !email}
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 touch-manipulation text-base font-medium"
+                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-base font-medium"
                   >
                     {isLoading ? (
                       <>
@@ -409,7 +410,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                     }}
                     variant="ghost"
                     disabled={isLoading}
-                    className="w-full text-sm text-gray-600 hover:text-gray-900 touch-manipulation"
+                    className="w-full text-sm text-gray-600 hover:text-gray-900"
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to Sign In
@@ -473,7 +474,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                         </button>
                       )}
                     </div>
-                    <div className="relative">
+                    <div className="relative flex items-center">
                       <Input
                         id="password"
                         type={showPassword ? "text" : "password"}
@@ -481,7 +482,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         disabled={isLoading}
-                        className="h-12 pr-12 text-base"
+                        className="h-12 pr-12 text-base w-full"
                         autoComplete={authMode === 'signin' ? 'current-password' : 'new-password'}
                         autoCapitalize="none"
                         autoCorrect="off"
@@ -489,7 +490,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 touch-manipulation p-1"
+                        className="absolute right-3 top-6/6 -translate-y-6/6 z-10 flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
                         disabled={isLoading}
                         aria-label={showPassword ? "Hide password" : "Show password"}
                       >
@@ -502,7 +503,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                     <Button
                       onClick={authMode === 'signin' ? handleEmailSignIn : handleEmailSignUp}
                       disabled={isLoading || !email || !password || (authMode === 'signup' && !name)}
-                      className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 touch-manipulation text-base font-medium"
+                      className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-base font-medium"
                     >
                       {isLoading ? (
                         <>
@@ -526,7 +527,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                       }}
                       variant="ghost"
                       disabled={isLoading}
-                      className="w-full text-sm text-gray-600 hover:text-gray-900 touch-manipulation"
+                      className="w-full text-sm text-gray-600 hover:text-gray-900"
                     >
                       {authMode === 'signin'
                         ? "Don't have an account? Sign Up"
@@ -550,7 +551,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
           <Button
             onClick={handleGoogleSignIn}
             disabled={isLoading}
-            className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 shadow-sm touch-manipulation text-base font-medium"
+            className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 shadow-sm text-base font-medium"
           >
             {isLoading ? (
               <>
