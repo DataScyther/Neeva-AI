@@ -140,6 +140,9 @@ class AuthService {
       // Check if user exists in Firestore, create if not
       const userProfile = await this.ensureUserProfile(user);
 
+      // Notify listeners immediately after successful auth
+      this.notifyAuthStateListeners(user);
+
       return userProfile;
     } catch (error) {
       console.error('Email sign-up error:', error);
@@ -167,6 +170,7 @@ class AuthService {
       // Update last login
       await this.updateUserProfile({ lastLoginAt: new Date() });
       
+      // Notify listeners immediately after successful auth
       this.notifyAuthStateListeners(user);
       
       return this.userProfile;

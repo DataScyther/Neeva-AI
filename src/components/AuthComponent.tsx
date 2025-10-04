@@ -134,11 +134,17 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
             }
           }, 500);
         }
-      } else if (!firebaseUser) {
-        console.log('AuthComponent: User logged out');
-        setUser(null);
-        setAuthCompleted(false);
+      } else if (firebaseUser && authCompleted) {
+        // Already completed, just ensure callback is triggered
+        console.log('AuthComponent: Already completed, ensuring callback');
+        if (onAuthSuccess) {
+          onAuthSuccess();
+        }
+      } else if (!firebaseUser && isAuthenticating) {
+        // Auth failed, reset state
+        console.log('AuthComponent: Auth failed, resetting state');
         setIsAuthenticating(false);
+        setAuthCompleted(false);
       }
     });
 
@@ -147,23 +153,36 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       if (authTimeout) clearTimeout(authTimeout);
       unsubscribe();
     };
-  }, [dispatch, onAuthSuccess, isAuthenticating, isMobile]);
+  }, [dispatch, onAuthSuccess, isAuthenticating, authCompleted, isMobile]);
 
-  // Real-time email validation
+  // Add a fallback timeout to prevent infinite loading states
   useEffect(() => {
-    if (email) {
-      const validation = validateEmail(email);
-      setEmailValidation(validation);
-      if (validation.suggestions && validation.suggestions.length > 0) {
-        setEmailSuggestion(validation.suggestions[0]);
-      } else {
-        setEmailSuggestion('');
-      }
-    } else {
-      setEmailValidation(null);
-      setEmailSuggestion('');
+    if (isAuthenticating) {
+      const fallbackTimeout = setTimeout(() => {
+        console.log('AuthComponent: Fallback timeout reached, forcing auth completion');
+        setIsAuthenticating(false);
+        setAuthCompleted(true);
+        
+        // Try to get the current user profile
+        const currentProfile = authService.getCurrentUserProfile();
+        if (currentProfile) {
+          setUser(currentProfile);
+          dispatch({
+            type: 'SET_USER',
+            payload: currentProfile,
+          });
+          if (onAuthSuccess) {
+            onAuthSuccess();
+          }
+        } else {
+          // If no profile, reset to allow retry
+          setError('Authentication timed out. Please try again.');
+        }
+      }, 10000); // 10 second fallback
+
+      return () => clearTimeout(fallbackTimeout);
     }
-  }, [email]);
+  }, [isAuthenticating, dispatch, onAuthSuccess]);
 
   // Real-time password validation
   useEffect(() => {
