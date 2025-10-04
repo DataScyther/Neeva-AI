@@ -8,18 +8,18 @@
   left: 0 !important;
   right: 0 !important;
   z-index: 9999 !important;
-  transform: translateZ(0);
   -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
+  transform: translateZ(0);
   -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   will-change: transform;
 }
 
 /* Smooth backdrop blur effect */
 .navigation-backdrop {
   background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(10px) !important;
   -webkit-backdrop-filter: blur(10px) !important;
+  backdrop-filter: blur(10px) !important;
 }
 
 /* Dark mode backdrop */
@@ -52,13 +52,13 @@ body {
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
 }
 
 .nav-item:active {
-  transform: scale(0.95);
   -webkit-transform: scale(0.95);
+  transform: scale(0.95);
 }
 
 /* Enhanced shadow for better visibility */
@@ -123,10 +123,10 @@ body {
 
 /* Prevent text selection on navigation */
 .navigation-mobile * {
-  user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  user-select: none;
 }
 
 /* Optimize for different screen sizes */
@@ -206,8 +206,8 @@ html {
 /* Glass morphism effect for modern look */
 .navigation-glass {
   background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 

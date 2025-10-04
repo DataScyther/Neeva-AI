@@ -78,7 +78,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
         authCompleted
       });
 
-      if (firebaseUser && !authCompleted) {
+      if (firebaseUser && isAuthenticating) {
         const profile = authService.getCurrentUserProfile();
         console.log('AuthComponent: User authenticated, profile:', profile);
         
@@ -102,20 +102,37 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
             
             console.log('AuthComponent: Auth completed, triggering callback');
             
-            // Use setTimeout to ensure state updates are processed
-            setTimeout(() => {
-              if (isSubscribed) {
-                onAuthSuccess?.();
-              }
-            }, 100);
+            // Trigger callback immediately
+            if (onAuthSuccess) {
+              onAuthSuccess();
+            }
           };
           
           // On mobile, add a small delay to ensure Firebase auth is fully synced
-          if (isMobile && isAuthenticating) {
-            authTimeout = setTimeout(completeAuth, 500);
+          if (isMobile) {
+            console.log('Mobile device: Adding 300ms delay for auth sync');
+            authTimeout = setTimeout(completeAuth, 300);
           } else {
             completeAuth();
           }
+        } else {
+          // If profile is not ready yet, retry after a short delay
+          console.log('Profile not ready, retrying...');
+          authTimeout = setTimeout(() => {
+            const retryProfile = authService.getCurrentUserProfile();
+            if (retryProfile && isSubscribed) {
+              setUser(retryProfile);
+              setAuthCompleted(true);
+              setIsAuthenticating(false);
+              dispatch({
+                type: 'SET_USER',
+                payload: retryProfile,
+              });
+              if (onAuthSuccess) {
+                onAuthSuccess();
+              }
+            }
+          }, 500);
         }
       } else if (!firebaseUser) {
         console.log('AuthComponent: User logged out');
@@ -130,7 +147,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       if (authTimeout) clearTimeout(authTimeout);
       unsubscribe();
     };
-  }, [dispatch, onAuthSuccess, isAuthenticating, authCompleted, isMobile]);
+  }, [dispatch, onAuthSuccess, isAuthenticating, isMobile]);
 
   // Real-time email validation
   useEffect(() => {
@@ -183,14 +200,11 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     setError(null);
 
     try {
+      console.log('Starting email sign-in...');
       const userProfile = await authService.signInWithEmail(email, password);
+      console.log('Email sign-in successful:', userProfile);
       
-      // Mobile-specific handling
-      if (isMobile) {
-        // Wait for auth state to propagate
-        await new Promise(resolve => setTimeout(resolve, 300));
-      }
-      
+      // Don't set loading to false here, let the auth listener handle it
       // Auth success will be handled by the useEffect listener
     } catch (err: any) {
       console.error('Email sign-in error:', err);
@@ -220,7 +234,6 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
 
       setError(errorMessage);
       setIsAuthenticating(false);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -258,14 +271,11 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     setError(null);
 
     try {
+      console.log('Starting email sign-up...');
       const userProfile = await authService.signUpWithEmail(email, password, name.trim());
+      console.log('Email sign-up successful:', userProfile);
       
-      // Mobile-specific handling
-      if (isMobile) {
-        // Wait for auth state to propagate
-        await new Promise(resolve => setTimeout(resolve, 300));
-      }
-      
+      // Don't set loading to false here, let the auth listener handle it
       // Auth success will be handled by the useEffect listener
     } catch (err: any) {
       console.error('Email sign-up error:', err);
@@ -289,7 +299,6 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
 
       setError(errorMessage);
       setIsAuthenticating(false);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -357,34 +366,12 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       const userProfile = await authService.signInWithGoogle();
       console.log('Google sign-in successful:', userProfile);
       
-      // Mobile-specific handling for better reliability
-      if (isMobile) {
-        console.log('Mobile device detected, ensuring auth state sync');
-        
-        // Wait for Firebase auth state to fully propagate
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Verify auth state
-        const currentProfile = authService.getCurrentUserProfile();
-        if (currentProfile) {
-          console.log('Mobile auth state verified');
-          // Auth success will be handled by the useEffect listener
-        } else {
-          // Retry getting profile after a delay
-          setTimeout(() => {
-            const retryProfile = authService.getCurrentUserProfile();
-            if (retryProfile) {
-              console.log('Mobile auth state verified on retry');
-            }
-          }, 1000);
-        }
-      }
+      // Don't set loading to false here, let the auth listener handle it
       // Auth success will be handled by the useEffect listener
     } catch (err) {
       console.error('Google Sign-in error:', err);
       setError(err instanceof Error ? err.message : 'Sign-in failed');
       setIsAuthenticating(false);
-    } finally {
       setIsLoading(false);
       
       // Re-enable button on mobile
