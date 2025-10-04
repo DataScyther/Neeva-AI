@@ -8,9 +8,9 @@
 */
 html {
   -webkit-text-size-adjust: 100%; /* Safari/iOS support - primary target */
-  /* Note: Removed standard text-size-adjust as it's not supported by Firefox/Safari */
-  /* Firefox doesn't support this property and doesn't need it */
-  /* Safari uses -webkit- prefix which is already included above */
+  text-size-adjust: 100%; /* Chrome/Edge support */
+  /* Note: Firefox doesn't support this property and doesn't need it */
+  /* Safari uses -webkit- prefix, Chrome/Edge use standard property */
 }
 
 /* Minimum touch targets (48px) for accessibility */

@@ -65,7 +65,6 @@ a,
     scroll-behavior: auto !important;
   }
 }
-
 /* Optimize text rendering */
 body {
   text-rendering: optimizeSpeed;
@@ -75,12 +74,13 @@ body {
 /* Note: text-size-adjust browser support varies:
    - Safari/iOS: Uses -webkit- prefix
    - Chrome/Edge: Supports standard property
-   The warning is expected and safe - each browser uses what it supports */
+   - Firefox: Doesn't support this property (graceful degradation)
+   Each browser uses what it supports - warnings are expected and safe */
 html {
   -webkit-text-size-adjust: 100%; /* Safari/iOS */
   -ms-text-size-adjust: 100%; /* IE/Edge legacy */
-  /* Note: Removed standard text-size-adjust as it's not supported by Firefox/Safari */
-  /* Firefox doesn't need this property, Safari uses -webkit- prefix above */
+  text-size-adjust: 100%; /* Chrome/Edge standard */
+  /* Note: Firefox doesn't support this property but doesn't need it */
 }
 
 /* Optimize input fields for mobile */
