@@ -10,6 +10,7 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Badge } from "./ui/badge";
 import { Heart, Plus, Smile, TrendingUp, Calendar, Sparkles } from "lucide-react";
+import "../styles/mood-tracker.css";
 
 interface MoodOption {
   value: number;
@@ -138,16 +139,12 @@ export function MoodTracker() {
                       <button
                         key={mood.value}
                         onClick={() => setSelectedMood(mood.value)}
-                        className={`absolute w-16 h-16 md:w-20 md:h-20 rounded-full flex flex-col items-center justify-center text-center transition-all duration-300 transform hover:scale-110 shadow-lg ${
+                        className={`mood-button-${mood.value} absolute w-16 h-16 md:w-20 md:h-20 rounded-full flex flex-col items-center justify-center text-center transition-all duration-300 transform hover:scale-110 shadow-lg ${
                           selectedMood === mood.value
                             ? `bg-gradient-to-r ${mood.color} text-white ring-4 ring-white dark:ring-gray-800 scale-110`
                             : `bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-xl`
                         }`}
-                        style={{
-                          left: '50%',
-                          top: '50%',
-                          transform: `translate(-50%, -50%) translate(${x}px, ${y}px) ${selectedMood === mood.value ? 'scale(1.1)' : ''}`,
-                        }}
+                        data-selected={selectedMood === mood.value}
                       >
                         <span className="text-2xl md:text-3xl mb-1">{mood.emoji}</span>
                         <span className={`text-xs font-medium leading-tight ${selectedMood === mood.value ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>

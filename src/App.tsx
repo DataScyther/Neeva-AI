@@ -963,7 +963,6 @@ function MoodTracker() {
       emoji: "😢",
       label: "Very Sad",
       gradient: "from-red-400 via-red-500 to-red-600",
-      description: "Having a really tough time",
       bgColor: "bg-red-50 dark:bg-red-900/20",
       borderColor: "border-red-200 dark:border-red-800",
     },
@@ -972,7 +971,6 @@ function MoodTracker() {
       emoji: "😕",
       label: "Sad",
       gradient: "from-orange-400 via-orange-500 to-orange-600",
-      description: "Feeling down today",
       bgColor: "bg-orange-50 dark:bg-orange-900/20",
       borderColor: "border-orange-200 dark:border-orange-800",
     },
@@ -981,7 +979,6 @@ function MoodTracker() {
       emoji: "😐",
       label: "Neutral",
       gradient: "from-yellow-400 via-yellow-500 to-yellow-600",
-      description: "Feeling okay, not great",
       bgColor: "bg-yellow-50 dark:bg-yellow-900/20",
       borderColor: "border-yellow-200 dark:border-yellow-800",
     },
@@ -990,7 +987,6 @@ function MoodTracker() {
       emoji: "🙂",
       label: "Good",
       gradient: "from-lime-400 via-green-500 to-green-600",
-      description: "Feeling positive today",
       bgColor: "bg-green-50 dark:bg-green-900/20",
       borderColor: "border-green-200 dark:border-green-800",
     },
@@ -999,7 +995,6 @@ function MoodTracker() {
       emoji: "😊",
       label: "Excellent",
       gradient: "from-emerald-400 via-green-500 to-teal-600",
-      description: "Feeling amazing!",
       bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
       borderColor: "border-emerald-200 dark:border-emerald-800",
     },
@@ -1122,9 +1117,6 @@ function MoodTracker() {
                             <span className="font-bold text-sm">
                               {mood.label}
                             </span>
-                            <p className="text-xs opacity-80 mt-1">
-                              {mood.description}
-                            </p>
                           </div>
                           {selectedMood === mood.value && (
                             <motion.div
@@ -1337,9 +1329,6 @@ function MoodTracker() {
                                 ).toLocaleDateString()}
                               </span>
                             </div>
-                            <p className="text-sm text-muted-foreground">
-                              {moodOption?.description}
-                            </p>
                             {entry.note && (
                               <p className="mt-2 text-sm font-medium bg-white/50 dark:bg-slate-700/50 p-2 rounded-lg">
                                 "{entry.note}"

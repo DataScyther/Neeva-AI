@@ -4,6 +4,7 @@ import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { useAppContext } from "./AppContext";
 import "../styles/navigation-optimize.css";
+import "../styles/navigation-glass.css";
 import {
   Home,
   MessageCircle,
@@ -336,16 +337,9 @@ export function Navigation() {
 
       {/* Mobile Bottom Navigation - Optimized for smooth scrolling */}
       <div 
-        className={`lg:hidden fixed bottom-0 inset-x-0 navigation-mobile navigation-glass navigation-shadow transition-transform duration-300 ease-in-out ${
+        className={`lg:hidden fixed bottom-0 inset-x-0 navigation-mobile navigation-glass navigation-shadow navigation-glass-effect transition-transform duration-300 ease-in-out ${
           isVisible ? 'translate-y-0' : 'translate-y-full'
         }`}
-        style={{
-          background: 'rgba(255, 255, 255, 0.98)',
-          backdropFilter: 'blur(20px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-          borderTop: '1px solid rgba(0, 0, 0, 0.1)',
-          boxShadow: '0 -10px 40px rgba(0, 0, 0, 0.1)'
-        }}
       >
         <div className="grid grid-cols-5 h-16 relative">
           {[

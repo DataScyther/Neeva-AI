@@ -4,18 +4,14 @@
 /* GPU Acceleration for smooth animations */
 * {
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
 }
 
-/* Optimize scrolling performance */
-/* Note: -webkit-overflow-scrolling is deprecated in iOS 13+ but kept for older iOS versions
-   Warning about browser support is expected - this is intentionally kept for iOS 12 and below
-   Modern browsers (iOS 13+) handle smooth scrolling automatically without this property */
-.scroll-container {
+/* Smooth scrolling for mobile devices */
+.mobile-scroll {
   overflow-y: auto;
-  /* @suppress-warning: -webkit-overflow-scrolling deprecated in iOS 13+ */
-  /* Intentionally kept for iOS 12 and below compatibility */
-  -webkit-overflow-scrolling: touch; /* Legacy iOS support (pre-iOS 13) */
+  /* Note: -webkit-overflow-scrolling is deprecated in iOS 13+ but kept for iOS 12 compatibility */
+  /* Modern iOS versions handle smooth scrolling automatically */
+  /* -webkit-overflow-scrolling: touch; Removed - deprecated in iOS 13+ */
   will-change: scroll-position;
 }
 
@@ -73,22 +69,18 @@ a,
 /* Optimize text rendering */
 body {
   text-rendering: optimizeSpeed;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Prevent text size adjustment on orientation change */
-/* Note: text-size-adjust browser compatibility:
-   - Firefox: Doesn't support (doesn't need it)
-   - Safari: Uses -webkit- prefix
+/* Note: text-size-adjust browser support varies:
+   - Safari/iOS: Uses -webkit- prefix
    - Chrome/Edge: Supports standard property
    The warning is expected and safe - each browser uses what it supports */
 html {
   -webkit-text-size-adjust: 100%; /* Safari/iOS */
   -ms-text-size-adjust: 100%; /* IE/Edge legacy */
-  /* @suppress-warning: text-size-adjust not supported by Firefox/Safari */
-  /* Firefox doesn't need it, Safari uses -webkit- prefix */
-  text-size-adjust: 100%; /* Standard property (Chrome/Edge) */
+  /* Note: Removed standard text-size-adjust as it's not supported by Firefox/Safari */
+  /* Firefox doesn't need this property, Safari uses -webkit- prefix above */
 }
 
 /* Optimize input fields for mobile */

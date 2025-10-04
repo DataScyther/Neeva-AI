@@ -3,24 +3,14 @@
 /* Prevent zoom on input focus (iOS) */
 /* Note: text-size-adjust browser support:
    - Safari/iOS: Requires -webkit- prefix (primary target for this fix)
-   - Chrome/Edge: Support standard property
+   - Chrome/Edge: Support standard property  
    - Firefox: Doesn't support this property (not needed for Firefox)
-   The warning about Firefox/Safari not supporting is expected and safe to ignore
-   as the property is primarily for iOS Safari zoom prevention */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-input[type="tel"],
-input[type="url"],
-input[type="search"],
-textarea,
-select {
-  font-size: 16px !important;
+*/
+html {
   -webkit-text-size-adjust: 100%; /* Safari/iOS support - primary target */
-  /* @suppress-warning: text-size-adjust not supported by Firefox/Safari */
-  /* This is intentional - Firefox doesn't need it, Safari uses -webkit- prefix */
-  text-size-adjust: 100%; /* Standard property for Chrome/Edge */
+  /* Note: Removed standard text-size-adjust as it's not supported by Firefox/Safari */
+  /* Firefox doesn't support this property and doesn't need it */
+  /* Safari uses -webkit- prefix which is already included above */
 }
 
 /* Minimum touch targets (48px) for accessibility */

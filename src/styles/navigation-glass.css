@@ -1,0 +1,25 @@
+/* Navigation Glass Effect Styles */
+/* Fixes inline style warnings by moving backdrop filter styles to CSS */
+
+.navigation-glass-effect {
+  background: rgba(255, 255, 255, 0.98);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 -4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 -2px 4px -1px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Dark mode glass effect */
+@media (prefers-color-scheme: dark) {
+  .navigation-glass-effect {
+    background: rgba(15, 23, 42, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+      0 -4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 -2px 4px -1px rgba(0, 0, 0, 0.2),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+}
