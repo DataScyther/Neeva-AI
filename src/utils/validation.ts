@@ -97,11 +97,6 @@ export function validatePassword(
     score -= 1;
   }
   
-  if (/(?:012|123|234|345|456|567|678|789|890)/.test(password)) {
-    errors.push('Password cannot contain sequential numbers');
-    score -= 1;
-  }
-  
   // Common weak passwords check
   const commonWeakPasswords = [
     'password', 'password123', '12345678', 'qwerty', 'abc123',
