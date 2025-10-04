@@ -86,6 +86,7 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
         <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
             className={`h-full transition-all duration-300 ${getStrengthColor(validation.strength)}`}
+            data-progress={progressPercentage}
             style={{ width: `${progressPercentage}%` }}
           />
         </div>

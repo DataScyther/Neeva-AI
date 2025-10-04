@@ -1,6 +1,8 @@
 /* Mobile-specific styles for AuthComponent */
 
 /* Prevent zoom on input focus (iOS) */
+/* Note: text-size-adjust warning is expected - Firefox doesn't need this property */
+/* -webkit-text-size-adjust is for Safari/iOS which is the primary target */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -11,8 +13,8 @@ input[type="search"],
 textarea,
 select {
   font-size: 16px !important;
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%; /* Safari/iOS support */
+  text-size-adjust: 100%; /* Standard property for future compatibility */
 }
 
 /* Minimum touch targets (48px) for accessibility */
