@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Shield, Check, X, AlertCircle } from 'lucide-react';
 import { PasswordValidationResult } from '../utils/validation';
+import '../styles/password-strength.css';
 
 interface PasswordStrengthIndicatorProps {
   validation: PasswordValidationResult | null;
@@ -11,6 +12,8 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
   validation,
   password
 }) => {
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  
   if (!password || !validation) return null;
 
   const getStrengthColor = (strength: string) => {
@@ -57,6 +60,13 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
 
   // Calculate progress percentage
   const progressPercentage = Math.min(100, (validation.score / 10) * 100);
+  
+  // Update progress bar width using CSS custom property
+  useEffect(() => {
+    if (progressBarRef.current) {
+      progressBarRef.current.style.setProperty('--progress-width', `${progressPercentage}%`);
+    }
+  }, [progressPercentage]);
 
   // Check requirements
   const hasMinLength = password.length >= 8;
@@ -85,9 +95,9 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
         {/* Progress Bar */}
         <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
           <div
-            className={`h-full transition-all duration-300 ${getStrengthColor(validation.strength)}`}
+            ref={progressBarRef}
+            className={`password-strength-bar h-full transition-all duration-300 ${getStrengthColor(validation.strength)}`}
             data-progress={progressPercentage}
-            style={{ width: `${progressPercentage}%` }}
           />
         </div>
       </div>

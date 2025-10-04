@@ -1,8 +1,12 @@
 /* Mobile-specific styles for AuthComponent */
 
 /* Prevent zoom on input focus (iOS) */
-/* Note: text-size-adjust warning is expected - Firefox doesn't need this property */
-/* -webkit-text-size-adjust is for Safari/iOS which is the primary target */
+/* Note: text-size-adjust browser support:
+   - Safari/iOS: Requires -webkit- prefix (primary target for this fix)
+   - Chrome/Edge: Support standard property
+   - Firefox: Doesn't support this property (not needed for Firefox)
+   The warning about Firefox/Safari not supporting is expected and safe to ignore
+   as the property is primarily for iOS Safari zoom prevention */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -13,8 +17,10 @@ input[type="search"],
 textarea,
 select {
   font-size: 16px !important;
-  -webkit-text-size-adjust: 100%; /* Safari/iOS support */
-  text-size-adjust: 100%; /* Standard property for future compatibility */
+  -webkit-text-size-adjust: 100%; /* Safari/iOS support - primary target */
+  /* @suppress-warning: text-size-adjust not supported by Firefox/Safari */
+  /* This is intentional - Firefox doesn't need it, Safari uses -webkit- prefix */
+  text-size-adjust: 100%; /* Standard property for Chrome/Edge */
 }
 
 /* Minimum touch targets (48px) for accessibility */

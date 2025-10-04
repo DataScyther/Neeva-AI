@@ -8,9 +8,14 @@
 }
 
 /* Optimize scrolling performance */
+/* Note: -webkit-overflow-scrolling is deprecated in iOS 13+ but kept for older iOS versions
+   Warning about browser support is expected - this is intentionally kept for iOS 12 and below
+   Modern browsers (iOS 13+) handle smooth scrolling automatically without this property */
 .scroll-container {
-  -webkit-overflow-scrolling: touch;
   overflow-y: auto;
+  /* @suppress-warning: -webkit-overflow-scrolling deprecated in iOS 13+ */
+  /* Intentionally kept for iOS 12 and below compatibility */
+  -webkit-overflow-scrolling: touch; /* Legacy iOS support (pre-iOS 13) */
   will-change: scroll-position;
 }
 
@@ -27,21 +32,21 @@ a,
 .clickable,
 .touch-target {
   touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
   min-height: 48px;
   min-width: 48px;
   position: relative;
+  -webkit-user-select: none; /* Vendor prefix first */
+  user-select: none; /* Standard property after vendor prefix */
 }
 
 /* Smooth transitions with GPU acceleration */
 .smooth-transition {
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  perspective: 1000px;
-  -webkit-perspective: 1000px;
+  -webkit-transform: translateZ(0); /* Vendor prefix first */
+  -webkit-backface-visibility: hidden; /* Vendor prefix first */
+  -webkit-perspective: 1000px; /* Vendor prefix first */
+  transform: translateZ(0); /* Standard property after vendor prefix */
+  backface-visibility: hidden; /* Standard property after vendor prefix */
+  perspective: 1000px; /* Standard property after vendor prefix */
 }
 
 /* Optimize animations */
@@ -73,10 +78,17 @@ body {
 }
 
 /* Prevent text size adjustment on orientation change */
+/* Note: text-size-adjust browser compatibility:
+   - Firefox: Doesn't support (doesn't need it)
+   - Safari: Uses -webkit- prefix
+   - Chrome/Edge: Supports standard property
+   The warning is expected and safe - each browser uses what it supports */
 html {
-  -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
-  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%; /* Safari/iOS */
+  -ms-text-size-adjust: 100%; /* IE/Edge legacy */
+  /* @suppress-warning: text-size-adjust not supported by Firefox/Safari */
+  /* Firefox doesn't need it, Safari uses -webkit- prefix */
+  text-size-adjust: 100%; /* Standard property (Chrome/Edge) */
 }
 
 /* Optimize input fields for mobile */
@@ -84,8 +96,8 @@ input,
 textarea,
 select {
   font-size: 16px !important; /* Prevents zoom on iOS */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+  -webkit-transform: translateZ(0); /* Vendor prefix first */
+  transform: translateZ(0); /* Standard property after vendor prefix */
 }
 
 /* Faster tap response */
@@ -95,8 +107,8 @@ select {
 }
 
 .fast-tap:active {
-  transform: scale(0.98);
-  -webkit-transform: scale(0.98);
+  -webkit-transform: scale(0.98); /* Vendor prefix first */
+  transform: scale(0.98); /* Standard property after vendor prefix */
 }
 
 /* Optimize chat messages */
@@ -159,16 +171,17 @@ select {
   
   /* Optimize backdrop filters */
   .backdrop-blur {
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px); /* Vendor prefix first */
+    backdrop-filter: blur(8px); /* Standard property after vendor prefix */
   }
 }
 
 /* iOS-specific fixes */
 @supports (-webkit-touch-callout: none) {
-  /* iOS momentum scrolling */
+  /* iOS momentum scrolling - deprecated in iOS 13+ but kept for older versions */
   .scroll-y {
-    -webkit-overflow-scrolling: touch;
+    /* @suppress-warning: -webkit-overflow-scrolling deprecated */
+    -webkit-overflow-scrolling: touch; /* Legacy iOS 12 and below */
   }
   
   /* Fix iOS rubber band scrolling */
@@ -185,7 +198,8 @@ select {
     right: 0;
     bottom: 0;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    /* @suppress-warning: -webkit-overflow-scrolling deprecated */
+    -webkit-overflow-scrolling: touch; /* Legacy iOS 12 and below */
   }
 }
 

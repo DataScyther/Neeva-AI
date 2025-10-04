@@ -31,7 +31,7 @@ After importing, go to your project settings and add these environment variables
 
 ### Required Variables
 
-```
+```bash
 # Firebase Configuration (Required for Authentication)
 VITE_FIREBASE_API_KEY=AIzaSyArYw_5H4KEXyQKs789SJZjwkHSPnBGe2s
 VITE_FIREBASE_AUTH_DOMAIN=neeva-ai.firebaseapp.com
