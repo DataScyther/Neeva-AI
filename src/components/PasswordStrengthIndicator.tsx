@@ -112,8 +112,8 @@ const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
             text="At least 8 characters"
           />
           <RequirementItem
-            met={requirementsMet >= 3}
-            text="3 of 4 character types:"
+            met={requirementsMet >= 2}
+            text="2 of 4 character types:"
           />
           <div className="ml-4 space-y-1">
             <RequirementItem

@@ -21,7 +21,7 @@ export interface EmailValidationResult {
  * Requirements:
  * - Minimum 8 characters (stronger than the 6 character minimum)
  * - Cannot contain user's email or name
- * - Must contain characters from at least 3 of 4 categories:
+ * - Must contain characters from at least 2 of 4 categories:
  *   - Uppercase letters (A-Z)
  *   - Lowercase letters (a-z)
  *   - Numbers (0-9)
@@ -76,8 +76,8 @@ export function validatePassword(
   const categoriesCount = [hasUppercase, hasLowercase, hasNumbers, hasSpecialChars]
     .filter(Boolean).length;
   
-  if (categoriesCount < 3) {
-    errors.push('Password must contain characters from at least 3 of the following: uppercase letters, lowercase letters, numbers, special characters');
+  if (categoriesCount < 2) {
+    errors.push('Password must contain characters from at least 2 of the following: uppercase letters, lowercase letters, numbers, special characters');
   } else {
     score += categoriesCount;
   }
@@ -99,12 +99,6 @@ export function validatePassword(
   
   if (/(?:012|123|234|345|456|567|678|789|890)/.test(password)) {
     errors.push('Password cannot contain sequential numbers');
-    score -= 1;
-  }
-  
-  // Check for repeated characters
-  if (/(.)\1{2,}/.test(password)) {
-    errors.push('Password cannot contain more than 2 repeated characters in a row');
     score -= 1;
   }
   
