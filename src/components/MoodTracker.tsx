@@ -16,7 +16,6 @@ interface MoodOption {
   emoji: string;
   label: string;
   color: string;
-  description: string;
 }
 
 const moodOptions: MoodOption[] = [
@@ -24,36 +23,31 @@ const moodOptions: MoodOption[] = [
     value: 1,
     emoji: "😢",
     label: "Very Sad",
-    color: "from-red-400 to-red-600",
-    description: "Having a really tough time"
+    color: "from-red-400 to-red-600"
   },
   {
     value: 2,
     emoji: "😕",
     label: "Sad",
-    color: "from-orange-400 to-orange-600",
-    description: "Feeling down today"
+    color: "from-orange-400 to-orange-600"
   },
   {
     value: 3,
     emoji: "😐",
     label: "Neutral",
-    color: "from-yellow-400 to-yellow-600",
-    description: "Just okay, nothing special"
+    color: "from-yellow-400 to-yellow-600"
   },
   {
     value: 4,
     emoji: "🙂",
     label: "Good",
-    color: "from-lime-400 to-lime-600",
-    description: "Feeling pretty good"
+    color: "from-lime-400 to-lime-600"
   },
   {
     value: 5,
     emoji: "😊",
     label: "Excellent",
-    color: "from-green-400 to-green-600",
-    description: "Amazing day ahead!"
+    color: "from-green-400 to-green-600"
   },
 ];
 
@@ -173,9 +167,6 @@ export function MoodTracker() {
                           </div>
                           <div className="text-sm font-medium">
                             {moodOptions.find(m => m.value === selectedMood)?.label}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            {moodOptions.find(m => m.value === selectedMood)?.description}
                           </div>
                         </div>
                       ) : (
