@@ -20,9 +20,13 @@ import {
   EyeOff,
   ArrowLeft,
   CheckCircle,
+  AlertTriangle,
+  Info,
 } from 'lucide-react';
 
 import { Alert, AlertDescription } from './ui/alert';
+import { validateEmail, validatePassword, PasswordValidationResult, EmailValidationResult } from '../utils/validation';
+import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 
 interface AuthComponentProps {
   onAuthSuccess?: () => void;
@@ -35,60 +39,126 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   const [authMode, setAuthMode] = useState<'signin' | 'signup' | 'forgot'>('signin');
   const [showPassword, setShowPassword] = useState(false);
   const [forgotPasswordSent, setForgotPasswordSent] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [authCompleted, setAuthCompleted] = useState(false);
 
   // Form state
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordValidation, setPasswordValidation] = useState<PasswordValidationResult | null>(null);
+  const [emailValidation, setEmailValidation] = useState<EmailValidationResult | null>(null);
+  const [emailSuggestion, setEmailSuggestion] = useState<string>('');
+  const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
 
   const { dispatch } = useAppContext();
+  
+  // Mobile detection
+  const isMobile = typeof window !== 'undefined' && 
+    ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
   useEffect(() => {
     console.log('AuthComponent: Setting up auth state listener');
+    
+    let authTimeout: NodeJS.Timeout;
+    let isSubscribed = true;
 
     // Listen to auth state changes
     const unsubscribe = authService.onAuthStateChange((firebaseUser) => {
+      if (!isSubscribed) return;
+      
       console.log('AuthComponent: Auth state changed:', {
         firebaseUser: firebaseUser ? {
           uid: firebaseUser.uid,
           email: firebaseUser.email,
           displayName: firebaseUser.displayName
         } : null,
-        currentProfile: authService.getCurrentUserProfile()
+        currentProfile: authService.getCurrentUserProfile(),
+        isAuthenticating,
+        authCompleted
       });
 
-      if (firebaseUser) {
+      if (firebaseUser && !authCompleted) {
         const profile = authService.getCurrentUserProfile();
         console.log('AuthComponent: User authenticated, profile:', profile);
-        setUser(profile);
+        
         if (profile) {
-          // Update app context
-          dispatch({
-            type: 'SET_USER',
-            payload: profile,
-          });
-          console.log('AuthComponent: Triggering onAuthSuccess callback');
-          onAuthSuccess?.();
+          // Clear any existing timeout
+          if (authTimeout) clearTimeout(authTimeout);
+          
+          // Mobile-optimized auth completion
+          const completeAuth = () => {
+            if (!isSubscribed) return;
+            
+            setUser(profile);
+            setAuthCompleted(true);
+            setIsAuthenticating(false);
+            
+            // Update app context
+            dispatch({
+              type: 'SET_USER',
+              payload: profile,
+            });
+            
+            console.log('AuthComponent: Auth completed, triggering callback');
+            
+            // Use setTimeout to ensure state updates are processed
+            setTimeout(() => {
+              if (isSubscribed) {
+                onAuthSuccess?.();
+              }
+            }, 100);
+          };
+          
+          // On mobile, add a small delay to ensure Firebase auth is fully synced
+          if (isMobile && isAuthenticating) {
+            authTimeout = setTimeout(completeAuth, 500);
+          } else {
+            completeAuth();
+          }
         }
-      } else {
+      } else if (!firebaseUser) {
         console.log('AuthComponent: User logged out');
         setUser(null);
+        setAuthCompleted(false);
+        setIsAuthenticating(false);
       }
     });
 
-    return unsubscribe;
-  }, [dispatch, onAuthSuccess]);
+    return () => {
+      isSubscribed = false;
+      if (authTimeout) clearTimeout(authTimeout);
+      unsubscribe();
+    };
+  }, [dispatch, onAuthSuccess, isAuthenticating, authCompleted, isMobile]);
 
-  // Email validation
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  // Real-time email validation
+  useEffect(() => {
+    if (email) {
+      const validation = validateEmail(email);
+      setEmailValidation(validation);
+      if (validation.suggestions && validation.suggestions.length > 0) {
+        setEmailSuggestion(validation.suggestions[0]);
+      } else {
+        setEmailSuggestion('');
+      }
+    } else {
+      setEmailValidation(null);
+      setEmailSuggestion('');
+    }
+  }, [email]);
 
-  // Password validation
-  const isValidPassword = (password: string): boolean => {
-    return password.length >= 6;
-  };
+  // Real-time password validation
+  useEffect(() => {
+    if (password) {
+      const validation = validatePassword(password, email, name);
+      setPasswordValidation(validation);
+      setShowPasswordRequirements(true);
+    } else {
+      setPasswordValidation(null);
+      setShowPasswordRequirements(false);
+    }
+  }, [password, email, name]);
 
   const handleEmailSignIn = async () => {
     if (!email || !password) {
@@ -96,23 +166,32 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       return;
     }
 
-    if (!isValidEmail(email)) {
-      setError('Please enter a valid email address');
+    const emailVal = validateEmail(email);
+    if (!emailVal.isValid) {
+      setError(emailVal.error || 'Please enter a valid email address');
       return;
     }
 
-    if (!isValidPassword(password)) {
-      setError('Password must be at least 6 characters long');
+    // For sign-in, we don't enforce all password rules, just check if it's not empty
+    if (password.length < 6) {
+      setError('Invalid email or password');
       return;
     }
 
     setIsLoading(true);
+    setIsAuthenticating(true);
     setError(null);
 
     try {
       const userProfile = await authService.signInWithEmail(email, password);
-      setUser(userProfile);
-      // onAuthSuccess will be called via the useEffect listener
+      
+      // Mobile-specific handling
+      if (isMobile) {
+        // Wait for auth state to propagate
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+      
+      // Auth success will be handled by the useEffect listener
     } catch (err: any) {
       console.error('Email sign-in error:', err);
 
@@ -140,6 +219,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       }
 
       setError(errorMessage);
+      setIsAuthenticating(false);
     } finally {
       setIsLoading(false);
     }
@@ -156,23 +236,37 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       return;
     }
 
-    if (!isValidEmail(email)) {
-      setError('Please enter a valid email address');
+    const emailVal = validateEmail(email);
+    if (!emailVal.isValid) {
+      setError(emailVal.error || 'Please enter a valid email address');
       return;
     }
 
-    if (!isValidPassword(password)) {
-      setError('Password must be at least 6 characters long');
+    const passwordVal = validatePassword(password, email, name);
+    if (!passwordVal.isValid) {
+      setError(passwordVal.errors[0] || 'Password does not meet security requirements');
+      return;
+    }
+
+    if (passwordVal.strength === 'weak') {
+      setError('Please choose a stronger password');
       return;
     }
 
     setIsLoading(true);
+    setIsAuthenticating(true);
     setError(null);
 
     try {
       const userProfile = await authService.signUpWithEmail(email, password, name.trim());
-      setUser(userProfile);
-      // onAuthSuccess will be called via the useEffect listener
+      
+      // Mobile-specific handling
+      if (isMobile) {
+        // Wait for auth state to propagate
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+      
+      // Auth success will be handled by the useEffect listener
     } catch (err: any) {
       console.error('Email sign-up error:', err);
 
@@ -194,6 +288,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       }
 
       setError(errorMessage);
+      setIsAuthenticating(false);
     } finally {
       setIsLoading(false);
     }
@@ -205,8 +300,9 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       return;
     }
 
-    if (!isValidEmail(email)) {
-      setError('Please enter a valid email address');
+    const emailVal = validateEmail(email);
+    if (!emailVal.isValid) {
+      setError(emailVal.error || 'Please enter a valid email address');
       return;
     }
 
@@ -243,58 +339,94 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    setIsAuthenticating(true);
     setError(null);
 
     try {
       console.log('Starting Google sign-in process...');
-      const userProfile = await authService.signInWithGoogle();
-
-      console.log('Google sign-in successful:', userProfile);
-      setUser(userProfile);
-
-      // Additional mobile-specific handling
-      if (typeof window !== 'undefined' && 'ontouchstart' in window) {
-        console.log('Mobile device detected, applying mobile-specific auth handling');
-
-        // Force a page reload on mobile to ensure proper state synchronization
-        // This helps with mobile browsers that may cache authentication state
-        setTimeout(() => {
-          if (authService.getCurrentUserProfile()) {
-            console.log('Mobile auth state verified, triggering callback');
-            onAuthSuccess?.();
-          }
-        }, 500);
-      } else {
-        // onAuthSuccess will be called via the useEffect listener
+      
+      // Prevent double-tap on mobile
+      if (isMobile) {
+        // Disable the button temporarily
+        const googleButton = document.querySelector('[data-google-signin]');
+        if (googleButton) {
+          (googleButton as HTMLButtonElement).disabled = true;
+        }
       }
+      
+      const userProfile = await authService.signInWithGoogle();
+      console.log('Google sign-in successful:', userProfile);
+      
+      // Mobile-specific handling for better reliability
+      if (isMobile) {
+        console.log('Mobile device detected, ensuring auth state sync');
+        
+        // Wait for Firebase auth state to fully propagate
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        // Verify auth state
+        const currentProfile = authService.getCurrentUserProfile();
+        if (currentProfile) {
+          console.log('Mobile auth state verified');
+          // Auth success will be handled by the useEffect listener
+        } else {
+          // Retry getting profile after a delay
+          setTimeout(() => {
+            const retryProfile = authService.getCurrentUserProfile();
+            if (retryProfile) {
+              console.log('Mobile auth state verified on retry');
+            }
+          }, 1000);
+        }
+      }
+      // Auth success will be handled by the useEffect listener
     } catch (err) {
       console.error('Google Sign-in error:', err);
       setError(err instanceof Error ? err.message : 'Sign-in failed');
+      setIsAuthenticating(false);
     } finally {
       setIsLoading(false);
+      
+      // Re-enable button on mobile
+      if (isMobile) {
+        setTimeout(() => {
+          const googleButton = document.querySelector('[data-google-signin]');
+          if (googleButton) {
+            (googleButton as HTMLButtonElement).disabled = false;
+          }
+        }, 1000);
+      }
     }
   };
 
-  if (user) {
+  // Show loading state during authentication
+  if ((isAuthenticating || authCompleted) && !error) {
     return (
-      <Card className="w-full max-w-md mx-auto shadow-xl border border-gray-200 bg-white">
-        <CardHeader className="text-center">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
-            <User className="w-8 h-8 text-white" />
-          </div>
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Welcome back, {user.name}!
-          </CardTitle>
-          <CardDescription>
-            Redirecting to your dashboard...
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-center">
-            <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-          </div>
-        </CardContent>
-      </Card>
+      <div className="min-h-screen min-h-[100dvh] bg-white flex items-center justify-center p-4">
+        <Card className="w-full max-w-md mx-auto shadow-xl border border-gray-200 bg-white">
+          <CardHeader className="text-center">
+            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
+              <User className="w-8 h-8 text-white" />
+            </div>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              {authCompleted ? `Welcome back${user?.name ? `, ${user.name}` : ''}!` : 'Authenticating...'}
+            </CardTitle>
+            <CardDescription>
+              {authCompleted ? 'Redirecting to your dashboard...' : 'Please wait while we sign you in...'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-center">
+              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+            </div>
+            {isMobile && (
+              <p className="text-xs text-gray-500 text-center">
+                This may take a moment on mobile devices
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -450,12 +582,40 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={isLoading}
-                      className="h-12 text-base"
+                      className={`h-12 text-base ${
+                        emailValidation && !emailValidation.isValid
+                          ? 'border-red-500 focus:ring-red-500'
+                          : emailValidation && emailValidation.isValid
+                          ? 'border-green-500 focus:ring-green-500'
+                          : ''
+                      }`}
                       autoComplete="email"
                       autoCapitalize="none"
                       autoCorrect="off"
                       inputMode="email"
                     />
+                    {/* Email validation feedback */}
+                    {emailValidation && !emailValidation.isValid && (
+                      <div className="flex items-start gap-1.5 text-xs text-red-600 mt-1">
+                        <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                        <span>{emailValidation.error}</span>
+                      </div>
+                    )}
+                    {emailSuggestion && (
+                      <div className="flex items-start gap-1.5 text-xs text-blue-600 mt-1">
+                        <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const suggestion = emailSuggestion.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+                            if (suggestion) setEmail(suggestion[1]);
+                          }}
+                          className="underline hover:no-underline"
+                        >
+                          {emailSuggestion}
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -497,6 +657,13 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                         {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                       </button>
                     </div>
+                    {/* Password Strength Indicator for Sign Up */}
+                    {authMode === 'signup' && showPasswordRequirements && (
+                      <PasswordStrengthIndicator
+                        validation={passwordValidation}
+                        password={password}
+                      />
+                    )}
                   </div>
 
                   <div className="space-y-3">
@@ -545,14 +712,14 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
               <span className="bg-white px-3 text-xs text-gray-500 uppercase tracking-wide">
                 Or continue with
               </span>
-            </div>
+          </div>
           </div>
 
           <Button
             onClick={handleGoogleSignIn}
-            disabled={isLoading}
-            className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 shadow-sm text-base font-medium"
-          >
+            disabled={isLoading || isAuthenticating}
+            data-google-signin
+            className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 shadow-sm text-base font-medium touch-manipulation">
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-3 animate-spin" />

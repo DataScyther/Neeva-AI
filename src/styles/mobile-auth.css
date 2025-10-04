@@ -1,131 +1,19 @@
-/* ==========================================================================
-   Mobile Authentication Styles - Neeva AI
-   Optimized for reliability, performance, and maintainability
-   ========================================================================== */
+/* Mobile-specific styles for AuthComponent */
 
-/* ==========================================================================
-   Base Styles & Reset
-   ========================================================================== */
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  background-color: #ffffff !important;
-  font-family: system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* ==========================================================================
-   Input Field Optimizations
-   ========================================================================== */
-
-/* Base input styling for all themes */
+/* Prevent zoom on input focus (iOS) */
 input[type="text"],
 input[type="email"],
 input[type="password"],
-input[type="tel"],
 input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
 textarea,
 select {
-  background-color: #ffffff !important;
-  color: #374151 !important;
-  border-color: #d1d5db !important;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 16px !important; /* Prevent iOS zoom */
-  transition: all 0.15s ease-in-out;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}
-
-/* Enhanced focus states */
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="tel"]:focus,
-input[type="number"]:focus,
-textarea:focus,
-select:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-  background-color: #ffffff !important;
-}
-
-/* Data attribute targeting for React components */
-input[data-slot="input"] {
-  background-color: #ffffff !important;
-  color: #374151 !important;
-  border-color: #d1d5db !important;
   font-size: 16px !important;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
-
-input[data-slot="input"]:focus {
-  background-color: #ffffff !important;
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
-}
-
-/* Tailwind class overrides */
-.bg-input {
-  background-color: #ffffff !important;
-}
-
-.dark\:bg-input\/30 {
-  background-color: #ffffff !important;
-}
-
-.bg-input-background {
-  background-color: #ffffff !important;
-}
-
-/* Placeholder styling */
-input::placeholder,
-textarea::placeholder {
-  color: #9ca3af;
-  opacity: 1;
-}
-
-/* Password toggle button alignment fix */
-.relative.flex.items-center {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.relative.flex.items-center input {
-  padding-right: 3rem !important;
-}
-
-.relative.flex.items-center button {
-  position: absolute !important;
-  right: 0.75rem !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  z-index: 10 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-/* ==========================================================================
-   Touch & Interaction Optimizations
-   ========================================================================== */
 
 /* Minimum touch targets (48px) for accessibility */
 @media (max-width: 768px) {
@@ -193,8 +81,8 @@ body {
 /* Viewport height fixes */
 .min-h-\[100dvh\] {
   min-height: 100vh;
-  min-height: 100dvh;
   min-height: -webkit-fill-available;
+  min-height: 100dvh;
 }
 
 /* Card layout optimizations */
