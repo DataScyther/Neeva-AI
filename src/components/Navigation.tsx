@@ -19,6 +19,11 @@ import {
   ChevronDown,
   Menu,
   X,
+  Plus,
+  User,
+  FileText,
+  Compass,
+  Activity,
 } from "lucide-react";
 import { AppState } from "./AppContext";
 
@@ -46,40 +51,6 @@ type NavigationItem = MainNavigationItem | SupportNavigationItem | ToolsNavigati
 export function Navigation() {
   const { state, dispatch } = useAppContext();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-
-  // Smart hide/show navigation on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Always show when at the top or scrolling up
-      if (currentScrollY < 10 || currentScrollY < lastScrollY) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // Hide when scrolling down after 100px
-        setIsVisible(false);
-      }
-      
-      setLastScrollY(currentScrollY);
-    };
-
-    // Throttle scroll events for performance
-    let ticking = false;
-    const scrollListener = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          handleScroll();
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-
-    window.addEventListener('scroll', scrollListener, { passive: true });
-    return () => window.removeEventListener('scroll', scrollListener);
-  }, [lastScrollY]);
 
   const mainNavigationItems: MainNavigationItem[] = [
     {
@@ -335,60 +306,100 @@ export function Navigation() {
         </div>
       </div>
 
-      {/* Mobile Bottom Navigation - Optimized for smooth scrolling */}
-      <div 
-        className={`lg:hidden fixed bottom-0 inset-x-0 navigation-mobile navigation-glass navigation-shadow navigation-glass-effect transition-transform duration-300 ease-in-out ${
-          isVisible ? 'translate-y-0' : 'translate-y-full'
-        }`}
-      >
-        <div className="grid grid-cols-5 h-16 relative">
-          {[
-            ...mainNavigationItems.slice(0, 4),
-            supportNavigationItems[0], // Crisis item with urgent property
-          ].map((item) => {
-            const IconComponent = item.icon;
-            const isActive = state.currentView === item.view;
+      {/* Mobile Bottom Navigation - New Pill Design */}
+      <div className="lg:hidden mobile-nav-container">
+        {/* Main Navigation Pill */}
+        <div className="navigation-pill bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 rounded-full px-4 py-3 shadow-2xl">
+          <div className="flex items-center justify-between space-x-3 sm:space-x-4">
+            {/* Home */}
+            <button
+              className={`nav-pill-item flex flex-col items-center space-y-1 transition-all duration-200 ${
+                state.currentView === "dashboard"
+                  ? "text-blue-600 dark:text-blue-400"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+              }`}
+              onClick={() => {
+                dispatch({ type: "SET_VIEW", payload: "dashboard" });
+                if ('vibrate' in navigator) navigator.vibrate(10);
+              }}
+            >
+              <Home className="w-6 h-6" />
+              <span className="text-xs font-medium">Home</span>
+            </button>
 
-            // Type guards for safe property access
-            const hasBadge = 'badge' in item && item.badge;
-            const hasUrgent = 'urgent' in item && item.urgent;
+            {/* AI Assistant - Neeva AI */}
+            <button
+              className={`nav-pill-item flex flex-col items-center space-y-1 transition-all duration-200 ${
+                state.currentView === "chatbot"
+                  ? "text-purple-600 dark:text-purple-400"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+              }`}
+              onClick={() => {
+                dispatch({ type: "SET_VIEW", payload: "chatbot" });
+                if ('vibrate' in navigator) navigator.vibrate(10);
+              }}
+            >
+              <MessageCircle className="w-6 h-6" />
+              <span className="text-xs font-medium">Neeva AI</span>
+              {state.chatHistory.length === 0 && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-purple-500 rounded-full" />
+              )}
+            </button>
 
-            return (
-              <button
-                key={item.id}
-                className={`nav-item flex flex-col items-center justify-center space-y-1 relative transition-all duration-200 ease-in-out ${
-                  isActive
-                    ? "text-blue-600 font-semibold"
-                    : hasUrgent
-                      ? "text-red-500"
-                      : "text-gray-600 hover:text-gray-900"
-                }`}
-                onClick={() => {
-                  dispatch({
-                    type: "SET_VIEW",
-                    payload: item.view,
-                  });
-                  // Haptic feedback on mobile
-                  if ('vibrate' in navigator) {
-                    navigator.vibrate(10);
-                  }
-                }}
-              >
-                <IconComponent className="nav-icon w-5 h-5 transition-transform duration-200" />
-                <span className="nav-label text-xs font-medium">
-                  {item.label.split(" ")[0]}
-                </span>
-                {hasUrgent && !isActive && (
-                  <div className="absolute top-1 right-2">
-                    <div className="w-2 h-2 bg-red-500 rounded-full" />
-                  </div>
-                )}
-                {isActive && (
-                  <div className="nav-active-indicator" />
-                )}
-              </button>
-            );
-          })}
+            {/* Center Explore Button */}
+            <button
+              className={`nav-center-button w-14 h-14 rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition-all duration-200 ${
+                state.currentView === "exercises"
+                  ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                  : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              }`}
+              onClick={() => {
+                dispatch({ type: "SET_VIEW", payload: "exercises" });
+                if ('vibrate' in navigator) navigator.vibrate(10);
+              }}
+              title="Explore CBT Wellness Studio"
+              aria-label="Explore CBT Wellness Studio"
+            >
+              <Compass className="w-7 h-7 text-white" />
+            </button>
+
+            {/* Mood Tracker */}
+            <button
+              className={`nav-pill-item flex flex-col items-center space-y-1 transition-all duration-200 ${
+                state.currentView === "mood"
+                  ? "text-pink-600 dark:text-pink-400"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+              }`}
+              onClick={() => {
+                dispatch({ type: "SET_VIEW", payload: "mood" });
+                if ('vibrate' in navigator) navigator.vibrate(10);
+              }}
+            >
+              <Activity className="w-6 h-6" />
+              <span className="text-xs font-medium">Mood</span>
+              {state.moodEntries.filter((entry) => {
+                const today = new Date();
+                const entryDate = new Date(entry.timestamp);
+                return entryDate.toDateString() === today.toDateString();
+              }).length > 0 && (
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-pink-500 rounded-full" />
+              )}
+            </button>
+
+            {/* Profile - Opens Drawer */}
+            <button
+              className="nav-pill-item flex flex-col items-center space-y-1 transition-all duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <User className="w-6 h-6" />
+              <span className="text-xs font-medium">Profile</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Home Indicator */}
+        <div className="flex justify-center mt-4">
+          <div className="w-32 h-1 bg-gray-800 dark:bg-gray-200 rounded-full opacity-60" />
         </div>
       </div>
 

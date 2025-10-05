@@ -23,3 +23,211 @@
       inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
   }
 }
+
+/* New Pill Navigation Styles - Ultra Translucent Glassmorphism */
+.navigation-pill {
+  min-width: 320px;
+  max-width: 90vw;
+  background: rgba(255, 255, 255, 0.35) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+  backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 
+    0 8px 32px rgba(31, 38, 135, 0.08),
+    0 4px 16px rgba(255, 255, 255, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode pill navigation - Ultra Translucent */
+@media (prefers-color-scheme: dark) {
+  .navigation-pill {
+    background: rgba(47, 0, 255, 0) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 4px 16px rgba(255, 255, 255, 0.05),
+      inset 0 1px 2px rgba(255, 255, 255, 0.2),
+      inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Navigation pill items */
+.nav-pill-item {
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 12px;
+  min-width: 60px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-pill-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .nav-pill-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Center button styles */
+.nav-center-button {
+  position: relative;
+  z-index: 10;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-center-button:active {
+  transform: scale(0.95);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .navigation-pill {
+    min-width: 280px;
+    padding: 12px 16px;
+  }
+  
+  .navigation-pill .flex {
+    gap: 1rem; /* Reduce spacing on smaller screens */
+  }
+  
+  .nav-pill-item {
+    min-width: 50px;
+    padding: 6px 8px;
+  }
+  
+  .nav-center-button {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .nav-center-button .lucide {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Animation for navigation visibility */
+.navigation-pill-container {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Badge positioning for pill navigation */
+.nav-pill-item .absolute {
+  pointer-events: none;
+}
+
+/* Ensure proper stacking - highest priority */
+.navigation-pill {
+  z-index: 9999;
+  position: relative;
+}
+
+/* Home indicator styling */
+.home-indicator {
+  transition: opacity 0.3s ease;
+}
+
+@media (max-width: 375px) {
+  .home-indicator {
+    width: 100px;
+  }
+}
+
+/* Mobile navigation container positioning */
+.mobile-nav-container {
+  position: fixed !important;
+  bottom: 12px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  width: auto !important;
+  max-width: calc(100vw - 32px) !important;
+}
+
+/* Ultra-premium liquid glass overlay */
+.navigation-pill::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 9999px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    rgba(255, 255, 255, 0.05) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Additional shimmer effect for liquid glass */
+.navigation-pill::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  right: 2px;
+  height: 40%;
+  border-radius: 9999px 9999px 50% 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Ensure content is above the gradient overlay */
+.navigation-pill > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Safe area for devices with home indicator */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-nav-container {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Smooth entrance animation */
+.mobile-nav-container {
+  animation: slideUpFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideUpFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Ensure content doesn't overlap with navigation */
+body {
+  padding-bottom: 100px;
+}
+
+@media (min-width: 1024px) {
+  body {
+    padding-bottom: 0;
+  }
+}
