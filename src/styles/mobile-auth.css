@@ -3,15 +3,9 @@
 /* Prevent zoom on input focus (iOS) */
 /* Note: text-size-adjust browser support:
    - Safari/iOS: Requires -webkit- prefix (primary target for this fix)
-   - Chrome/Edge: Support standard property  
+   - Chrome/Edge: Support standard property
    - Firefox: Doesn't support this property (not needed for Firefox)
-*/
-html {
-  -webkit-text-size-adjust: 100%; /* Safari/iOS support - primary target */
-  text-size-adjust: 100%; /* Chrome/Edge support */
-  /* Note: Firefox doesn't support this property and doesn't need it */
-  /* Safari uses -webkit- prefix, Chrome/Edge use standard property */
-}
+   Modern browsers handle text sizing automatically without these properties */
 
 /* Minimum touch targets (48px) for accessibility */
 @media (max-width: 768px) {

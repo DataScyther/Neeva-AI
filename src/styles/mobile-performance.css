@@ -75,13 +75,7 @@ body {
    - Safari/iOS: Uses -webkit- prefix
    - Chrome/Edge: Supports standard property
    - Firefox: Doesn't support this property (graceful degradation)
-   Each browser uses what it supports - warnings are expected and safe */
-html {
-  -webkit-text-size-adjust: 100%; /* Safari/iOS */
-  -ms-text-size-adjust: 100%; /* IE/Edge legacy */
-  text-size-adjust: 100%; /* Chrome/Edge standard */
-  /* Note: Firefox doesn't support this property but doesn't need it */
-}
+   Modern browsers handle text sizing automatically without these properties */
 
 /* Optimize input fields for mobile */
 input,

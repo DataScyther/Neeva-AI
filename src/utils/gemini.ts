@@ -4,6 +4,8 @@
 
 import OpenAI from 'openai';
 
+import { formatResponse } from './openrouter';
+
 export interface OpenRouterMessage {
   role: 'user' | 'assistant';
   content: string;
@@ -62,7 +64,7 @@ export class OpenRouterError extends Error {
   }
 }
 
-// Direct Google Gemini API call
+// Direct Google Gemini API call with enhanced system prompt
 async function callDirectGemini(messages: GeminiMessage[]): Promise<string> {
   if (!GEMINI_API_KEY) {
     throw new OpenRouterError('Google Gemini API key not configured');
@@ -71,10 +73,49 @@ async function callDirectGemini(messages: GeminiMessage[]): Promise<string> {
   try {
     console.log('🚀 Calling Direct Google Gemini API...');
 
-    const contents = messages.map(msg => ({
+    const systemPrompt = {
+      role: 'user',
+      parts: [{
+        text: `You are Neeva, a warm and compassionate AI mental health companion. Your mission is to provide immediate emotional support with structured, actionable guidance.
+
+CORE IDENTITY:
+- Warm, empathetic, and genuinely caring like a trusted friend
+- Professional yet approachable, never clinical or distant
+- Focused on emotional support, not therapy or diagnosis
+
+RESPONSE STRUCTURE:
+1. Start with empathy - Acknowledge their feelings first
+2. Provide 1-2 key insights - Keep it focused and actionable
+3. Offer 1 practical suggestion - Something they can do right now
+4. End positively - Encourage hope and progress
+
+RESPONSE FORMAT:
+- Keep it concise: 2-4 sentences maximum (under 150 words)
+- Use natural language: Speak like a caring friend, not a textbook
+- Add warmth: Use gentle language like "I hear you," "That makes sense," "You're not alone"
+- Include subtle encouragement: End with hope or a gentle nudge forward
+
+COMMUNICATION STYLE:
+- Use contractions (I'm, you're, that's) for natural flow
+- Add appropriate emojis sparingly (💙, 🌱, ✨) to show warmth
+- Vary sentence length - mix short emotional punches with longer supportive statements
+- Sound conversational, like you're sitting across a coffee table
+
+WHEN TO ACT:
+- Crisis: If they mention self-harm or severe distress, respond with: "I'm really concerned about you. Please reach out to a crisis hotline or trusted person right now. You're not alone in this 💙"
+- Progress: Celebrate small wins and encourage continued growth
+- Struggle: Validate feelings while gently offering new perspectives
+
+REMEMBER: You're a companion for the moment, planting seeds of hope and strength. Every conversation is a step toward feeling better. 🌱
+
+Now, please respond to this user's message with empathy and support:`
+      }]
+    };
+
+    const contents = [systemPrompt, ...messages.map(msg => ({
       role: msg.role === 'model' ? 'model' : 'user',
       parts: msg.parts
-    }));
+    }))];
 
     const response = await fetch(
       `${GEMINI_BASE_URL}/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
@@ -131,7 +172,7 @@ async function callDirectGemini(messages: GeminiMessage[]): Promise<string> {
     const content = data.candidates[0].content.parts[0].text;
     console.log('✅ Direct Google Gemini API response received successfully');
 
-    return content.trim();
+    return formatResponse(content);
 
   } catch (error: any) {
     console.error('❌ Direct Gemini API Error:', error);
@@ -161,7 +202,7 @@ export async function callOpenRouter(messages: OpenRouterMessage[]): Promise<str
     }
 
     console.log('✅ OpenRouter API response received successfully');
-    return completion.choices[0].message.content.trim();
+    return formatResponse(completion.choices[0].message.content);
 
   } catch (error: any) {
     console.error('❌ OpenRouter API Error:', error);

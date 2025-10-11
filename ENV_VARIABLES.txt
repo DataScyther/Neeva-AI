@@ -40,7 +40,7 @@ Total: 12 variables (6 Firebase + 3 Gemini + 3 OpenRouter)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 7. Name: VITE_GEMINI_API_KEY
-   Value: AIzaSyDuGk6eephMZOla7-NjvQnuV4NLlHTDuyA
+   Value: AIzaSyCGhhAmN9OdJmmUnDoPpLB6mQJgRh1dAm0
 
 8. Name: VITE_GEMINI_MODEL
    Value: gemini-2.0-flash
@@ -53,7 +53,7 @@ Total: 12 variables (6 Firebase + 3 Gemini + 3 OpenRouter)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 10. Name: VITE_OPENROUTER_API_KEY
-    Value: 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
+    Value: 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
 
 11. Name: VITE_OPENROUTER_MODEL
     Value: deepseek/deepseek-chat-v3.1:free

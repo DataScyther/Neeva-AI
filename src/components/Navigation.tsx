@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import anime from "animejs";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
@@ -51,6 +52,27 @@ type NavigationItem = MainNavigationItem | SupportNavigationItem | ToolsNavigati
 export function Navigation() {
   const { state, dispatch } = useAppContext();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Add subtle anime.js animations
+  useEffect(() => {
+    // Animate navigation items on mount
+    anime({
+      targets: '.nav-pill-item',
+      translateY: [10, 0],
+      opacity: [0, 1],
+      duration: 500,
+      delay: anime.stagger(50),
+      easing: 'easeOutQuad'
+    });
+
+    // Animate center button pulse
+    anime({
+      targets: '.nav-center-button',
+      scale: [0.9, 1],
+      duration: 600,
+      easing: 'easeOutElastic(1, .5)'
+    });
+  }, [state.currentView]);
 
   const mainNavigationItems: MainNavigationItem[] = [
     {
@@ -424,7 +446,7 @@ export function Navigation() {
           />
 
           {/* Drawer */}
-          <div className="lg:hidden fixed inset-y-0 right-0 w-80 max-w-[85vw] bg-background border-l border-border shadow-xl z-50 transform transition-transform duration-300">
+          <div className="lg:hidden fixed inset-y-0 right-0 w-80 max-w-[85vw] bg-white dark:bg-black border-l border-border shadow-xl z-50 transform transition-transform duration-300">
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
