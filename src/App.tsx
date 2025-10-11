@@ -11,7 +11,7 @@ import AuthComponent from "./components/AuthComponent";
 import { Onboarding } from "./components/Onboarding";
 import { CommunityGroups } from "./components/CommunityGroups";
 import { CBTExercises } from "./components/CBTExercises";
-import { Settings } from "./components/Settings";
+import { Settings as SettingsComponent } from "./components/Settings";
 import { Navigation } from "./components/Navigation";
 import { InsightsDashboard } from "./components/InsightsDashboard";
 import { GuidedMeditation } from "./components/GuidedMeditation";
@@ -29,17 +29,16 @@ import { Textarea } from "./components/ui/textarea";
 import { Badge } from "./components/ui/badge";
 import { Progress } from "./components/ui/progress";
 import {
-  Heart,
+  Home,
   MessageCircle,
-  BookOpen,
+  Heart,
+  Brain,
   Users,
-  TrendingUp,
-  Target,
-  ChevronRight,
+  Settings,
+  BarChart3,
+  Headphones,
+  AlertCircle,
   Send,
-  Bot,
-  User,
-  Lightbulb,
   Sparkles,
   Plus,
   Smile,
@@ -49,6 +48,9 @@ import {
   Moon,
   Rainbow,
   Flame,
+  BookOpen,
+  Target,
+  ChevronRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -184,7 +186,7 @@ function Dashboard() {
           </p>
         </motion.div>
 
-        {/* Stats Cards */
+        {/* Stats Cards */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -274,7 +276,7 @@ function Dashboard() {
           </Card>
         </motion.div>
 
-        {/* Quick Actions */
+        {/* Quick Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -353,7 +355,7 @@ function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Progress and Activity */
+        {/* Progress and Activity */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -491,7 +493,7 @@ function Dashboard() {
                           ).toLocaleTimeString()}
                         </p>
                       </div>
-                    
+                    </motion.div>
                   ))}
 
                 {completedExercises
@@ -519,7 +521,7 @@ function Dashboard() {
                           Streak: {exercise.streak} days
                         </p>
                       </div>
-                    
+                    </motion.div>
                   ))}
 
                 {state.moodEntries.length === 0 &&
@@ -880,7 +882,7 @@ function Chatbot() {
                     </motion.div>
                   </div>
                 </motion.div>
-              )}
+              ))}
               <div ref={messagesEndRef} />
             </div>
 
@@ -1241,8 +1243,7 @@ function MoodTracker() {
                   </div>
                 </CardContent>
               </Card>
-            
-          </div>
+            </div>
 
           <div className="space-y-6">
             <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-blue-900">
@@ -1303,99 +1304,99 @@ function MoodTracker() {
                   </div>
                 </CardContent>
               </Card>
-            
+            </div>
           </div>
-        </div>
 
-        {/* Recent Entries */}
-        {state.moodEntries.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <Card className="border-0 shadow-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <TrendingUp className="w-5 h-5 text-green-500" />
-                  <span>Recent Entries</span>
-                  <Sparkles className="w-4 h-4 text-purple-500" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  {state.moodEntries
-                    .slice(-5)
-                    .reverse()
-                    .map((entry, index) => {
-                      const moodOption = moodOptions.find(
-                        (m) => m.value === entry.mood,
-                      );
-                      return (
-                        <motion.div
-                          key={entry.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className={`flex items-start space-x-4 p-4 rounded-2xl ${moodOption?.bgColor} ${moodOption?.borderColor} border-2`}
-                        >
-                          <div className="text-3xl">
-                            {moodOption?.emoji}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="font-bold text-lg">
-                                {moodOption?.label}
-                              </span>
-                              <span className="text-sm text-muted-foreground font-medium">
-                                {new Date(
-                                  entry.timestamp,
-                                ).toLocaleDateString()}
-                              </span>
+          {/* Recent Entries */}
+          {state.moodEntries.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <Card className="border-0 shadow-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <TrendingUp className="w-5 h-5 text-green-500" />
+                    <span>Recent Entries</span>
+                    <Sparkles className="w-4 h-4 text-purple-500" />
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4">
+                    {state.moodEntries
+                      .slice(-5)
+                      .reverse()
+                      .map((entry, index) => {
+                        const moodOption = moodOptions.find(
+                          (m) => m.value === entry.mood,
+                        );
+                        return (
+                          <motion.div
+                            key={entry.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className={`flex items-start space-x-4 p-4 rounded-2xl ${moodOption?.bgColor} ${moodOption?.borderColor} border-2`}
+                          >
+                            <div className="text-3xl">
+                              {moodOption?.emoji}
                             </div>
-                            {entry.note && (
-                              <p className="mt-2 text-sm font-medium bg-white/50 dark:bg-slate-700/50 p-2 rounded-lg">
-                                "{entry.note}"
-                              </p>
-                            )}
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                </div>
-              </CardContent>
-            </Card>
-          
-        )}
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-bold text-lg">
+                                  {moodOption?.label}
+                                </span>
+                                <span className="text-sm text-muted-foreground font-medium">
+                                  {new Date(
+                                    entry.timestamp,
+                                  ).toLocaleDateString()}
+                                </span>
+                              </div>
+                              {entry.note && (
+                                <p className="mt-2 text-sm font-medium bg-white/50 dark:bg-slate-700/50 p-2 rounded-lg">
+                                  "{entry.note}"
+                                </p>
+                              )}
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
-        {/* Empty State */}
-        {state.moodEntries.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <Card className="border-0 shadow-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm">
-              <CardContent className="text-center py-16">
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  className="mb-6"
-                >
-                  <Heart className="w-20 h-20 mx-auto text-pink-400" />
-                </motion.div>
-                <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-                  Start your mood journey
-                </h3>
-                <p className="text-muted-foreground text-lg max-w-md mx-auto">
-                  Regular mood tracking helps you understand
-                  patterns in your emotional wellbeing. Every
-                  feeling is valid! ✨
-                </p>
-              </CardContent>
-            </Card>
-          
-        )}
+          {/* Empty State */}
+          {state.moodEntries.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <Card className="border-0 shadow-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm">
+                <CardContent className="text-center py-16">
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className="mb-6"
+                  >
+                    <Heart className="w-20 h-20 mx-auto text-pink-400" />
+                  </motion.div>
+                  <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                    Start your mood journey
+                  </h3>
+                  <p className="text-muted-foreground text-lg max-w-md mx-auto">
+                    Regular mood tracking helps you understand
+                    patterns in your emotional wellbeing. Every
+                    feeling is valid! ✨
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1513,7 +1514,7 @@ function AppContent() {
       case "community":
         return <CommunityGroups />;
       case "settings":
-        return <Settings />;
+        return <SettingsComponent />;
       case "insights":
         return <InsightsDashboard />;
       case "meditation":
