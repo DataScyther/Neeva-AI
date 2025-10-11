@@ -61,6 +61,21 @@ import { motion } from "framer-motion";
 // Inline Dashboard Component
 function Dashboard() {
   const { state, dispatch } = useAppContext();
+  
+  // Add subtle animations on mount
+  useEffect(() => {
+    // Animate stats cards
+    const statsCards = document.querySelectorAll('.stats-card');
+    statsCards.forEach((card, index) => {
+      (card as HTMLElement).style.animation = `fadeInUp 0.8s ease-out ${index * 0.1}s forwards`;
+    });
+
+    // Animate quick action cards
+    const actionCards = document.querySelectorAll('.quick-action-card');
+    actionCards.forEach((card, index) => {
+      (card as HTMLElement).style.animation = `scaleIn 0.6s ease-out ${0.3 + index * 0.08}s forwards`;
+    });
+  }, []);
 
   const todayMoodEntries = state.moodEntries.filter((entry) => {
     const today = new Date();
@@ -197,7 +212,7 @@ function Dashboard() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-blue-900 shadow-xl shadow-blue-500/10">
+          <Card className="stats-card relative overflow-hidden border-0 bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-blue-900 shadow-xl shadow-blue-500/10">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
             <CardContent className="relative p-6">
               <div className="flex items-center space-x-4">
@@ -223,7 +238,7 @@ function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-emerald-50 dark:from-slate-800 dark:to-emerald-900 shadow-xl shadow-emerald-500/10">
+          <Card className="stats-card relative overflow-hidden border-0 bg-gradient-to-br from-white to-emerald-50 dark:from-slate-800 dark:to-emerald-900 shadow-xl shadow-emerald-500/10">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent" />
             <CardContent className="relative p-6">
               <div className="flex items-center space-x-4">
@@ -243,7 +258,7 @@ function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-purple-50 dark:from-slate-800 dark:to-purple-900 shadow-xl shadow-purple-500/10">
+          <Card className="stats-card relative overflow-hidden border-0 bg-gradient-to-br from-white to-purple-50 dark:from-slate-800 dark:to-purple-900 shadow-xl shadow-purple-500/10">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent" />
             <CardContent className="relative p-6">
               <div className="flex items-center space-x-4">
@@ -262,7 +277,7 @@ function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-amber-50 dark:from-slate-800 dark:to-amber-900 shadow-xl shadow-amber-500/10">
+          <Card className="stats-card relative overflow-hidden border-0 bg-gradient-to-br from-white to-amber-50 dark:from-slate-800 dark:to-amber-900 shadow-xl shadow-amber-500/10">
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent" />
             <CardContent className="relative p-6">
               <div className="flex items-center space-x-4">
@@ -309,7 +324,7 @@ function Dashboard() {
                   whileTap={{ scale: 0.98 }}
                 >
                   <Card
-                    className={`cursor-pointer border-0 overflow-hidden group transition-all duration-300 hover:shadow-2xl ${action.shadowColor} bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-700`}
+                    className={`quick-action-card cursor-pointer border-0 overflow-hidden group transition-all duration-300 hover:shadow-2xl ${action.shadowColor} bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-700`}
                     onClick={action.action}
                   >
                     <CardContent className="p-0">
@@ -1247,7 +1262,8 @@ function MoodTracker() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
+          </div>
 
           <div className="space-y-6">
             <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-blue-900">
@@ -1308,7 +1324,6 @@ function MoodTracker() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
           </div>
 
           {/* Recent Entries */}
