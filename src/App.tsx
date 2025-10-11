@@ -51,6 +51,10 @@ import {
   BookOpen,
   Target,
   ChevronRight,
+  TrendingUp,
+  Bot,
+  User,
+  Lightbulb,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
