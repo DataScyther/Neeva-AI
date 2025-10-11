@@ -1,4 +1,63 @@
 /*! tailwindcss v4.1.3 | MIT License | https://tailwindcss.com */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom animations for subtle UI enhancements */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Apply initial hidden state for animated elements */
+.stats-card,
+.quick-action-card,
+.nav-pill-item {
+  opacity: 0;
+}
+
+.nav-center-button {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
     *, :before, :after, ::backdrop {

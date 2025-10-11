@@ -11,7 +11,7 @@ import AuthComponent from "./components/AuthComponent";
 import { Onboarding } from "./components/Onboarding";
 import { CommunityGroups } from "./components/CommunityGroups";
 import { CBTExercises } from "./components/CBTExercises";
-import { Settings as SettingsComponent } from "./components/Settings";
+import { Settings } from "./components/Settings";
 import { Navigation } from "./components/Navigation";
 import { InsightsDashboard } from "./components/InsightsDashboard";
 import { GuidedMeditation } from "./components/GuidedMeditation";
@@ -29,16 +29,17 @@ import { Textarea } from "./components/ui/textarea";
 import { Badge } from "./components/ui/badge";
 import { Progress } from "./components/ui/progress";
 import {
-  Home,
-  MessageCircle,
   Heart,
-  Brain,
+  MessageCircle,
+  BookOpen,
   Users,
-  Settings,
-  BarChart3,
-  Headphones,
-  AlertCircle,
+  TrendingUp,
+  Target,
+  ChevronRight,
   Send,
+  Bot,
+  User,
+  Lightbulb,
   Sparkles,
   Plus,
   Smile,
@@ -48,34 +49,11 @@ import {
   Moon,
   Rainbow,
   Flame,
-  BookOpen,
-  Target,
 } from "lucide-react";
-import anime from "animejs";
 import { motion } from "framer-motion";
 
 // Inline Dashboard Component
 function Dashboard() {
-  // Add subtle anime.js animations on mount
-  useEffect(() => {
-    anime({
-      targets: '.stats-card',
-      translateY: [20, 0],
-      opacity: [0, 1],
-      duration: 800,
-      delay: anime.stagger(100),
-      easing: 'easeOutQuad'
-    });
-
-    anime({
-      targets: '.quick-action-card',
-      scale: [0.95, 1],
-      opacity: [0, 1],
-      duration: 600,
-      delay: anime.stagger(80, {start: 300}),
-      easing: 'easeOutElastic(1, .8)'
-    });
-  }, []);
   const { state, dispatch } = useAppContext();
 
   const todayMoodEntries = state.moodEntries.filter((entry) => {
@@ -206,7 +184,7 @@ function Dashboard() {
           </p>
         </motion.div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards */
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -296,7 +274,7 @@ function Dashboard() {
           </Card>
         </motion.div>
 
-        {/* Quick Actions */}
+        {/* Quick Actions */
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -375,7 +353,7 @@ function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Progress and Activity */}
+        {/* Progress and Activity */
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -513,7 +491,7 @@ function Dashboard() {
                           ).toLocaleTimeString()}
                         </p>
                       </div>
-                    </motion.div>
+                    
                   ))}
 
                 {completedExercises
@@ -541,7 +519,7 @@ function Dashboard() {
                           Streak: {exercise.streak} days
                         </p>
                       </div>
-                    </motion.div>
+                    
                   ))}
 
                 {state.moodEntries.length === 0 &&
@@ -586,6 +564,23 @@ function Chatbot() {
     messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",
     });
+  };
+
+  // AI Response formatting utility
+  const formatAIResponse = (content: string) => {
+    // Split into sentences for better readability
+    const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0);
+
+    // Add proper punctuation if missing
+    const formattedSentences = sentences.map((sentence, index) => {
+      const trimmed = sentence.trim();
+      if (!trimmed.match(/[.!?]$/)) {
+        return index === sentences.length - 1 ? `${trimmed}.` : `${trimmed}.`;
+      }
+      return trimmed;
+    });
+
+    return formattedSentences.join(' ');
   };
 
   useEffect(() => {
@@ -866,11 +861,13 @@ function Chatbot() {
                           : "bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600"
                       }`}
                     >
-                      <p
-                        className={`leading-relaxed ${msg.isUser ? "text-white" : ""}`}
-                      >
-                        {msg.content}
-                      </p>
+                      <div className={`leading-relaxed ${msg.isUser ? "text-white" : ""}`}>
+                        {(!msg.isUser ? formatAIResponse(msg.content) : msg.content).split('\n').map((line, index) => (
+                          <p key={index} className={`${index > 0 ? "mt-3" : ""} ${!msg.isUser ? "text-gray-800 dark:text-gray-200" : ""}`}>
+                            {line.trim()}
+                          </p>
+                        ))}
+                      </div>
                       <p
                         className={`text-xs mt-2 ${
                           msg.isUser
@@ -878,56 +875,9 @@ function Chatbot() {
                             : "text-muted-foreground"
                         }`}
                       >
-                        {new Date(
-                          msg.timestamp,
-                        ).toLocaleTimeString()}
+                        {new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit' }).format(new Date(msg.timestamp))}
                       </p>
                     </motion.div>
-                  </div>
-                </motion.div>
-              ))}
-
-              {isTyping && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-start"
-                >
-                  <div className="flex items-start space-x-3">
-                    <div className="p-3 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-500 shadow-lg">
-                      <Bot className="w-5 h-5 text-white" />
-                    </div>
-                    <div className="bg-white dark:bg-slate-700 p-4 rounded-3xl shadow-lg border border-gray-200 dark:border-slate-600">
-                      <div className="flex space-x-2">
-                        <motion.div
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{
-                            duration: 0.6,
-                            repeat: Infinity,
-                            delay: 0,
-                          }}
-                          className="w-2 h-2 bg-purple-500 rounded-full"
-                        />
-                        <motion.div
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{
-                            duration: 0.6,
-                            repeat: Infinity,
-                            delay: 0.2,
-                          }}
-                          className="w-2 h-2 bg-purple-500 rounded-full"
-                        />
-                        <motion.div
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{
-                            duration: 0.6,
-                            repeat: Infinity,
-                            delay: 0.4,
-                          }}
-                          className="w-2 h-2 bg-purple-500 rounded-full"
-                        />
-                      </div>
-                    </div>
                   </div>
                 </motion.div>
               )}
@@ -1267,16 +1217,13 @@ function MoodTracker() {
                     />
                   </div>
 
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
+                  <div className="w-full h-14 text-lg bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg">
                     <Button
                       onClick={handleMoodSubmit}
                       disabled={
                         selectedMood === null || isSubmitting
                       }
-                      className="w-full h-14 text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-2xl shadow-lg"
+                      className="w-full h-full bg-transparent hover:bg-transparent text-white font-semibold"
                     >
                       {isSubmitting ? (
                         <div className="flex items-center space-x-2">
@@ -1291,19 +1238,14 @@ function MoodTracker() {
                         </div>
                       )}
                     </Button>
-                  </motion.div>
+                  </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            
           </div>
 
           <div className="space-y-6">
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-blue-900">
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-blue-900">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Star className="w-5 h-5 text-amber-500" />
@@ -1361,7 +1303,7 @@ function MoodTracker() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
+            
           </div>
         </div>
 
@@ -1423,7 +1365,7 @@ function MoodTracker() {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
+          
         )}
 
         {/* Empty State */}
@@ -1452,7 +1394,7 @@ function MoodTracker() {
                 </p>
               </CardContent>
             </Card>
-          </motion.div>
+          
         )}
       </div>
     </div>

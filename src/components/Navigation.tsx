@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import anime from "animejs";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
@@ -53,25 +52,18 @@ export function Navigation() {
   const { state, dispatch } = useAppContext();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Add subtle anime.js animations
+  // Add subtle animations using CSS transitions
   useEffect(() => {
-    // Animate navigation items on mount
-    anime({
-      targets: '.nav-pill-item',
-      translateY: [10, 0],
-      opacity: [0, 1],
-      duration: 500,
-      delay: anime.stagger(50),
-      easing: 'easeOutQuad'
+    // Trigger re-render animations when view changes
+    const items = document.querySelectorAll('.nav-pill-item');
+    items.forEach((item, index) => {
+      (item as HTMLElement).style.animation = `fadeInUp 0.5s ease-out ${index * 0.05}s forwards`;
     });
 
-    // Animate center button pulse
-    anime({
-      targets: '.nav-center-button',
-      scale: [0.9, 1],
-      duration: 600,
-      easing: 'easeOutElastic(1, .5)'
-    });
+    const centerButton = document.querySelector('.nav-center-button');
+    if (centerButton) {
+      (centerButton as HTMLElement).style.animation = 'scaleIn 0.6s ease-out forwards';
+    }
   }, [state.currentView]);
 
   const mainNavigationItems: MainNavigationItem[] = [
