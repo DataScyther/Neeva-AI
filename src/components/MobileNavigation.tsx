@@ -8,54 +8,9 @@ import {
   User,
 } from "lucide-react";
 
+
 export function MobileNavigation() {
   const { state, dispatch } = useAppContext();
-
-  const navItems = [
-    {
-      id: "dashboard",
-      icon: Home,
-      label: "Home",
-      view: "dashboard" as const,
-      color: "text-blue-600",
-      activeColor: "text-blue-600",
-    },
-    {
-      id: "chatbot",
-      icon: MessageCircle,
-      label: "Neeva AI",
-      view: "chatbot" as const,
-      color: "text-purple-600",
-      activeColor: "text-purple-600",
-      hasIndicator: true,
-    },
-    {
-      id: "mood",
-      icon: Heart,
-      label: "Mood",
-      view: "mood" as const,
-      color: "text-pink-600",
-      activeColor: "text-pink-600",
-      isCenter: true,
-    },
-    {
-      id: "exercises",
-      icon: Brain,
-      label: "CBT",
-      view: "exercises" as const,
-      color: "text-green-600",
-      activeColor: "text-green-600",
-    },
-    {
-      id: "profile",
-      icon: User,
-      label: "Profile",
-      view: "settings" as const,
-      color: "text-gray-600",
-      activeColor: "text-gray-900",
-      isProfile: true,
-    },
-  ];
 
   const handleNavigation = (view: string) => {
     dispatch({ type: "SET_VIEW", payload: view as any });
@@ -64,66 +19,115 @@ export function MobileNavigation() {
     }
   };
 
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+
   return (
-    <div className="mobile-nav-container">
-      <div className="navigation-pill">
-        <div className="flex items-center justify-between px-2">
-          {navItems.map((item) => {
-            const IconComponent = item.icon;
-            const isActive = state.currentView === item.view;
-            
-            if (item.isCenter) {
-              return (
-                <button
-                  key={item.id}
-                  className="nav-center-button"
-                  onClick={() => handleNavigation(item.view)}
-                  aria-label={item.label}
-                >
-                  <IconComponent className="w-6 h-6 text-white" />
-                </button>
-              );
-            }
+    <div className="lg:hidden mobile-nav-container">
+      {/* Main Navigation Pill */}
+      <div
+        className="navigation-pill rounded-full px-4 py-3"
+        style={
+          isDark
+            ? { background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.15)' }
+            : { background: '#ffffff', border: '1px solid rgba(0,0,0,0.12)' }
+        }
+      >
+        <div className="flex items-center justify-between space-x-3 sm:space-x-4">
+          {/* Home */}
+          <button
+            className={`nav-pill-item flex flex-col items-center space-y-1 ${
+              state.currentView === "dashboard" ? "active" : ""
+            }`}
+            onClick={() => handleNavigation("dashboard")}
+            aria-label="Home"
+          >
+            <Home className={`w-5 h-5 mb-1 ${
+              state.currentView === "dashboard"
+                ? "text-blue-600 dark:text-blue-400"
+                : "text-gray-600 dark:text-gray-300"
+            }`} />
+            <span className={`text-xs font-bold ${
+              state.currentView === "dashboard"
+                ? "text-blue-600 dark:text-blue-400"
+                : "text-gray-600 dark:text-gray-300"
+            }`}>Home</span>
+          </button>
 
-            if (item.isProfile) {
-              return (
-                <button
-                  key={item.id}
-                  className={`nav-pill-item ${
-                    isActive ? item.activeColor : "text-gray-500"
-                  }`}
-                  onClick={() => handleNavigation(item.view)}
-                  aria-label={item.label}
-                >
-                  <div className="relative mb-1">
-                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs">
-                      {state.user?.name?.charAt(0) || "U"}
-                    </div>
-                  </div>
-                  <span className="text-xs font-semibold">{item.label}</span>
-                </button>
-              );
-            }
+          {/* AI Assistant - Neeva AI */}
+          <button
+            className={`nav-pill-item flex flex-col items-center space-y-1 ${
+              state.currentView === "chatbot" ? "active" : ""
+            }`}
+            onClick={() => handleNavigation("chatbot")}
+            aria-label="Neeva AI"
+          >
+            <div className="relative mb-1">
+              <MessageCircle className={`w-5 h-5 ${
+                state.currentView === "chatbot"
+                  ? "text-purple-600 dark:text-purple-400"
+                  : "text-gray-600 dark:text-gray-300"
+              }`} />
+              <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" />
+            </div>
+            <span className={`text-xs font-bold ${
+              state.currentView === "chatbot"
+                ? "text-purple-600 dark:text-purple-400"
+                : "text-gray-600 dark:text-gray-300"
+            }`}>Neeva AI</span>
+          </button>
 
-            return (
-              <button
-                key={item.id}
-                className={`nav-pill-item ${
-                  isActive ? item.activeColor : "text-gray-500"
-                }`}
-                onClick={() => handleNavigation(item.view)}
-                aria-label={item.label}
-              >
-                <div className="relative mb-1">
-                  <IconComponent className="w-5 h-5" />
-                  {item.hasIndicator && (
-                    <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse" />
-                  )}
-                </div>
-                <span className="text-xs font-semibold">{item.label}</span>
-              </button>
-            );
-          })}
+          {/* Center Action Button - Record Mood */}
+          <button
+            className="nav-center-button flex items-center justify-center"
+            onClick={() => handleNavigation("mood")}
+            aria-label="Record Mood"
+          >
+            <Heart className="w-6 h-6 text-white" />
+          </button>
+
+          {/* CBT Exercises */}
+          <button
+            className={`nav-pill-item flex flex-col items-center space-y-1 ${
+              state.currentView === "exercises" ? "active" : ""
+            }`}
+            onClick={() => handleNavigation("exercises")}
+            aria-label="CBT Exercises"
+          >
+            <Brain className={`w-5 h-5 mb-1 ${
+              state.currentView === "exercises"
+                ? "text-green-600 dark:text-green-400"
+                : "text-gray-600 dark:text-gray-300"
+            }`} />
+            <span className={`text-xs font-bold ${
+              state.currentView === "exercises"
+                ? "text-green-600 dark:text-green-400"
+                : "text-gray-600 dark:text-gray-300"
+            }`}>CBT</span>
+          </button>
+
+          {/* Profile/Settings */}
+          <button
+            className={`nav-pill-item flex flex-col items-center space-y-1 ${
+              state.currentView === "settings" ? "active" : ""
+            }`}
+            onClick={() => handleNavigation("settings")}
+            aria-label="Profile"
+          >
+            <div className="relative mb-1">
+              <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs ${
+                state.currentView === "settings"
+                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white scale-110"
+                  : "bg-gradient-to-r from-blue-500 to-purple-600 text-white"
+              }`}>
+                {state.user?.name?.charAt(0) || "U"}
+              </div>
+            </div>
+            <span className={`text-xs font-bold ${
+              state.currentView === "settings"
+                ? "text-gray-900 dark:text-white"
+                : "text-gray-600 dark:text-gray-300"
+            }`}>Profile</span>
+          </button>
         </div>
       </div>
       

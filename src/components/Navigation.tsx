@@ -5,7 +5,7 @@ import { Separator } from "./ui/separator";
 import { useAppContext } from "./AppContext";
 import { MobileNavigation } from "./MobileNavigation";
 import "../styles/navigation-optimize.css";
-import "../styles/navigation-glass.css";
+import "../styles/navigation-clean.css";
 import {
   Home,
   MessageCircle,
@@ -321,7 +321,7 @@ export function Navigation() {
         </div>
       </div>
 
-      {/* Mobile Bottom Navigation - Modern Redesign */}
+      {/* Mobile Bottom Navigation - Clean Design */}
       <MobileNavigation />
 
       {/* Mobile Menu Button for other features */}

@@ -1,0 +1,243 @@
+/* Clean Mobile Navigation Styles - Optimized for Mobile Phones */
+/* Matches the design from the provided images */
+
+/* Force override any conflicting styles */
+.mobile-nav-container .navigation-pill,
+div.mobile-nav-container div.navigation-pill {
+  background-color: #fffefe !important;
+  background-image: none !important;
+  background: #ffffff !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mobile-nav-container .navigation-pill,
+  div.mobile-nav-container div.navigation-pill {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    background: #ffffff !important;
+  }
+}
+
+/* Mobile navigation container positioning */
+.mobile-nav-container {
+  position: fixed !important;
+  bottom: 20px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+  width: auto !important;
+  max-width: calc(100vw - 24px) !important;
+  padding: 0 12px !important;
+}
+
+/* Navigation Pill - Optimized Light Theme */
+.mobile-nav-container .navigation-pill {
+  min-width: 340px;
+  max-width: calc(100vw - 24px);
+  background: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 6px 20px rgba(0, 0, 0, 0.1), 0 3px 10px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  /* Ensure solid appearance */
+  opacity: 1 !important;
+}
+
+/* Dark mode pill navigation - Enhanced */
+@media (prefers-color-scheme: dark) {
+  .mobile-nav-container .navigation-pill {
+    background: #ffffff !important;
+    border: 1px solid rgb(255, 255, 255) !important;
+    box-shadow: 0 10px 40px rgb(255, 255, 255), 0 6px 20px rgba(0, 0, 0, 0.6), 0 3px 10px rgba(0, 0, 0, 0.4) !important;
+  }
+}
+
+/* Navigation pill items - Enhanced for Both Themes */
+.nav-pill-item {
+  position: relative;
+  padding: 10px 6px;
+  border-radius: 18px;
+  min-width: 56px;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+/* Light theme interactions */
+.nav-pill-item:hover {
+  background: rgb(255, 255, 255);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.nav-pill-item:active {
+  transform: scale(0.96);
+  background: rgb(255, 255, 255);
+}
+
+/* Dark theme interactions */
+@media (prefers-color-scheme: dark) {
+  .nav-pill-item:hover {
+    background: rgb(255, 255, 255);
+    transform: translateY(-1px) scale(1.02);
+  }
+
+  .nav-pill-item:active {
+    background: rgba(59, 130, 246, 0.2);
+    transform: scale(0.96);
+  }
+}
+
+/* Active state styling */
+.nav-pill-item.active {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .nav-pill-item.active {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(147, 51, 234, 0.2) 100%);
+  }
+}
+
+/* Center button styles - Optimized for Both Themes */
+.nav-center-button {
+  position: relative;
+  z-index: 10;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+  border: 3px solid #ffffff;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4), 0 3px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+/* Light theme center button interactions */
+.nav-center-button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5), 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.nav-center-button:active {
+  transform: scale(0.94);
+  box-shadow: 0 3px 12px rgba(59, 130, 246, 0.3), 0 1px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Dark theme center button */
+@media (prefers-color-scheme: dark) {
+  .nav-center-button {
+    border: 3px solid #1a1a1a;
+    box-shadow: 0 6px 20px rgb(255, 255, 255), 0 3px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .nav-center-button:hover {
+    box-shadow: 0 8px 25px rgb(255, 255, 255), 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .nav-center-button:active {
+    box-shadow: 0 3px 12px rgba(59, 130, 246, 0.5), 0 1px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .navigation-pill {
+    min-width: 280px;
+    padding: 12px 16px;
+  }
+
+  .navigation-pill .flex {
+    gap: 0.75rem;
+  }
+
+  .nav-pill-item {
+    min-width: 48px;
+    padding: 8px 6px;
+  }
+
+  .nav-center-button {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+/* Ensure proper stacking */
+.navigation-pill {
+  z-index: 9999;
+  position: relative;
+}
+
+/* Home indicator styling */
+.home-indicator {
+  transition: opacity 0.3s ease;
+}
+
+@media (max-width: 375px) {
+  .home-indicator {
+    width: 100px;
+  }
+}
+
+/* Safe area for devices with home indicator */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mobile-nav-container {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Smooth entrance animation */
+.mobile-nav-container {
+  animation: slideUpFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideUpFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Ensure content doesn't overlap with navigation */
+body {
+  padding-bottom: 100px;
+}
+
+@media (min-width: 1024px) {
+  body {
+    padding-bottom: 0;
+  }
+}
+
+/* Performance optimizations */
+.navigation-pill,
+.nav-pill-item,
+.nav-center-button {
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-container,
+  .nav-pill-item,
+  .nav-center-button,
+  .navigation-pill {
+    animation: none;
+    transition: none;
+  }
+}

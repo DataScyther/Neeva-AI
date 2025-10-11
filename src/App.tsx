@@ -16,6 +16,7 @@ import { Navigation } from "./components/Navigation";
 import { InsightsDashboard } from "./components/InsightsDashboard";
 import { GuidedMeditation } from "./components/GuidedMeditation";
 import { CrisisSupport } from "./components/CrisisSupport";
+import { WellnessStudio } from "./components/WellnessStudio";
 import { Toaster } from "./components/ui/sonner";
 import {
   Card,
@@ -1540,6 +1541,8 @@ function AppContent() {
         return <GuidedMeditation />;
       case "crisis":
         return <CrisisSupport />;
+      case "wellness":
+        return <WellnessStudio />;
       default:
         return <Dashboard />;
     }
