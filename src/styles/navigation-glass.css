@@ -1,89 +1,121 @@
-/* Navigation Glass Effect Styles */
-/* Fixes inline style warnings by moving backdrop filter styles to CSS */
+/* Modern Mobile-First Navigation Styles */
+/* Optimized for mobile phone users with clean solid backgrounds */
 
 .navigation-glass-effect {
-  background: rgba(255, 255, 255, 0.98);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
   box-shadow: 
     0 -4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 -2px 4px -1px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.1);
+    0 -2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* Dark mode glass effect */
+/* Dark mode solid effect */
 @media (prefers-color-scheme: dark) {
   .navigation-glass-effect {
-    background: rgba(15, 23, 42, 0.95);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: #000000;
+    border-top: 1px solid #374151;
     box-shadow: 
       0 -4px 6px -1px rgba(0, 0, 0, 0.3),
-      0 -2px 4px -1px rgba(0, 0, 0, 0.2),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+      0 -2px 4px -1px rgba(0, 0, 0, 0.2);
   }
 }
 
-/* New Pill Navigation Styles - Ultra Translucent Glassmorphism */
+/* Modern Mobile Navigation Pill - Solid Design */
 .navigation-pill {
-  min-width: 320px;
-  max-width: 90vw;
-  background: rgba(255, 255, 255, 0.35) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
-  backdrop-filter: blur(20px) saturate(180%) brightness(1.1);
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  min-width: 340px;
+  max-width: calc(100vw - 24px);
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
   box-shadow: 
-    0 8px 32px rgba(31, 38, 135, 0.08),
-    0 4px 16px rgba(255, 255, 255, 0.1),
-    inset 0 1px 2px rgba(255, 255, 255, 0.6),
-    inset 0 -1px 1px rgba(0, 0, 0, 0.02);
+    0 10px 25px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
-/* Dark mode pill navigation - Ultra Translucent */
+/* Dark mode pill navigation - Solid Design */
 @media (prefers-color-scheme: dark) {
   .navigation-pill {
-    background: rgba(47, 0, 255, 0) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    background: #000000 !important;
+    border: 1px solid #374151 !important;
     box-shadow: 
-      0 8px 32px rgba(0, 0, 0, 0.3),
-      0 4px 16px rgba(255, 255, 255, 0.05),
-      inset 0 1px 2px rgba(255, 255, 255, 0.2),
-      inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+      0 10px 25px -3px rgba(0, 0, 0, 0.4),
+      0 4px 6px -2px rgba(0, 0, 0, 0.2);
   }
 }
 
-/* Navigation pill items */
+/* Modern Navigation pill items - Mobile Optimized */
 .nav-pill-item {
   position: relative;
-  padding: 8px 12px;
-  border-radius: 12px;
-  min-width: 60px;
+  padding: 12px 8px;
+  border-radius: 16px;
+  min-width: 52px;
+  min-height: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-pill-item:active {
+  transform: scale(0.95);
+  background: rgba(59, 130, 246, 0.1);
 }
 
 .nav-pill-item:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(59, 130, 246, 0.05);
   transform: translateY(-1px);
 }
 
 @media (prefers-color-scheme: dark) {
   .nav-pill-item:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(59, 130, 246, 0.1);
+  }
+  
+  .nav-pill-item:active {
+    background: rgba(59, 130, 246, 0.15);
   }
 }
 
-/* Center button styles */
+/* Modern Center button styles - Enhanced for Mobile */
 .nav-center-button {
   position: relative;
   z-index: 10;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border: 3px solid #ffffff;
+  box-shadow: 
+    0 4px 12px rgba(59, 130, 246, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.1);
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-center-button:active {
-  transform: scale(0.95);
+  transform: scale(0.92);
+  box-shadow: 
+    0 2px 8px rgba(59, 130, 246, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.nav-center-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 6px 16px rgba(59, 130, 246, 0.5),
+    0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .nav-center-button {
+    border: 3px solid #000000;
+  }
 }
 
 /* Responsive adjustments */
@@ -141,55 +173,23 @@
   }
 }
 
-/* Mobile navigation container positioning */
+/* Mobile navigation container positioning - Enhanced */
 .mobile-nav-container {
   position: fixed !important;
-  bottom: 12px !important;
+  bottom: 20px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   z-index: 9999 !important;
   pointer-events: auto !important;
   width: auto !important;
-  max-width: calc(100vw - 32px) !important;
+  max-width: calc(100vw - 24px) !important;
+  padding: 0 12px !important;
 }
 
-/* Ultra-premium liquid glass overlay */
-.navigation-pill::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 9999px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.3) 0%,
-    rgba(255, 255, 255, 0.1) 30%,
-    rgba(255, 255, 255, 0.05) 70%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Additional shimmer effect for liquid glass */
+/* Clean Modern Design - No Glass Effects */
+.navigation-pill::before,
 .navigation-pill::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  height: 40%;
-  border-radius: 9999px 9999px 50% 50%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.2) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
+  display: none;
 }
 
 /* Ensure content is above the gradient overlay */
