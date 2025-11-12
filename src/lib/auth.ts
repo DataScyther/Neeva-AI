@@ -64,16 +64,27 @@ class AuthService {
   // Sign in with Google using redirect instead of popup
   async signInWithGoogle(): Promise<UserProfile> {
     try {
-      // Use redirect instead of popup to avoid popup blockers
+      // Configure Google provider with proper settings
       const provider = new GoogleAuthProvider();
+      
+      // Only request basic scopes needed for authentication
       provider.addScope('email');
-      provider.addScope('profile');
+      
+      // Set custom parameters to prompt user selection and enhance compatibility
+      provider.setCustomParameters({
+        prompt: 'select_account',
+        access_type: 'online' // Don't need offline access for this app
+      });
+      
+      console.log('Starting Google auth process');
       
       // Try popup first, fallback to redirect if blocked
       let result;
       try {
         result = await signInWithPopup(auth, provider);
+        console.log('Popup auth succeeded');
       } catch (popupError: any) {
+        console.error('Popup error:', popupError.code, popupError.message);
         if (popupError.code === 'auth/popup-blocked') {
           console.log('Popup blocked, using redirect method');
           await signInWithRedirect(auth, provider);
@@ -109,10 +120,22 @@ class AuthService {
         },
       };
 
-      // Save to Firestore
-      await setDoc(doc(db, 'users', user.uid), userProfile);
-      
+      // Set the user profile immediately to ensure auth can continue even if Firestore fails
       this.userProfile = userProfile;
+      this.currentUser = user;
+      
+      // Try to save to Firestore but don't block authentication if it fails
+      try {
+        console.log('Attempting to save user profile to Firestore');
+        await setDoc(doc(db, 'users', user.uid), userProfile);
+        console.log('Successfully saved user profile to Firestore');
+      } catch (firestoreError) {
+        // Log the error but continue with authentication
+        console.warn('Failed to save profile to Firestore, continuing with local profile:', firestoreError);
+        // No re-throw - we'll continue with the local profile
+      }
+      
+      // Notify listeners even if Firestore saving failed
       this.notifyAuthStateListeners(user);
       
       return userProfile;
@@ -278,9 +301,68 @@ class AuthService {
             lastActivityDate: data.stats?.lastActivityDate?.toDate() || new Date(),
           },
         } as UserProfile;
+      } else {
+        // User document doesn't exist yet, create a minimal profile
+        const currentUser = this.currentUser;
+        if (currentUser) {
+          // Create a minimal profile based on Firebase Auth user data
+          this.userProfile = {
+            uid: currentUser.uid,
+            name: currentUser.displayName || 'User',
+            email: currentUser.email || '',
+            photoURL: currentUser.photoURL || undefined,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            lastLoginAt: new Date(),
+            preferences: {
+              theme: 'light',
+              notifications: true,
+              language: 'en',
+            },
+            stats: {
+              totalSessions: 0,
+              totalMinutes: 0,
+              streakDays: 0,
+              lastActivityDate: new Date(),
+            },
+          };
+          
+          try {
+            // Try to save the profile, but don't block auth if it fails
+            await setDoc(userDocRef, this.userProfile);
+          } catch (saveError) {
+            console.warn('Could not save user profile, continuing with local profile:', saveError);
+            // We'll continue even if saving fails
+          }
+        }
       }
     } catch (error) {
       console.error('Error loading user profile:', error);
+      // Continue with authentication even if Firestore access fails
+      // Create a minimal profile from current user data
+      const currentUser = this.currentUser;
+      if (currentUser) {
+        this.userProfile = {
+          uid: currentUser.uid,
+          name: currentUser.displayName || 'User',
+          email: currentUser.email || '',
+          photoURL: currentUser.photoURL || undefined,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          lastLoginAt: new Date(),
+          preferences: {
+            theme: 'light',
+            notifications: true,
+            language: 'en',
+          },
+          stats: {
+            totalSessions: 0,
+            totalMinutes: 0,
+            streakDays: 0,
+            lastActivityDate: new Date(),
+          },
+        };
+      }
     }
   }
 

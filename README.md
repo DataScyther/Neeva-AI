@@ -25,6 +25,7 @@ Neeva AI represents the future of mental health support, seamlessly blending cut
 - Technology Stack
 - Quick Start
 - Usage Guide
+- Documentation
 - Development
 - Contributing
 - License
@@ -147,6 +148,14 @@ graph TD
 - **📈 Dashboard**: Visual analytics and trend analysis
 - **🎯 Exercises**: Guided therapeutic activities
 - **👥 Community**: Anonymous peer support groups
+
+---
+
+## Documentation
+
+- Project Synopsis: [docs/Project_Synopsis.md](docs/Project_Synopsis.md)
+- Requirements & Methodology: [docs/Requirements_and_Methodology.md](docs/Requirements_and_Methodology.md)
+- Future Scope & References: [docs/Future_Scope_and_References.md](docs/Future_Scope_and_References.md)
 
 ---
 
