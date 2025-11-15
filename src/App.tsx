@@ -664,10 +664,12 @@ function Chatbot() {
     perf.start();
     
     try {
+      const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
       const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-      if (!OPENROUTER_API_KEY) {
-        console.error("OpenRouter API key is missing. Please set VITE_OPENROUTER_API_KEY in your .env/.env.local and restart the dev server.");
-        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an OpenRouter API key. If you're the administrator, please set VITE_OPENROUTER_API_KEY in the environment.";
+      
+      if (!GEMINI_API_KEY && !OPENROUTER_API_KEY) {
+        console.error("No API keys found. Please set VITE_GEMINI_API_KEY or VITE_OPENROUTER_API_KEY in your .env/.env.local and restart the dev server.");
+        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with API keys. If you're the administrator, please set the required API keys in the environment.";
       }
 
       const chatHistory = convertChatHistoryToGemini(
@@ -994,16 +996,7 @@ function Chatbot() {
                           </div>
                         </motion.div>
                       )}
-                      <motion.div
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                        }}
-                        className="pointer-events-none absolute right-2.5 bottom-2.5 text-purple-400/80"
-                      >
-                        <Sparkles className="w-5 h-5" />
-                      </motion.div>
+                      {/* Sparkles icon removed for cleaner interface */}
                     </div>
                     <motion.div
                       whileHover={{ scale: rateLimitUntil && Date.now() < rateLimitUntil ? 1 : 1.05 }}
@@ -1026,30 +1019,7 @@ function Chatbot() {
                       </Button>
                     </motion.div>
                   </div>
-                  <div className="mt-2 flex items-center justify-between gap-2">
-                    <p className="text-xs text-muted-foreground hidden sm:block">
-                      Press Enter to send, Shift+Enter for a new line
-                    </p>
-                    <TooltipProvider delayDuration={0}>
-                      <div className="flex items-center gap-2">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              type="button"
-                              onClick={insertSuggestedPrompt}
-                              disabled={isTyping || (rateLimitUntil && Date.now() < rateLimitUntil)}
-                              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/70 bg-white/70 text-slate-500 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900/80 dark:text-slate-300"
-                            >
-                              <Sparkles className="h-4 w-4" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent side="top">
-                            <span>Let Neeva suggest a prompt</span>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </TooltipProvider>
-                  </div>
+                  {/* Status bar removed for cleaner interface */}
                 </div>
               </div>
             </div>

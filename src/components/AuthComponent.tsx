@@ -49,6 +49,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   const [emailValidation, setEmailValidation] = useState<EmailValidationResult | null>(null);
   const [emailSuggestion, setEmailSuggestion] = useState<string>('');
   const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+  const [formValid, setFormValid] = useState(false);
 
   const { dispatch } = useAppContext();
   
@@ -194,6 +195,24 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       setShowPasswordRequirements(false);
     }
   }, [password, email, name]);
+
+  // Check if form is valid for submission
+  useEffect(() => {
+    if (authMode === 'signin') {
+      const emailValid = email.trim().length > 0;
+      const passwordValid = password.trim().length > 0;
+      setFormValid(emailValid && passwordValid);
+    } else if (authMode === 'signup') {
+      const nameValid = name.trim().length >= 2;
+      const emailValid = email.trim().length > 0;
+      const passwordValid = password.trim().length >= 6;
+      setFormValid(nameValid && emailValid && passwordValid);
+    } else {
+      // Forgot password mode
+      const emailValid = email.trim().length > 0;
+      setFormValid(emailValid);
+    }
+  }, [authMode, name, email, password]);
 
   const handleEmailSignIn = async () => {
     if (!email || !password) {
@@ -687,7 +706,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                     <div className="flex flex-col gap-3">
                       <Button
                         onClick={authMode === 'signin' ? handleEmailSignIn : handleEmailSignUp}
-                        disabled={isLoading || !email || !password || (authMode === 'signup' && !name)}
+                        disabled={isLoading || !formValid}
                         className="w-full h-12 rounded-2xl bg-slate-900 text-white hover:bg-slate-800 text-base font-medium"
                       >
                         {isLoading ? (
@@ -715,6 +734,58 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                       >
                         {authMode === 'signin' ? 'Register' : 'Back to Login'}
                       </Button>
+                    </div>
+                    
+                    {/* Form validation status message */}
+                    {!formValid && (
+                      <div className="text-center text-sm text-amber-600 mt-2">
+                        {authMode === 'signin' && 'Please enter both email and password to login'}
+                        {authMode === 'signup' && 'Please fill all required fields to create your account'}
+                        {authMode === 'forgot' && 'Please enter your email address'}
+                      </div>
+                    )}
+                    
+                    {/* Skip login option */}
+                    <div className="mt-4 text-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Create a guest user profile
+                          const guestProfile: UserProfile = {
+                            uid: `guest-${Date.now()}`,
+                            name: 'Guest User',
+                            email: `guest-${Date.now()}@example.com`,
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                            lastLoginAt: new Date(),
+                            preferences: {
+                              theme: 'light',
+                              notifications: false,
+                              language: 'en',
+                            },
+                            stats: {
+                              totalSessions: 1,
+                              totalMinutes: 0,
+                              streakDays: 0,
+                              lastActivityDate: new Date(),
+                            },
+                          };
+                          
+                          // Update app context with guest user
+                          dispatch({
+                            type: 'SET_USER',
+                            payload: guestProfile,
+                          });
+                          
+                          // Call the auth success callback
+                          if (onAuthSuccess) {
+                            onAuthSuccess();
+                          }
+                        }}
+                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                      >
+                        Continue without login
+                      </button>
                     </div>
                   </div>
                 </div>
