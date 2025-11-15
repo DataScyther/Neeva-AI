@@ -30,6 +30,7 @@ Neeva AI represents the future of mental health support, seamlessly blending cut
 - Contributing
 - License
 - Support
+- Live Demo
 
 ---
 
@@ -194,6 +195,33 @@ VITE_GEMINI_API_KEY=your_gemini_key
 VITE_SUPABASE_URL=your_supabase_url
 VITE_SUPABASE_ANON_KEY=your_supabase_key
 ```
+
+---
+
+## Live Demo
+
+The application is deployed and accessible at: [https://neeva-ai-demo.example.com](https://neeva-ai-demo.example.com)
+
+### Deployment Setup
+
+To deploy this application:
+1. Run `npm run build` to create a production build
+2. Deploy the `dist` folder to your hosting platform
+3. For GitHub Pages:
+   - Set base path in `vite.config.js`:
+     ```js
+     export default {
+       base: '/your-repo-name/',
+       // ... other config
+     }
+     ```
+   - Add deployment script to `package.json`:
+     ```json
+     "scripts": {
+       "predeploy": "npm run build",
+       "deploy": "gh-pages -d dist"
+     }
+     ```
 
 ---
 
