@@ -25,10 +25,10 @@ import {
   CardTitle,
 } from "./components/ui/card";
 import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
 import { Textarea } from "./components/ui/textarea";
 import { Badge } from "./components/ui/badge";
 import { Progress } from "./components/ui/progress";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "./components/ui/tooltip";
 import {
   Home,
   MessageCircle,
@@ -581,6 +581,14 @@ function Chatbot() {
   const [isTyping, setIsTyping] = useState(false);
   const [rateLimitUntil, setRateLimitUntil] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const insertSuggestedPrompt = () => {
+    if (!quickSuggestions.length) return;
+    const suggestion = quickSuggestions[Math.floor(Math.random() * quickSuggestions.length)].text;
+    setMessage(suggestion);
+    requestAnimationFrame(() => textareaRef.current?.focus());
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({
@@ -608,6 +616,14 @@ function Chatbot() {
   useEffect(() => {
     scrollToBottom();
   }, [state.chatHistory, isTyping]);
+
+  useEffect(() => {
+    if (!textareaRef.current) return;
+    const el = textareaRef.current;
+    el.style.height = "auto";
+    const maxHeight = 240;
+    el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
+  }, [message]);
 
   // Clear rate limit after timeout
   useEffect(() => {
@@ -650,6 +666,7 @@ function Chatbot() {
     try {
       const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
       if (!OPENROUTER_API_KEY) {
+        console.error("OpenRouter API key is missing. Please set VITE_OPENROUTER_API_KEY in your .env/.env.local and restart the dev server.");
         return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an OpenRouter API key. If you're the administrator, please set VITE_OPENROUTER_API_KEY in the environment.";
       }
 
@@ -671,7 +688,7 @@ function Chatbot() {
     } catch (error) {
       // Only log non-expected errors
       if (error instanceof OpenRouterError && !error.statusCode) {
-        // Expected error when API is not configured - don't log
+        console.error("OpenRouter configuration error:", error.message);
       } else {
         console.error("AI API Error:", error);
       }
@@ -943,64 +960,97 @@ function Chatbot() {
             )}
 
             {/* Input Area */}
-            <div className="p-6 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-slate-800 dark:to-slate-700 border-t border-gray-200 dark:border-slate-600">
-              <div className="flex space-x-4">
-                <div className="flex-1 relative">
-                  <Input
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Share what's on your mind... 💭"
-                    onKeyPress={(e) =>
-                      e.key === "Enter" && sendMessage()
-                    }
-                    disabled={isTyping || (rateLimitUntil && Date.now() < rateLimitUntil)}
-                    className="h-12 rounded-2xl border-2 border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg text-base px-4"
-                  />
-                  {rateLimitUntil && Date.now() < rateLimitUntil && (
+            <div className="p-5 bg-gradient-to-r from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 border-t border-slate-200/40 dark:border-slate-700/60">
+              <div className="max-w-3xl mx-auto">
+                <div className="border-input bg-background/90 dark:bg-slate-950/70 rounded-3xl border shadow-[0_18px_45px_rgba(15,23,42,0.25)] p-3 sm:p-4">
+                  <div className="flex items-end gap-3">
+                    <div className="flex-1 relative">
+                      <Textarea
+                        ref={textareaRef}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        placeholder="Share what's on your mind... 💭"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            sendMessage();
+                          }
+                        }}
+                        disabled={isTyping || (rateLimitUntil && Date.now() < rateLimitUntil)}
+                        className="text-primary min-h-[44px] max-h-60 w-full resize-none border-none bg-transparent shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 pr-10"
+                        rows={1}
+                      />
+                      {rateLimitUntil && Date.now() < rateLimitUntil && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="absolute -top-8 left-0 right-0 text-center"
+                        >
+                          <div className="inline-flex items-center space-x-2 px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-full text-sm">
+                            <span>⏳ Rate limited</span>
+                            <span className="font-medium">
+                              {Math.ceil((rateLimitUntil - Date.now()) / 1000)}s
+                            </span>
+                          </div>
+                        </motion.div>
+                      )}
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                        }}
+                        className="pointer-events-none absolute right-2.5 bottom-2.5 text-purple-400/80"
+                      >
+                        <Sparkles className="w-5 h-5" />
+                      </motion.div>
+                    </div>
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="absolute -top-8 left-0 right-0 text-center"
+                      whileHover={{ scale: rateLimitUntil && Date.now() < rateLimitUntil ? 1 : 1.05 }}
+                      whileTap={{ scale: rateLimitUntil && Date.now() < rateLimitUntil ? 1 : 0.95 }}
                     >
-                      <div className="inline-flex items-center space-x-2 px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-full text-sm">
-                        <span>⏳ Rate limited</span>
-                        <span className="font-medium">
-                          {Math.ceil((rateLimitUntil - Date.now()) / 1000)}s
-                        </span>
-                      </div>
+                      <Button
+                        onClick={() => sendMessage()}
+                        disabled={!message.trim() || isTyping || (rateLimitUntil && Date.now() < rateLimitUntil)}
+                        className={`h-11 w-11 rounded-2xl shadow-[0_16px_40px_rgba(88,28,135,0.45)] ${
+                          rateLimitUntil && Date.now() < rateLimitUntil
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
+                        }`}
+                      >
+                        {rateLimitUntil && Date.now() < rateLimitUntil ? (
+                          <span className="text-white text-xs">⏳</span>
+                        ) : (
+                          <Send className="w-5 h-5" />
+                        )}
+                      </Button>
                     </motion.div>
-                  )}
-                  <motion.div
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                    }}
-                    className="absolute right-3 top-3 text-purple-400"
-                  >
-                    <Sparkles className="w-6 h-6" />
-                  </motion.div>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <p className="text-xs text-muted-foreground hidden sm:block">
+                      Press Enter to send, Shift+Enter for a new line
+                    </p>
+                    <TooltipProvider delayDuration={0}>
+                      <div className="flex items-center gap-2">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              onClick={insertSuggestedPrompt}
+                              disabled={isTyping || (rateLimitUntil && Date.now() < rateLimitUntil)}
+                              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200/70 bg-white/70 text-slate-500 shadow-sm hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900/80 dark:text-slate-300"
+                            >
+                              <Sparkles className="h-4 w-4" />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">
+                            <span>Let Neeva suggest a prompt</span>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TooltipProvider>
+                  </div>
                 </div>
-                <motion.div
-                  whileHover={{ scale: rateLimitUntil && Date.now() < rateLimitUntil ? 1 : 1.05 }}
-                  whileTap={{ scale: rateLimitUntil && Date.now() < rateLimitUntil ? 1 : 0.95 }}
-                >
-                  <Button
-                    onClick={() => sendMessage()}
-                    disabled={!message.trim() || isTyping || (rateLimitUntil && Date.now() < rateLimitUntil)}
-                    className={`h-12 w-12 rounded-2xl shadow-lg ${
-                      rateLimitUntil && Date.now() < rateLimitUntil
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
-                    }`}
-                  >
-                    {rateLimitUntil && Date.now() < rateLimitUntil ? (
-                      <span className="text-white text-xs">⏳</span>
-                    ) : (
-                      <Send className="w-5 h-5" />
-                    )}
-                  </Button>
-                </motion.div>
               </div>
             </div>
           </CardContent>

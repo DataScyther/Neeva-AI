@@ -12,7 +12,6 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Separator } from './ui/separator';
 import {
-  Heart,
   Sparkles,
   User,
   Loader2,
@@ -436,24 +435,36 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     );
   }
 
+  const copy = {
+    signin: {
+      title: 'Login',
+      description: 'Enter your credentials to access your account.'
+    },
+    signup: {
+      title: 'Create account',
+      description: 'Join Neeva to unlock your personal companion.'
+    },
+    forgot: {
+      title: 'Forgot password',
+      description: 'Enter your email to receive a reset link.'
+    }
+  };
+
+  const activeCopy = copy[authMode];
+
   return (
-    <div className="min-h-screen min-h-[100dvh] bg-white flex items-center justify-center p-4 overflow-y-auto">
-      <Card className="w-full max-w-md mx-auto shadow-xl border border-gray-200 bg-white">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
-            <Heart className="w-10 h-10 text-white" />
-          </div>
-          <div className="space-y-2">
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Welcome to Neeva AI
-            </CardTitle>
-            <CardDescription className="text-lg text-gray-600">
-              Your personal mental health companion
-            </CardDescription>
-          </div>
+    <div className="min-h-screen bg-slate-50/80 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      <Card className="relative w-full max-w-md overflow-hidden border border-slate-100 bg-white/95 shadow-[0_30px_80px_rgba(15,23,42,0.12)] rounded-[32px] backdrop-blur-xl p-6 sm:p-8">
+        <CardHeader className="px-0 pt-0 space-y-2">
+          <CardTitle className="text-3xl font-semibold text-slate-900 tracking-tight">
+            {activeCopy.title}
+          </CardTitle>
+          <CardDescription className="text-base text-slate-500">
+            {activeCopy.description}
+          </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="px-0 space-y-6">
           {error && (
             <Alert className="border-red-200 bg-red-50">
               <AlertDescription className="text-red-800">
@@ -673,39 +684,38 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                   </div>
 
                   <div className="space-y-3">
-                    <Button
-                      onClick={authMode === 'signin' ? handleEmailSignIn : handleEmailSignUp}
-                      disabled={isLoading || !email || !password || (authMode === 'signup' && !name)}
-                      className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-base font-medium"
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                          {authMode === 'signin' ? 'Signing in...' : 'Creating account...'}
-                        </>
-                      ) : (
-                        authMode === 'signin' ? 'Sign In' : 'Sign Up'
-                      )}
-                    </Button>
+                    <div className="flex flex-col gap-3">
+                      <Button
+                        onClick={authMode === 'signin' ? handleEmailSignIn : handleEmailSignUp}
+                        disabled={isLoading || !email || !password || (authMode === 'signup' && !name)}
+                        className="w-full h-12 rounded-2xl bg-slate-900 text-white hover:bg-slate-800 text-base font-medium"
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                            {authMode === 'signin' ? 'Signing in...' : 'Creating account...'}
+                          </>
+                        ) : (
+                          authMode === 'signin' ? 'Login' : 'Create account'
+                        )}
+                      </Button>
 
-                    <Button
-                      onClick={() => {
-                        setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
-                        setError(null);
-                        setForgotPasswordSent(false);
-                        // Clear form when switching modes
-                        if (authMode === 'signin') {
-                          setName('');
-                        }
-                      }}
-                      variant="ghost"
-                      disabled={isLoading}
-                      className="w-full text-sm text-gray-600 hover:text-gray-900"
-                    >
-                      {authMode === 'signin'
-                        ? "Don't have an account? Sign Up"
-                        : "Already have an account? Sign In"}
-                    </Button>
+                      <Button
+                        onClick={() => {
+                          setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+                          setError(null);
+                          setForgotPasswordSent(false);
+                          if (authMode === 'signin') {
+                            setName('');
+                          }
+                        }}
+                        variant="outline"
+                        disabled={isLoading}
+                        className="w-full h-12 rounded-2xl text-base font-medium relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(15,23,42,0.18)] active:translate-y-0"
+                      >
+                        {authMode === 'signin' ? 'Register' : 'Back to Login'}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -718,14 +728,14 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
               <span className="bg-white px-3 text-xs text-gray-500 uppercase tracking-wide">
                 Or continue with
               </span>
-          </div>
+            </div>
           </div>
 
           <Button
             onClick={handleGoogleSignIn}
             disabled={isLoading || isAuthenticating}
             data-google-signin
-            className="w-full h-12 bg-white hover:bg-gray-50 text-gray-900 border-2 border-gray-200 shadow-sm text-base font-medium touch-manipulation">
+            className="w-full h-12 rounded-2xl bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 shadow-sm text-base font-medium touch-manipulation transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(15,23,42,0.2)] active:translate-y-0">
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-3 animate-spin" />
@@ -756,17 +766,16 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
             )}
           </Button>
 
-          <div className="text-center text-sm text-gray-600 space-y-2">
+          <div className="text-center text-sm text-gray-500 space-y-1">
             <p className="flex items-center justify-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-500" />
               Personalized mental health support
             </p>
-            <p className="flex items-center justify-center gap-2">
-              <Heart className="w-4 h-4 text-red-500" />
-              100% confidential and secure
-            </p>
+            <p>100% confidential and secure</p>
           </div>
         </CardContent>
+
+        <div className="pointer-events-none absolute inset-x-10 bottom-4 h-[1px] rounded-full bg-gradient-to-r from-blue-500 via-purple-400 to-pink-400" />
       </Card>
     </div>
   );

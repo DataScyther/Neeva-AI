@@ -32,7 +32,7 @@ const getEnvVar = (name: string): string | undefined => {
 };
 
 const API_KEY = getEnvVar('VITE_OPENROUTER_API_KEY');
-const MODEL = getEnvVar('VITE_OPENROUTER_MODEL') || 'mistralai/mistral-small-3.1-24b-instruct:free';
+const MODEL = getEnvVar('VITE_OPENROUTER_MODEL') || 'kwaipilot/kat-coder-pro:free';
 const BASE_URL = getEnvVar('VITE_OPENROUTER_BASE_URL') || 'https://openrouter.ai/api/v1';
 
 // Debug logging
