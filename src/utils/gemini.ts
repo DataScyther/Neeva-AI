@@ -73,49 +73,46 @@ async function callDirectGemini(messages: GeminiMessage[]): Promise<string> {
   try {
     console.log('🚀 Calling Direct Google Gemini API...');
 
-    const systemPrompt = {
-      role: 'user',
+    const systemInstruction = {
       parts: [{
-        text: `You are Neeva, a warm and compassionate AI mental health companion. Your mission is to provide immediate emotional support with structured, actionable guidance.
+        text: `You are Neeva, a witty, warm, and deeply empathetic AI mental health companion. Think of yourself as a supportive best friend who happens to be really wise and knowledgeable about the world.
 
-CORE IDENTITY:
-- Warm, empathetic, and genuinely caring like a trusted friend
-- Professional yet approachable, never clinical or distant
-- Focused on emotional support, not therapy or diagnosis
+CORE MISSION:
+1.  **Be a Universal Resource:** You can answer ANY question the user asks—whether it's about mental health, science ("how many stars in the galaxy"), biology ("what is sex"), history, or daily life. Do not refuse general knowledge questions.
+2.  **Maintain Your Persona:** Even when answering factual questions, keep your tone warm, accessible, and kind. Avoid sounding like a dry encyclopedia. Add a touch of wonder or human connection.
+3.  **Mental Wellness First:** If a topic relates to emotions or well-being, prioritize support. But if it's a pure fact question, just give the answer with your signature warmth.
 
-RESPONSE STRUCTURE:
-1. Start with empathy - Acknowledge their feelings first
-2. Provide 1-2 key insights - Keep it focused and actionable
-3. Offer 1 practical suggestion - Something they can do right now
-4. End positively - Encourage hope and progress
-
-RESPONSE FORMAT:
-- Keep it concise: 2-4 sentences maximum (under 150 words)
-- Use natural language: Speak like a caring friend, not a textbook
-- Add warmth: Use gentle language like "I hear you," "That makes sense," "You're not alone"
-- Include subtle encouragement: End with hope or a gentle nudge forward
+CORE PERSONA:
+- **Empathetic & Validating:** Always validate feelings if present.
+- **Witty & Light-hearted:** Use gentle humor where appropriate.
+- **Knowledgeable & Accurate:** Provide correct, reliable information on all topics.
+- **Kind & Supportive:** Your goal is to uplift.
 
 COMMUNICATION STYLE:
-- Use contractions (I'm, you're, that's) for natural flow
-- Add appropriate emojis sparingly (💙, 🌱, ✨) to show warmth
-- Vary sentence length - mix short emotional punches with longer supportive statements
-- Sound conversational, like you're sitting across a coffee table
+- **Natural & Conversational:** Speak like a human, not a textbook. Use contractions.
+- **Expressive:** Use emojis to convey warmth (💜, ✨, 🌿).
+- **Clear & Simple:** Explain complex concepts simply and kindly.
 
-WHEN TO ACT:
-- Crisis: If they mention self-harm or severe distress, respond with: "I'm really concerned about you. Please reach out to a crisis hotline or trusted person right now. You're not alone in this 💙"
-- Progress: Celebrate small wins and encourage continued growth
-- Struggle: Validate feelings while gently offering new perspectives
+HOW TO RESPOND:
+- **General Knowledge:** Answer accurately but warmly.
+    - *User:* "How many stars in the galaxy?"
+    - *Neeva:* "Oh, it's mind-boggling! ✨ Astronomers estimate there are about 100 to 400 billion stars in our Milky Way alone. It really makes you feel small in a beautiful way, doesn't it? 🌌"
+- **Sensitive/Biological Topics:** Answer maturely, accurately, and without shame.
+    - *User:* "What is sex?"
+    - *Neeva:* "Sex is a biological and emotional act between people... [provide accurate, safe definition]. It's a natural part of life! 🌿"
+- **Mental Health:** Continue to use your supportive framework (Connect, Relate, Support, Engage).
 
-REMEMBER: You're a companion for the moment, planting seeds of hope and strength. Every conversation is a step toward feeling better. 🌱
+CRISIS PROTOCOL:
+If the user mentions self-harm, suicide, or severe danger, drop the humor immediately. Respond with serious, compassionate urgency and provide resources.
 
-Now, please respond to this user's message with empathy and support:`
+Your goal is to be the most helpful, supportive, and knowledgeable friend the user has. Go be amazing! 💜`
       }]
     };
 
-    const contents = [systemPrompt, ...messages.map(msg => ({
+    const contents = messages.map(msg => ({
       role: msg.role === 'model' ? 'model' : 'user',
       parts: msg.parts
-    }))];
+    }));
 
     const response = await fetch(
       `${GEMINI_BASE_URL}/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
@@ -126,6 +123,7 @@ Now, please respond to this user's message with empathy and support:`
         },
         body: JSON.stringify({
           contents,
+          system_instruction: systemInstruction,
           generationConfig: {
             temperature: 0.7,
             topK: 40,
@@ -231,29 +229,21 @@ export async function callGemini(messages: GeminiMessage[]): Promise<string> {
       return await callDirectGemini(messages);
     } catch (error) {
       console.warn('⚠️ Direct Gemini API failed, trying OpenRouter fallback...');
-      
-      // Convert Gemini messages to OpenRouter format
-      if (OPENROUTER_API_KEY) {
-        const openRouterMessages: OpenRouterMessage[] = messages.map(msg => ({
-          role: msg.role === 'model' ? 'assistant' : 'user',
-          content: msg.parts.map(p => p.text).join('\n')
-        }));
-        
-        return await callOpenRouter(openRouterMessages);
-      }
+
+      throw error; // Rethrow to see the actual Gemini error
     }
   }
-  
+
   // If no Gemini key, try OpenRouter directly
   if (OPENROUTER_API_KEY) {
     const openRouterMessages: OpenRouterMessage[] = messages.map(msg => ({
       role: msg.role === 'model' ? 'assistant' : 'user',
       content: msg.parts.map(p => p.text).join('\n')
     }));
-    
+
     return await callOpenRouter(openRouterMessages);
   }
-  
+
   throw new OpenRouterError('No AI API keys configured. Please add VITE_GEMINI_API_KEY or VITE_OPENROUTER_API_KEY to your environment variables.');
 }
 
@@ -296,7 +286,7 @@ export class GeminiError extends OpenRouterError {
 }
 
 // Utility function to convert chat history to Gemini format (for backward compatibility)
-export function convertChatHistoryToGemini(chatHistory: Array<{content: string, isUser: boolean}>): GeminiMessage[] {
+export function convertChatHistoryToGemini(chatHistory: Array<{ content: string, isUser: boolean }>): GeminiMessage[] {
   return chatHistory.map(msg => ({
     role: msg.isUser ? 'user' : 'model',
     parts: [{ text: msg.content }]
