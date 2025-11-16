@@ -62,7 +62,7 @@ import { motion } from "framer-motion";
 // Inline Dashboard Component
 function Dashboard() {
   const { state, dispatch } = useAppContext();
-  
+
   // Add subtle animations on mount
   useEffect(() => {
     // Animate stats cards
@@ -95,9 +95,9 @@ function Dashboard() {
   const averageMood =
     todayMoodEntries.length > 0
       ? todayMoodEntries.reduce(
-          (sum, entry) => sum + entry.mood,
-          0,
-        ) / todayMoodEntries.length
+        (sum, entry) => sum + entry.mood,
+        0,
+      ) / todayMoodEntries.length
       : 0;
 
   const quickActions = [
@@ -662,11 +662,11 @@ function Chatbot() {
   const getAIResponse = useCallback(async (userMessage: string): Promise<string> => {
     const perf = measurePerformance('ai-response');
     perf.start();
-    
+
     try {
       const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
       const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-      
+
       if (!GEMINI_API_KEY && !OPENROUTER_API_KEY) {
         console.error("No API keys found. Please set VITE_GEMINI_API_KEY or VITE_OPENROUTER_API_KEY in your .env/.env.local and restart the dev server.");
         return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with API keys. If you're the administrator, please set the required API keys in the environment.";
@@ -682,10 +682,10 @@ function Chatbot() {
         { role: "user" as const, parts: [{ text: userMessage }] },
       ];
       const response = await callGemini(messages);
-      
+
       const duration = perf.end();
       console.log(`AI response generated in ${duration}ms`);
-      
+
       return response;
     } catch (error) {
       // Only log non-expected errors
@@ -763,7 +763,7 @@ function Chatbot() {
     });
     setMessage("");
     setIsTyping(true);
-    
+
     // Use requestAnimationFrame for smooth UI update
     requestAnimationFrame(async () => {
       try {
@@ -881,11 +881,10 @@ function Chatbot() {
                   >
                     <motion.div
                       whileHover={{ scale: 1.1 }}
-                      className={`p-3 rounded-2xl shadow-lg ${
-                        msg.isUser
+                      className={`p-3 rounded-2xl shadow-lg ${msg.isUser
                           ? "bg-gradient-to-r from-blue-500 to-purple-500"
                           : "bg-gradient-to-r from-violet-500 to-purple-500"
-                      }`}
+                        }`}
                     >
                       {msg.isUser ? (
                         <User className="w-5 h-5 text-white" />
@@ -896,11 +895,10 @@ function Chatbot() {
 
                     <motion.div
                       whileHover={{ scale: 1.02 }}
-                      className={`p-4 rounded-3xl shadow-lg ${
-                        msg.isUser
+                      className={`p-4 rounded-3xl shadow-lg ${msg.isUser
                           ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
                           : "bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600"
-                      }`}
+                        }`}
                     >
                       <div className={`leading-relaxed ${msg.isUser ? "text-white" : ""}`}>
                         {(!msg.isUser ? formatAIResponse(msg.content) : msg.content).split('\n').map((line, index) => (
@@ -910,11 +908,10 @@ function Chatbot() {
                         ))}
                       </div>
                       <p
-                        className={`text-xs mt-2 ${
-                          msg.isUser
+                        className={`text-xs mt-2 ${msg.isUser
                             ? "text-white/70"
                             : "text-muted-foreground"
-                        }`}
+                          }`}
                       >
                         {new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit' }).format(new Date(msg.timestamp))}
                       </p>
@@ -1005,11 +1002,10 @@ function Chatbot() {
                       <Button
                         onClick={() => sendMessage()}
                         disabled={!message.trim() || isTyping || (rateLimitUntil && Date.now() < rateLimitUntil)}
-                        className={`h-11 w-11 rounded-2xl shadow-[0_16px_40px_rgba(88,28,135,0.45)] ${
-                          rateLimitUntil && Date.now() < rateLimitUntil
+                        className={`h-11 w-11 rounded-2xl shadow-[0_16px_40px_rgba(88,28,135,0.45)] ${rateLimitUntil && Date.now() < rateLimitUntil
                             ? "bg-gray-400 cursor-not-allowed"
                             : "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
-                        }`}
+                          }`}
                       >
                         {rateLimitUntil && Date.now() < rateLimitUntil ? (
                           <span className="text-white text-xs">⏳</span>
@@ -1112,9 +1108,9 @@ function MoodTracker() {
   const averageMood =
     state.moodEntries.length > 0
       ? state.moodEntries.reduce(
-          (sum, entry) => sum + entry.mood,
-          0,
-        ) / state.moodEntries.length
+        (sum, entry) => sum + entry.mood,
+        0,
+      ) / state.moodEntries.length
       : 0;
 
   return (
@@ -1183,11 +1179,10 @@ function MoodTracker() {
                               ? "default"
                               : "outline"
                           }
-                          className={`h-32 w-full flex flex-col space-y-3 relative overflow-hidden transition-all duration-300 ${
-                            selectedMood === mood.value
+                          className={`h-32 w-full flex flex-col space-y-3 relative overflow-hidden transition-all duration-300 ${selectedMood === mood.value
                               ? `bg-gradient-to-br ${mood.gradient} text-white border-0 shadow-2xl ${mood.borderColor}`
                               : `hover:shadow-xl ${mood.bgColor} ${mood.borderColor} border-2`
-                          }`}
+                            }`}
                           onClick={() =>
                             setSelectedMood(mood.value)
                           }
@@ -1288,63 +1283,63 @@ function MoodTracker() {
 
           <div className="space-y-6">
             <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-blue-900">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Star className="w-5 h-5 text-amber-500" />
-                    <span>Today's Summary</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
-                    <span className="font-medium">
-                      Entries logged
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                    >
-                      {todayEntries.length}
-                    </Badge>
-                  </div>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Star className="w-5 h-5 text-amber-500" />
+                  <span>Today's Summary</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
+                  <span className="font-medium">
+                    Entries logged
+                  </span>
+                  <Badge
+                    variant="secondary"
+                    className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                  >
+                    {todayEntries.length}
+                  </Badge>
+                </div>
 
-                  <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
-                    <span className="font-medium">
-                      Average mood
+                <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
+                  <span className="font-medium">
+                    Average mood
+                  </span>
+                  <div className="flex items-center space-x-2">
+                    <span className="font-bold">
+                      {averageMood > 0
+                        ? averageMood.toFixed(1)
+                        : "--"}
+                      /5
                     </span>
-                    <div className="flex items-center space-x-2">
-                      <span className="font-bold">
-                        {averageMood > 0
-                          ? averageMood.toFixed(1)
-                          : "--"}
-                        /5
+                    {averageMood > 0 && (
+                      <span className="text-xl">
+                        {
+                          moodOptions.find(
+                            (m) =>
+                              Math.round(averageMood) ===
+                              m.value,
+                          )?.emoji
+                        }
                       </span>
-                      {averageMood > 0 && (
-                        <span className="text-xl">
-                          {
-                            moodOptions.find(
-                              (m) =>
-                                Math.round(averageMood) ===
-                                m.value,
-                            )?.emoji
-                          }
-                        </span>
-                      )}
-                    </div>
+                    )}
                   </div>
+                </div>
 
-                  <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/30 rounded-xl">
-                    <span className="font-medium">
-                      Total entries
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                    >
-                      {state.moodEntries.length}
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
+                <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/30 rounded-xl">
+                  <span className="font-medium">
+                    Total entries
+                  </span>
+                  <Badge
+                    variant="secondary"
+                    className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                  >
+                    {state.moodEntries.length}
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Recent Entries */}
@@ -1505,7 +1500,7 @@ function AppContent() {
       return <AuthComponent onAuthSuccess={() => {
         const perf = measurePerformance('auth-success');
         perf.start();
-        
+
         console.log('Auth success callback triggered');
 
         // Set onboarding as completed for existing users
@@ -1517,7 +1512,7 @@ function AppContent() {
           if (currentUser) {
             console.log('Updating context with user:', currentUser);
             dispatch({ type: 'SET_USER', payload: currentUser });
-            
+
             // Haptic feedback on mobile for successful auth
             if (isMobileDevice()) {
               triggerHapticFeedback('light');
@@ -1525,7 +1520,7 @@ function AppContent() {
           } else {
             console.log('No current user found in auth service');
           }
-          
+
           const duration = perf.end();
           console.log(`Auth update completed in ${duration}ms`);
         });
