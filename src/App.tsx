@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { checkEnvVariables } from "./utils/env-check";
-import { callGemini, convertChatHistoryToGemini, OpenRouterError } from "./utils/gemini";
+import { callGemini, convertChatHistoryToGemini, GeminiError } from "./utils/gemini";
 import { authService } from "./lib/auth";
 import { isMobileDevice, measurePerformance, triggerHapticFeedback } from "./utils/mobile-optimizations";
 import {
@@ -664,12 +664,11 @@ function Chatbot() {
     perf.start();
 
     try {
-      const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
       const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 
-      if (!GEMINI_API_KEY && !OPENROUTER_API_KEY) {
-        console.error("No API keys found. Please set VITE_GEMINI_API_KEY or VITE_OPENROUTER_API_KEY in your .env/.env.local and restart the dev server.");
-        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with API keys. If you're the administrator, please set the required API keys in the environment.";
+      if (!OPENROUTER_API_KEY) {
+        console.error("No API key found. Please set VITE_OPENROUTER_API_KEY in your .env file and restart the dev server.");
+        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an OpenRouter API key. If you're the administrator, please set VITE_OPENROUTER_API_KEY in the environment.";
       }
 
       const chatHistory = convertChatHistoryToGemini(
@@ -689,22 +688,22 @@ function Chatbot() {
       return response;
     } catch (error) {
       // Only log non-expected errors
-      if (error instanceof OpenRouterError && !error.statusCode) {
-        console.error("OpenRouter configuration error:", error.message);
+      if (error instanceof GeminiError && !error.statusCode) {
+        console.error("Gemini configuration error:", error.message);
       } else {
         console.error("AI API Error:", error);
       }
       const lowerMessage = userMessage.toLowerCase();
 
-      if (error instanceof OpenRouterError) {
+      if (error instanceof GeminiError) {
         if (error.statusCode === 401) {
           return "⚠️ Authentication failed. Please verify your OpenRouter API key is valid and properly configured.";
         }
         if (error.statusCode === 403) {
-          return "⚠️ Access forbidden. Your OpenRouter API key may not have permission to access the selected model.";
+          return "⚠️ Access forbidden. Your OpenRouter API key may not have permission to access the model.";
         }
         if (error.statusCode === 429) {
-          return "⏳ I'm receiving a lot of requests right now. Please wait a moment and try again. For immediate support, you can also chat with our Gemini AI or use the quick suggestion buttons below.";
+          return "⏳ I'm receiving a lot of requests right now. Please wait a moment and try again.";
         }
         return `⚠️ ${error.message}`;
       }
@@ -784,7 +783,7 @@ function Chatbot() {
         console.error('Error getting AI response:', error);
 
         // Handle rate limit errors specifically
-        if (error instanceof OpenRouterError && error.statusCode === 429) {
+        if (error instanceof GeminiError && error.statusCode === 429) {
           // Set rate limit for 60 seconds
           setRateLimitUntil(Date.now() + 60000);
 
@@ -882,8 +881,8 @@ function Chatbot() {
                     <motion.div
                       whileHover={{ scale: 1.1 }}
                       className={`p-3 rounded-2xl shadow-lg ${msg.isUser
-                          ? "bg-gradient-to-r from-blue-500 to-purple-500"
-                          : "bg-gradient-to-r from-violet-500 to-purple-500"
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500"
+                        : "bg-gradient-to-r from-violet-500 to-purple-500"
                         }`}
                     >
                       {msg.isUser ? (
@@ -896,8 +895,8 @@ function Chatbot() {
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       className={`p-4 rounded-3xl shadow-lg ${msg.isUser
-                          ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
-                          : "bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600"
+                        ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+                        : "bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600"
                         }`}
                     >
                       <div className={`leading-relaxed ${msg.isUser ? "text-white" : ""}`}>
@@ -909,8 +908,8 @@ function Chatbot() {
                       </div>
                       <p
                         className={`text-xs mt-2 ${msg.isUser
-                            ? "text-white/70"
-                            : "text-muted-foreground"
+                          ? "text-white/70"
+                          : "text-muted-foreground"
                           }`}
                       >
                         {new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit' }).format(new Date(msg.timestamp))}
@@ -1003,8 +1002,8 @@ function Chatbot() {
                         onClick={() => sendMessage()}
                         disabled={!message.trim() || isTyping || (rateLimitUntil && Date.now() < rateLimitUntil)}
                         className={`h-11 w-11 rounded-2xl shadow-[0_16px_40px_rgba(88,28,135,0.45)] ${rateLimitUntil && Date.now() < rateLimitUntil
-                            ? "bg-gray-400 cursor-not-allowed"
-                            : "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600"
                           }`}
                       >
                         {rateLimitUntil && Date.now() < rateLimitUntil ? (
@@ -1180,8 +1179,8 @@ function MoodTracker() {
                               : "outline"
                           }
                           className={`h-32 w-full flex flex-col space-y-3 relative overflow-hidden transition-all duration-300 ${selectedMood === mood.value
-                              ? `bg-gradient-to-br ${mood.gradient} text-white border-0 shadow-2xl ${mood.borderColor}`
-                              : `hover:shadow-xl ${mood.bgColor} ${mood.borderColor} border-2`
+                            ? `bg-gradient-to-br ${mood.gradient} text-white border-0 shadow-2xl ${mood.borderColor}`
+                            : `hover:shadow-xl ${mood.bgColor} ${mood.borderColor} border-2`
                             }`}
                           onClick={() =>
                             setSelectedMood(mood.value)
