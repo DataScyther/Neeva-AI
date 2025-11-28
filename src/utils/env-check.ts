@@ -3,26 +3,22 @@ export function checkEnvVariables(): { isValid: boolean; errors: string[]; warni
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Check if OpenRouter API key is set (optional now)
-  const apiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
-  if (!apiKey) {
-    warnings.push('VITE_OPENROUTER_API_KEY is not set. OpenRouter features will be disabled.');
-  } else if (typeof apiKey !== 'string' || apiKey.length < 20) {
-    warnings.push('VITE_OPENROUTER_API_KEY appears to be invalid (too short). OpenRouter features may not work.');
-  } else if (!apiKey.startsWith('sk-or-v1-')) {
-    warnings.push('VITE_OPENROUTER_API_KEY format is invalid. OpenRouter API keys should start with "sk-or-v1-".');
-  }
+  // OpenRouter API key is now handled securely in the backend
+  // No frontend check needed
 
   // Check if model is set (optional, but good to know)
+  // Check if model is set (optional, but good to know)
   const model = import.meta.env.VITE_OPENROUTER_MODEL;
-  if (!model && apiKey) {
-    warnings.push('VITE_OPENROUTER_MODEL is not set. Using default model.');
+  if (!model) {
+    // Just a debug log, not a warning since we have defaults
+    // console.debug('VITE_OPENROUTER_MODEL is not set. Using default model.');
   }
 
   // Check if base URL is set (optional, but good to know)
   const baseUrl = import.meta.env.VITE_OPENROUTER_BASE_URL;
-  if (!baseUrl && apiKey) {
-    warnings.push('VITE_OPENROUTER_BASE_URL is not set. Using default URL.');
+  if (!baseUrl) {
+    // Just a debug log, not a warning since we have defaults
+    // console.debug('VITE_OPENROUTER_BASE_URL is not set. Using default URL.');
   }
 
   // Log warnings to console

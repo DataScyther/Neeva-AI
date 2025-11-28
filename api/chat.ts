@@ -48,6 +48,6 @@ export default async function handler(
         return response.status(200).json(data);
     } catch (error) {
         console.error('Error calling OpenRouter:', error);
-        return response.status(500).json({ error: 'Internal server error' });
+        return response.status(500).json({ error: `Internal server error: ${error instanceof Error ? error.message : String(error)}` });
     }
 }

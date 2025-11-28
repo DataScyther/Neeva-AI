@@ -656,12 +656,8 @@ function Chatbot() {
     perf.start();
 
     try {
-      const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-
-      if (!OPENROUTER_API_KEY) {
-        console.error("No API key found. Please set VITE_OPENROUTER_API_KEY in your .env file and restart the dev server.");
-        return "⚠️ I'm having trouble connecting to my AI service. The application is not properly configured with an OpenRouter API key. If you're the administrator, please set VITE_OPENROUTER_API_KEY in the environment.";
-      }
+      // API calls are now handled through secure backend proxy (/api/chat)
+      // No frontend API key needed - all authentication happens server-side
 
       const chatHistory = convertChatHistoryToGemini(
         state.chatHistory.filter(
@@ -689,13 +685,16 @@ function Chatbot() {
 
       if (error instanceof GeminiError) {
         if (error.statusCode === 401) {
-          return "⚠️ Authentication failed. Please verify your OpenRouter API key is valid and properly configured.";
+          return "⚠️ Authentication failed. The backend API key needs to be configured. For local development, make sure you're running 'vercel dev' instead of 'npm run dev'.";
         }
         if (error.statusCode === 403) {
-          return "⚠️ Access forbidden. Your OpenRouter API key may not have permission to access the model.";
+          return "⚠️ Access forbidden. The API key may not have permission to access this model.";
         }
         if (error.statusCode === 429) {
           return "⏳ I'm receiving a lot of requests right now. Please wait a moment and try again.";
+        }
+        if (error.statusCode === 404 || error.statusCode === 500) {
+          return "⚠️ Backend service unavailable. For local testing, run 'vercel dev' to start the backend functions.";
         }
         return `⚠️ ${error.message}`;
       }

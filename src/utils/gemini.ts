@@ -17,11 +17,8 @@ export class GeminiError extends Error {
   }
 }
 
-// Access Vite environment variables
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || "";
-
-// Debug log to check API configuration
-console.log('🔑 OpenRouter API loaded:', OPENROUTER_API_KEY ? 'Yes (Local)' : 'No (Using Proxy)');
+// No API key in frontend - always use backend proxy for security
+console.log('🔒 Using secure backend proxy for OpenRouter API');
 
 // System instruction for Neeva
 const SYSTEM_INSTRUCTION = `You are Neeva, a witty, warm, and deeply empathetic AI mental health companion. Think of yourself as a supportive best friend who happens to be really wise and knowledgeable about the world.
@@ -101,54 +98,25 @@ export async function callGemini(messages: GeminiMessage[]): Promise<string> {
       ...openAIMessages
     ];
 
-    // Check if we have a local key (dev mode) or need to use proxy
-    if (OPENROUTER_API_KEY) {
-      // Local dev mode with direct key
-      const OpenAI = (await import('openai')).default;
-      const openai = new OpenAI({
-        baseURL: "https://openrouter.ai/api/v1",
-        apiKey: OPENROUTER_API_KEY,
-        dangerouslyAllowBrowser: true,
-        defaultHeaders: {
-          'HTTP-Referer': typeof window !== 'undefined' ? window.location.origin : 'https://neeva-ai.app',
-          'X-Title': 'Neeva AI Mental Health Companion'
-        }
-      });
-
-      const completion = await openai.chat.completions.create({
-        model: "x-ai/grok-4.1-fast:free",
+    // Always use backend proxy for security (API key is never exposed to frontend)
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
         messages: allMessages,
-        temperature: 0.7,
-        max_tokens: 1000,
-      });
+      }),
+    });
 
-      if (!completion.choices || completion.choices.length === 0) {
-        throw new GeminiError('No response generated from OpenRouter API');
-      }
-
-      const content = completion.choices[0].message.content || '';
-      return formatResponse(content);
-    } else {
-      // Production mode (Proxy)
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: allMessages,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new GeminiError(errorData.error || `API Error: ${response.statusText}`, response.status);
-      }
-
-      const data = await response.json();
-      const content = data.choices?.[0]?.message?.content || '';
-      return formatResponse(content);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new GeminiError(errorData.error || `API Error: ${response.statusText}`, response.status);
     }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content || '';
+    return formatResponse(content);
   };
 
   try {
