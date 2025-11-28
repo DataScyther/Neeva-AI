@@ -1,6 +1,8 @@
 node_modules
 build
 .env
+.env.temp
+*.env*
 *.apk
 *.keystore
 *.jks

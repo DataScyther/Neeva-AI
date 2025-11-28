@@ -30,34 +30,41 @@ import { Badge } from "./components/ui/badge";
 import { Progress } from "./components/ui/progress";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "./components/ui/tooltip";
 import {
-  Home,
-  MessageCircle,
   Heart,
-  Brain,
-  Users,
-  Settings,
+  MessageCircle,
   BarChart3,
-  Headphones,
-  AlertCircle,
+  Settings,
   Send,
-  Sparkles,
-  Plus,
   Smile,
-  Star,
-  Zap,
+  Calendar,
+  Clock,
   Sun,
   Moon,
-  Rainbow,
-  Flame,
+  Zap,
+  Coffee,
   BookOpen,
+  Music,
+  Wind,
+  CloudRain,
+  Flame,
+  Droplets,
   Target,
-  ChevronRight,
+  Trophy,
+  Star,
+  Sparkles,
   TrendingUp,
-  Bot,
+  Activity,
   User,
+  Users,
+  Bot,
+  ChevronRight,
+  Rainbow,
   Lightbulb,
+  Plus,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { motion, AnimatePresence } from "framer-motion";
 
 // Inline Dashboard Component
 function Dashboard() {
@@ -596,22 +603,7 @@ function Chatbot() {
     });
   };
 
-  // AI Response formatting utility
-  const formatAIResponse = (content: string) => {
-    // Split into sentences for better readability
-    const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0);
 
-    // Add proper punctuation if missing
-    const formattedSentences = sentences.map((sentence, index) => {
-      const trimmed = sentence.trim();
-      if (!trimmed.match(/[.!?]$/)) {
-        return index === sentences.length - 1 ? `${trimmed}.` : `${trimmed}.`;
-      }
-      return trimmed;
-    });
-
-    return formattedSentences.join(' ');
-  };
 
   useEffect(() => {
     scrollToBottom();
@@ -899,12 +891,28 @@ function Chatbot() {
                         : "bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600"
                         }`}
                     >
-                      <div className={`leading-relaxed ${msg.isUser ? "text-white" : ""}`}>
-                        {(!msg.isUser ? formatAIResponse(msg.content) : msg.content).split('\n').map((line, index) => (
-                          <p key={index} className={`${index > 0 ? "mt-3" : ""} ${!msg.isUser ? "text-gray-800 dark:text-gray-200" : ""}`}>
-                            {line.trim()}
-                          </p>
-                        ))}
+                      <div className={`leading-relaxed ${msg.isUser ? "text-white" : "text-gray-800 dark:text-gray-200"}`}>
+                        {msg.isUser ? (
+                          <p>{msg.content}</p>
+                        ) : (
+                          <ReactMarkdown
+                            components={{
+                              p: ({ node, ...props }) => <p className="mb-3 last:mb-0" {...props} />,
+                              ul: ({ node, ...props }) => <ul className="list-disc pl-4 mb-3 space-y-1" {...props} />,
+                              ol: ({ node, ...props }) => <ol className="list-decimal pl-4 mb-3 space-y-1" {...props} />,
+                              li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                              h1: ({ node, ...props }) => <h1 className="text-xl font-bold mb-2 mt-4 first:mt-0" {...props} />,
+                              h2: ({ node, ...props }) => <h2 className="text-lg font-bold mb-2 mt-3 first:mt-0" {...props} />,
+                              h3: ({ node, ...props }) => <h3 className="text-base font-bold mb-2 mt-3 first:mt-0" {...props} />,
+                              strong: ({ node, ...props }) => <strong className="font-bold text-indigo-600 dark:text-indigo-400" {...props} />,
+                              em: ({ node, ...props }) => <em className="italic" {...props} />,
+                              blockquote: ({ node, ...props }) => <blockquote className="border-l-4 border-indigo-300 pl-4 italic my-3" {...props} />,
+                              code: ({ node, ...props }) => <code className="bg-gray-100 dark:bg-gray-800 rounded px-1 py-0.5 text-sm font-mono" {...props} />,
+                            }}
+                          >
+                            {msg.content}
+                          </ReactMarkdown>
+                        )}
                       </div>
                       <p
                         className={`text-xs mt-2 ${msg.isUser
