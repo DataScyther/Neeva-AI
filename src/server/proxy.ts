@@ -18,17 +18,15 @@ app.use(express.json());
 
 // Environment variables (these should be set in the hosting platform)
 // We check for both standard and VITE_ prefixed variables to support local .env files
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
-const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || process.env.VITE_OPENROUTER_MODEL || 'openrouter/bert-nebulon-alpha';
-const OPENROUTER_BASE_URL = process.env.OPENROUTER_BASE_URL || process.env.VITE_OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
-
-if (!OPENROUTER_API_KEY) {
-    console.error('❌ OPENROUTER_API_KEY (or VITE_OPENROUTER_API_KEY) is not set. The proxy cannot function without it.');
-}
-
 // Proxy endpoint – the client sends the messages array
 app.post('/api/openrouter', async (req, res) => {
+    // Access environment variables at runtime to ensure they are available in serverless context
+    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
+    const OPENROUTER_MODEL = process.env.OPENROUTER_MODEL || process.env.VITE_OPENROUTER_MODEL || 'openrouter/bert-nebulon-alpha';
+    const OPENROUTER_BASE_URL = process.env.OPENROUTER_BASE_URL || process.env.VITE_OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
+
     if (!OPENROUTER_API_KEY) {
+        console.error('❌ OPENROUTER_API_KEY is not set.');
         return res.status(500).json({ error: 'Server configuration error: API key not set.' });
     }
 
@@ -83,6 +81,7 @@ export default app;
 
 // Start the server if running directly
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
+    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || process.env.VITE_OPENROUTER_API_KEY;
     if (!OPENROUTER_API_KEY) {
         process.exit(1);
     }
