@@ -99,7 +99,7 @@ export async function callGemini(messages: GeminiMessage[]): Promise<string> {
     ];
 
     // Always use backend proxy for security (API key is never exposed to frontend)
-    const response = await fetch('/api/chat', {
+    const response = await fetch('/api/openrouter', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
