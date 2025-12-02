@@ -527,14 +527,14 @@ export function CBTExercises() {
                 <motion.button
                   key={i}
                   className={`w-16 h-16 rounded-full border-4 ${color === "red"
-                      ? "bg-red-500"
-                      : color === "blue"
-                        ? "bg-blue-500"
-                        : color === "green"
-                          ? "bg-green-500"
-                          : color === "yellow"
-                            ? "bg-yellow-500"
-                            : "bg-purple-500"
+                    ? "bg-red-500"
+                    : color === "blue"
+                      ? "bg-blue-500"
+                      : color === "green"
+                        ? "bg-green-500"
+                        : color === "yellow"
+                          ? "bg-yellow-500"
+                          : "bg-purple-500"
                     } ${isCenter ? "border-gray-800 ring-4 ring-yellow-300" : "border-gray-300"}`}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
@@ -661,7 +661,7 @@ export function CBTExercises() {
           className="text-center space-y-4 py-8"
         >
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
               CBT Wellness Studio
             </h1>
           </div>
@@ -1077,8 +1077,8 @@ export function CBTExercises() {
                       >
                         <Card
                           className={`border-0 overflow-hidden group transition-all duration-300 hover:shadow-2xl ${isCompleted
-                              ? "ring-2 ring-green-200 bg-green-50/50 dark:bg-green-900/20"
-                              : "hover:shadow-xl"
+                            ? "ring-2 ring-green-200 bg-green-50/50 dark:bg-green-900/20"
+                            : "hover:shadow-xl"
                             } bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-700`}
                         >
                           <CardContent className="p-0">

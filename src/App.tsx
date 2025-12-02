@@ -835,14 +835,10 @@ function Chatbot() {
           className="text-center mb-8"
         >
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl shadow-lg"
-            >
+            <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl shadow-lg">
               <Bot className="w-8 h-8 text-white" />
-            </motion.div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               Neeva AI Companion
             </h1>
           </div>
@@ -1129,16 +1125,12 @@ function MoodTracker() {
           className="text-center space-y-4 py-8"
         >
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Heart className="w-12 h-12 text-pink-500" />
-            </motion.div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            <div className="p-2 bg-pink-100 dark:bg-pink-900/30 rounded-full">
+              <Heart className="w-8 h-8 text-pink-500" />
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
               Mood Tracker
             </h1>
-            <Rainbow className="w-8 h-8 text-purple-500" />
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Your emotions matter. Let's track how you're feeling
