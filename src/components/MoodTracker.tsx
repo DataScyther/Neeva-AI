@@ -90,21 +90,19 @@ export function MoodTracker() {
   const averageMood =
     state.moodEntries.length > 0
       ? state.moodEntries.reduce(
-          (sum, entry) => sum + entry.mood,
-          0,
-        ) / state.moodEntries.length
+        (sum, entry) => sum + entry.mood,
+        0,
+      ) / state.moodEntries.length
       : 0;
 
   return (
     <div className="p-4 md:p-6 space-y-6 max-w-7xl mx-auto">
       {/* Header Section */}
       <div className="text-center space-y-3 py-6">
-        <div className="inline-flex items-center space-x-3 bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 px-6 py-3 rounded-full">
-          <Heart className="w-6 h-6 text-pink-500 animate-pulse" />
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+        <div className="inline-flex items-center space-x-3 px-6 py-3 rounded-full">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
             How Are You Feeling?
           </h1>
-          <Sparkles className="w-6 h-6 text-purple-500 animate-pulse" />
         </div>
         <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
           Take a moment to check in with yourself. Your mood matters, and tracking it helps you understand your emotional journey.
@@ -139,11 +137,10 @@ export function MoodTracker() {
                       <button
                         key={mood.value}
                         onClick={() => setSelectedMood(mood.value)}
-                        className={`mood-button-${mood.value} absolute w-16 h-16 md:w-20 md:h-20 rounded-full flex flex-col items-center justify-center text-center transition-all duration-300 transform hover:scale-110 shadow-lg ${
-                          selectedMood === mood.value
+                        className={`mood-button-${mood.value} absolute w-16 h-16 md:w-20 md:h-20 rounded-full flex flex-col items-center justify-center text-center transition-all duration-300 transform hover:scale-110 shadow-lg ${selectedMood === mood.value
                             ? `bg-gradient-to-r ${mood.color} text-white ring-4 ring-white dark:ring-gray-800 scale-110`
                             : `bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-xl`
-                        }`}
+                          }`}
                         data-selected={selectedMood === mood.value}
                       >
                         <span className="text-2xl md:text-3xl mb-1">{mood.emoji}</span>

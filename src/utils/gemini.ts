@@ -1,7 +1,4 @@
-// OpenRouter API integration for Neeva AI
-// Uses OpenAI SDK compatible with OpenRouter
-
-import OpenAI from 'openai';
+// Google Gemini API integration for Neeva AI
 
 export interface GeminiMessage {
   role: 'user' | 'model';
@@ -18,7 +15,7 @@ export class GeminiError extends Error {
 }
 
 // No API key in frontend - always use backend proxy for security
-console.log('🔒 Using secure backend proxy for OpenRouter API');
+console.log('🔒 Using secure backend proxy for Gemini API');
 
 // System instruction for Neeva
 const SYSTEM_INSTRUCTION = `You are Neeva, a witty, warm, and deeply empathetic AI mental health companion. Think of yourself as a supportive best friend who happens to be really wise and knowledgeable about the world.
@@ -81,41 +78,56 @@ async function retryWithBackoff<T>(
   }
 }
 
-// Call OpenRouter API with Neeva system instruction
+// Call Gemini API via Proxy
 export async function callGemini(messages: GeminiMessage[]): Promise<string> {
   const performApiCall = async () => {
-    console.log('🚀 Calling OpenRouter API...');
+    console.log('🚀 Calling Gemini API via Proxy...');
 
-    // Convert Gemini message format to OpenAI format
-    const openAIMessages = messages.map(msg => ({
-      role: msg.role === 'model' ? 'assistant' as const : 'user' as const,
-      content: msg.parts.map(p => p.text).join('\n')
-    }));
+    // Prepare payload for Gemini API
+    // We need to inject the system instruction.
+    // Gemini 1.5/2.0 supports system instructions differently, but for 2.0 Flash via generateContent,
+    // we can often just prepend it or use the system_instruction field if supported by the REST API version.
+    // For simplicity and compatibility with the "chat" structure, we'll prepend it as a user message or model message?
+    // Actually, for generateContent, we can use "system_instruction" field if we were calling it directly with that field,
+    // but the user's curl example didn't show it.
+    // Let's prepend it as a 'user' part for now to ensure it's seen, or better, just rely on the prompt context.
+    // However, the best way for chat is to have the first message be the system prompt if the API supports it,
+    // or just include it in the first user message.
 
-    // Add system message at the beginning
-    const allMessages = [
-      { role: 'system' as const, content: SYSTEM_INSTRUCTION },
-      ...openAIMessages
+    // Let's try to structure it as:
+    // contents: [ { role: 'user', parts: [{ text: SYSTEM_INSTRUCTION }] }, ...messages ]
+    // Note: Gemini roles are 'user' and 'model'.
+
+    const contents = [
+      {
+        role: 'user',
+        parts: [{ text: SYSTEM_INSTRUCTION }]
+      },
+      {
+        role: 'model',
+        parts: [{ text: "Understood. I am Neeva, ready to help." }]
+      },
+      ...messages
     ];
 
-    // Always use backend proxy for security (API key is never exposed to frontend)
-    const response = await fetch('/api/openrouter', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        messages: allMessages,
+        contents: contents
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new GeminiError(errorData.error || `API Error: ${response.statusText}`, response.status);
+      throw new GeminiError(errorData.error?.message || `API Error: ${response.statusText}`, response.status);
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || '';
+    // Gemini response structure: candidates[0].content.parts[0].text
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     return formatResponse(content);
   };
 
@@ -149,4 +161,3 @@ export function convertChatHistoryToGemini(chatHistory: Array<{ content: string,
     parts: [{ text: msg.content }]
   }));
 }
-

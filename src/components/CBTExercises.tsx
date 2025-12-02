@@ -520,14 +520,13 @@ export function CBTExercises() {
               const color = isCenter
                 ? targetColor
                 : colors[
-                    Math.floor(Math.random() * colors.length)
-                  ];
+                Math.floor(Math.random() * colors.length)
+                ];
 
               return (
                 <motion.button
                   key={i}
-                  className={`w-16 h-16 rounded-full border-4 ${
-                    color === "red"
+                  className={`w-16 h-16 rounded-full border-4 ${color === "red"
                       ? "bg-red-500"
                       : color === "blue"
                         ? "bg-blue-500"
@@ -536,7 +535,7 @@ export function CBTExercises() {
                           : color === "yellow"
                             ? "bg-yellow-500"
                             : "bg-purple-500"
-                  } ${isCenter ? "border-gray-800 ring-4 ring-yellow-300" : "border-gray-300"}`}
+                    } ${isCenter ? "border-gray-800 ring-4 ring-yellow-300" : "border-gray-300"}`}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {
@@ -546,9 +545,9 @@ export function CBTExercises() {
                         score: prev.score + 10,
                         currentColor:
                           colors[
-                            Math.floor(
-                              Math.random() * colors.length,
-                            )
+                          Math.floor(
+                            Math.random() * colors.length,
+                          )
                           ],
                       }));
                     }
@@ -662,22 +661,13 @@ export function CBTExercises() {
           className="text-center space-y-4 py-8"
         >
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Brain className="w-12 h-12 text-emerald-500" />
-            </motion.div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
               CBT Wellness Studio
             </h1>
-            <Rainbow className="w-8 h-8 text-purple-500" />
           </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Evidence-based exercises, guided meditations, and
             cognitive games for your mental wellness journey
-            🧠✨
-{" "}
           </p>
         </motion.div>
 
@@ -845,133 +835,133 @@ export function CBTExercises() {
                 <CardContent className="p-8 space-y-6">
                   {getExerciseById(activeExercise)?.exercise
                     .type === "journal" && (
-                    <div className="space-y-6">
-                      <div className="text-center">
-                        <h3 className="text-2xl font-bold mb-4">
-                          Prompt {currentStep + 1} of{" "}
-                          {
-                            (getExerciseById(activeExercise)?.exercise.type === 'journal' ? (getExerciseById(activeExercise)?.exercise as JournalingExercise).prompts.length : 0)
-                          }
-                        </h3>
-                        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-800">
-                          <CardContent className="p-6">
-                            <p className="text-lg font-medium text-center">
-                              {
-                                getExerciseById(activeExercise)?.exercise.type === 'journal' 
-                                  ? (getExerciseById(activeExercise)?.exercise as JournalingExercise).prompts[currentStep]
-                                  : ''
-                              }
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </div>
-
-                      <div className="space-y-4">
-                        <Textarea
-                          placeholder="Take your time to reflect and write your thoughts here..."
-                          value={currentJournalResponse}
-                          onChange={(e) =>
-                            setCurrentJournalResponse(
-                              e.target.value,
-                            )
-                          }
-                          rows={6}
-                          className="rounded-2xl border-2 resize-none text-base"
-                        />
-                        <div className="flex justify-center space-x-3">
-                          <Button
-                            onClick={saveJournalEntry}
-                            disabled={
-                              !currentJournalResponse.trim()
+                      <div className="space-y-6">
+                        <div className="text-center">
+                          <h3 className="text-2xl font-bold mb-4">
+                            Prompt {currentStep + 1} of{" "}
+                            {
+                              (getExerciseById(activeExercise)?.exercise.type === 'journal' ? (getExerciseById(activeExercise)?.exercise as JournalingExercise).prompts.length : 0)
                             }
-                          >
-                            <Save className="w-4 h-4 mr-2" />
-                            Save & Continue
-                          </Button>
+                          </h3>
+                          <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-800">
+                            <CardContent className="p-6">
+                              <p className="text-lg font-medium text-center">
+                                {
+                                  getExerciseById(activeExercise)?.exercise.type === 'journal'
+                                    ? (getExerciseById(activeExercise)?.exercise as JournalingExercise).prompts[currentStep]
+                                    : ''
+                                }
+                              </p>
+                            </CardContent>
+                          </Card>
                         </div>
-                      </div>
 
-                      {journalEntries.length > 0 && (
-                        <div className="space-y-3">
-                          <h4 className="font-semibold">
-                            Your Reflections:
-                          </h4>
-                          <div className="space-y-3 max-h-60 overflow-y-auto">
-                            {journalEntries.map(
-                              (entry, index) => (
-                                <Card
-                                  key={index}
-                                  className="bg-muted/50"
-                                >
-                                  <CardContent className="p-4">
-                                    <p className="text-sm font-medium text-muted-foreground mb-2">
-                                      {entry.prompt}
-                                    </p>
-                                    <p className="text-sm">
-                                      {entry.response}
-                                    </p>
-                                  </CardContent>
-                                </Card>
-                              ),
-                            )}
+                        <div className="space-y-4">
+                          <Textarea
+                            placeholder="Take your time to reflect and write your thoughts here..."
+                            value={currentJournalResponse}
+                            onChange={(e) =>
+                              setCurrentJournalResponse(
+                                e.target.value,
+                              )
+                            }
+                            rows={6}
+                            className="rounded-2xl border-2 resize-none text-base"
+                          />
+                          <div className="flex justify-center space-x-3">
+                            <Button
+                              onClick={saveJournalEntry}
+                              disabled={
+                                !currentJournalResponse.trim()
+                              }
+                            >
+                              <Save className="w-4 h-4 mr-2" />
+                              Save & Continue
+                            </Button>
                           </div>
                         </div>
-                      )}
-                    </div>
-                  )}
+
+                        {journalEntries.length > 0 && (
+                          <div className="space-y-3">
+                            <h4 className="font-semibold">
+                              Your Reflections:
+                            </h4>
+                            <div className="space-y-3 max-h-60 overflow-y-auto">
+                              {journalEntries.map(
+                                (entry, index) => (
+                                  <Card
+                                    key={index}
+                                    className="bg-muted/50"
+                                  >
+                                    <CardContent className="p-4">
+                                      <p className="text-sm font-medium text-muted-foreground mb-2">
+                                        {entry.prompt}
+                                      </p>
+                                      <p className="text-sm">
+                                        {entry.response}
+                                      </p>
+                                    </CardContent>
+                                  </Card>
+                                ),
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                   {getExerciseById(activeExercise)?.exercise
                     .type === "adhd_game" && (
-                    <div className="space-y-6">
-                      {getExerciseById(activeExercise)?.exercise.type === 'adhd_game' && (getExerciseById(activeExercise)?.exercise as ADHDGameExercise).gameType === 'color_focus' && (
-                        <ColorFocusGame />
-                      )}
-                      {getExerciseById(activeExercise)?.exercise.type === 'adhd_game' && (getExerciseById(activeExercise)?.exercise as ADHDGameExercise).gameType === 'memory_sequence' && (
-                        <MemorySequenceGame />
-                      )}
-                    </div>
-                  )}
+                      <div className="space-y-6">
+                        {getExerciseById(activeExercise)?.exercise.type === 'adhd_game' && (getExerciseById(activeExercise)?.exercise as ADHDGameExercise).gameType === 'color_focus' && (
+                          <ColorFocusGame />
+                        )}
+                        {getExerciseById(activeExercise)?.exercise.type === 'adhd_game' && (getExerciseById(activeExercise)?.exercise as ADHDGameExercise).gameType === 'memory_sequence' && (
+                          <MemorySequenceGame />
+                        )}
+                      </div>
+                    )}
 
                   {(getExerciseById(activeExercise)?.exercise
                     .type === "guided" ||
                     getExerciseById(activeExercise)?.exercise
                       .type === "breathing") && (
-                    <div className="space-y-6">
-                      <div className="text-center">
-                        <div className="text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-                          {formatTime(timer.timeLeft)}
-                        </div>
-                        <p className="text-muted-foreground text-lg">
-                          Step {currentStep + 1} of{" "}
-                          {
-                            (() => {
-                              const ex = getExerciseById(activeExercise)?.exercise;
-                              if (ex && 'instructions' in ex) {
-                                return ex.instructions.length;
-                              }
-                              return 0;
-                            })()
-                          }
-                        </p>
-                      </div>
-
-                      <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200 dark:border-blue-800">
-                        <CardContent className="p-6">
-                          <p className="text-center text-lg font-medium leading-relaxed">
+                      <div className="space-y-6">
+                        <div className="text-center">
+                          <div className="text-6xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                            {formatTime(timer.timeLeft)}
+                          </div>
+                          <p className="text-muted-foreground text-lg">
+                            Step {currentStep + 1} of{" "}
                             {
                               (() => {
                                 const ex = getExerciseById(activeExercise)?.exercise;
                                 if (ex && 'instructions' in ex) {
-                                  return ex.instructions[currentStep];
+                                  return ex.instructions.length;
                                 }
-                                return '';
+                                return 0;
                               })()
                             }
                           </p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  )}
+                        </div>
+
+                        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-200 dark:border-blue-800">
+                          <CardContent className="p-6">
+                            <p className="text-center text-lg font-medium leading-relaxed">
+                              {
+                                (() => {
+                                  const ex = getExerciseById(activeExercise)?.exercise;
+                                  if (ex && 'instructions' in ex) {
+                                    return ex.instructions[currentStep];
+                                  }
+                                  return '';
+                                })()
+                              }
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
 
                   <div className="flex justify-center space-x-4">
                     {timer.isActive ? (
@@ -1003,14 +993,14 @@ export function CBTExercises() {
                     {getExerciseById(activeExercise)?.exercise
                       .type !== "journal" &&
                       currentStep <
-                        ((() => {
-                          const ex = getExerciseById(activeExercise)?.exercise;
-                          if (ex && 'instructions' in ex) {
-                            return ex.instructions.length;
-                          }
-                          return 1;
-                        })() || 1) -
-                          1 && (
+                      ((() => {
+                        const ex = getExerciseById(activeExercise)?.exercise;
+                        if (ex && 'instructions' in ex) {
+                          return ex.instructions.length;
+                        }
+                        return 1;
+                      })() || 1) -
+                      1 && (
                         <Button
                           onClick={() =>
                             setCurrentStep((prev) => prev + 1)
@@ -1086,11 +1076,10 @@ export function CBTExercises() {
                         whileHover={{ y: -5, scale: 1.02 }}
                       >
                         <Card
-                          className={`border-0 overflow-hidden group transition-all duration-300 hover:shadow-2xl ${
-                            isCompleted
+                          className={`border-0 overflow-hidden group transition-all duration-300 hover:shadow-2xl ${isCompleted
                               ? "ring-2 ring-green-200 bg-green-50/50 dark:bg-green-900/20"
                               : "hover:shadow-xl"
-                          } bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-700`}
+                            } bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-700`}
                         >
                           <CardContent className="p-0">
                             <div
@@ -1150,21 +1139,21 @@ export function CBTExercises() {
                               <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                                 {exercise.type ===
                                   "journal" && (
-                                  <div className="flex items-center space-x-1">
-                                    <PenTool className="w-4 h-4" />
-                                    <span>
-                                      {'prompts' in exercise ? exercise.prompts.length : 0}{" "}
-                                      prompts
-                                    </span>
-                                  </div>
-                                )}
+                                    <div className="flex items-center space-x-1">
+                                      <PenTool className="w-4 h-4" />
+                                      <span>
+                                        {'prompts' in exercise ? exercise.prompts.length : 0}{" "}
+                                        prompts
+                                      </span>
+                                    </div>
+                                  )}
                                 {exercise.type ===
                                   "adhd_game" && (
-                                  <div className="flex items-center space-x-1">
-                                    <Target className="w-4 h-4" />
-                                    <span>Focus training</span>
-                                  </div>
-                                )}
+                                    <div className="flex items-center space-x-1">
+                                      <Target className="w-4 h-4" />
+                                      <span>Focus training</span>
+                                    </div>
+                                  )}
                                 {'audioGuided' in exercise && exercise.audioGuided && (
                                   <div className="flex items-center space-x-1">
                                     <Headphones className="w-4 h-4" />
@@ -1191,7 +1180,7 @@ export function CBTExercises() {
                                 {exercise.type === "journal"
                                   ? "Writing"
                                   : exercise.type ===
-                                      "adhd_game"
+                                    "adhd_game"
                                     ? "Game"
                                     : "Session"}
                               </Button>

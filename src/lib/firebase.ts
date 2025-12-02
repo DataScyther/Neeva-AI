@@ -5,12 +5,12 @@ import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 
 // Firebase configuration - with fallbacks for local development
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyArYw_5H4KEXyQKs789SJZjwkHSPnBGe2s",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "neeva-ai.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "neeva-ai",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "neeva-ai.appspot.com",  // Fixed storage bucket URL
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "164484584995",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:164484584995:web:a1b2c3d4e5f6g7h8",  // Fixed app ID format
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
