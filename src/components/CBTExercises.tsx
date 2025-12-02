@@ -42,6 +42,7 @@ import {
   Music,
   Waves,
   Volume1,
+  BookOpen,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ADHDGameExercise, JournalingExercise } from "../types/exercise.types";
@@ -661,7 +662,10 @@ export function CBTExercises() {
           className="text-center space-y-4 py-8"
         >
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
+            <div className="bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 p-2 rounded-lg shadow-lg">
+              <BookOpen className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
               CBT Wellness Studio
             </h1>
           </div>
