@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAppContext } from "./AppContext";
 import { callGemini, convertChatHistoryToGemini, GeminiError } from "../utils/gemini";
+import { saveChatMessage } from "../lib/db";
 import { measurePerformance, triggerHapticFeedback, isMobileDevice } from "../utils/mobile-optimizations";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
@@ -169,6 +170,12 @@ export function Chatbot() {
             type: "ADD_CHAT_MESSAGE",
             payload: userMessage,
         });
+
+        const userId = (state.user as any)?.uid || (state.user as any)?.id;
+
+        if (userId) {
+            saveChatMessage(userId, userMessage);
+        }
         setMessage("");
         setIsTyping(true);
 
@@ -187,6 +194,10 @@ export function Chatbot() {
                     type: "ADD_CHAT_MESSAGE",
                     payload: aiResponse,
                 });
+
+                if (userId) {
+                    saveChatMessage(userId, aiResponse);
+                }
                 setIsTyping(false);
             } catch (error) {
                 console.error('Error getting AI response:', error);
@@ -207,6 +218,9 @@ export function Chatbot() {
                         type: "ADD_CHAT_MESSAGE",
                         payload: rateLimitResponse,
                     });
+                    if (userId) {
+                        saveChatMessage(userId, rateLimitResponse);
+                    }
                 } else {
                     const fallbackResponse = {
                         id: (Date.now() + 1).toString(),
@@ -219,6 +233,9 @@ export function Chatbot() {
                         type: "ADD_CHAT_MESSAGE",
                         payload: fallbackResponse,
                     });
+                    if (state.user?.uid) {
+                        saveChatMessage(state.user.uid, fallbackResponse);
+                    }
                 }
                 setIsTyping(false);
             }

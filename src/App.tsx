@@ -32,15 +32,7 @@ import { motion } from "framer-motion";
 function AppContent() {
   const { state, dispatch } = useAppContext();
 
-  // Debug environment variables
-  useEffect(() => {
-    const apiKey = (import.meta as any).env.VITE_OPENROUTER_API_KEY;
-    console.log('=== App Environment Debug ===');
-    console.log('API Key exists:', !!apiKey);
-    if (apiKey) {
-      console.log('API Key (masked):', `${apiKey.substring(0, 10)}...${apiKey.substring(apiKey.length - 5)}`);
-    }
-  }, []);
+
 
   // Check environment variables on app start
   useEffect(() => {

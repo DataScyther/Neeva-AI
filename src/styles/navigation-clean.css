@@ -59,16 +59,7 @@
     0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
-@media (prefers-color-scheme: dark) {
-  .navigation-pill {
-    background: #1a1a2e;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.4),
-      0 4px 16px rgba(0, 0, 0, 0.3),
-      0 0 0 1px rgba(255, 255, 255, 0.05);
-  }
-}
+
 
 /* Force light override (keep for explicit light mode) */
 .mobile-nav-container .navigation-pill,
@@ -87,16 +78,7 @@ div.mobile-nav-container div.navigation-pill {
   border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-@media (prefers-color-scheme: dark) {
 
-  .mobile-nav-container .navigation-pill,
-  div.mobile-nav-container div.navigation-pill {
-    background-color: #1a1a2e !important;
-    background-image: none !important;
-    background: #1a1a2e !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-  }
-}
 
 /* ============================================
    Items Layout — Even spacing with gap
@@ -141,15 +123,7 @@ div.mobile-nav-container div.navigation-pill {
 }
 
 /* Dark mode hover/active */
-@media (prefers-color-scheme: dark) {
-  .nav-pill-item:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
 
-  .nav-pill-item:active {
-    background: rgba(255, 255, 255, 0.12);
-  }
-}
 
 .dark .nav-pill-item:hover,
 [data-theme="dark"] .nav-pill-item:hover {
@@ -166,11 +140,7 @@ div.mobile-nav-container div.navigation-pill {
   background: rgba(59, 130, 246, 0.08);
 }
 
-@media (prefers-color-scheme: dark) {
-  .nav-pill-item.active {
-    background: rgba(59, 130, 246, 0.15);
-  }
-}
+
 
 .dark .nav-pill-item.active,
 [data-theme="dark"] .nav-pill-item.active {
@@ -195,11 +165,7 @@ div.mobile-nav-container div.navigation-pill {
 }
 
 /* Dark mode icon color */
-@media (prefers-color-scheme: dark) {
-  .nav-icon {
-    color: #6b7280;
-  }
-}
+
 
 .dark .nav-icon,
 [data-theme="dark"] .nav-icon {
@@ -308,14 +274,7 @@ div.mobile-nav-container div.navigation-pill {
 }
 
 /* Dark mode center button */
-@media (prefers-color-scheme: dark) {
-  .nav-center-button {
-    border-color: #1a1a2e;
-    box-shadow:
-      0 4px 14px rgba(139, 92, 246, 0.5),
-      0 2px 6px rgba(0, 0, 0, 0.3);
-  }
-}
+
 
 .dark .nav-center-button,
 [data-theme="dark"] .nav-center-button {

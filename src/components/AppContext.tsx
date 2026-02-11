@@ -6,6 +6,7 @@ import React, {
 } from "react";
 
 import { authService, UserProfile } from '../lib/auth';
+import { loadUserData, getCompletedExercises } from '../lib/db';
 
 // Types
 interface User {
@@ -58,16 +59,16 @@ interface AppState {
   user: User | UserProfile | null;
   isAuthenticated: boolean;
   currentView:
-    | "dashboard"
-    | "chatbot"
-    | "mood"
-    | "exercises"
-    | "community"
-    | "settings"
-    | "insights"
-    | "meditation"
-    | "crisis"
-    | "wellness";
+  | "dashboard"
+  | "chatbot"
+  | "mood"
+  | "exercises"
+  | "community"
+  | "settings"
+  | "insights"
+  | "meditation"
+  | "crisis"
+  | "wellness";
   moodEntries: MoodEntry[];
   chatHistory: ChatMessage[];
   exercises: Exercise[];
@@ -84,7 +85,8 @@ type AppAction =
   | { type: "ADD_CHAT_MESSAGE"; payload: ChatMessage }
   | { type: "COMPLETE_EXERCISE"; payload: string }
   | { type: "SET_THEME"; payload: AppState["theme"] }
-  | { type: "SET_LOADING"; payload: boolean };
+  | { type: "SET_LOADING"; payload: boolean }
+  | { type: "SET_INITIAL_DATA"; payload: Partial<AppState> };
 
 const initialState: AppState = {
   user: null,
@@ -219,6 +221,25 @@ function appReducer(
       return { ...state, theme: action.payload };
     case "SET_LOADING":
       return { ...state, isLoading: action.payload };
+    case "SET_INITIAL_DATA":
+      // Merge initial data
+      // For exercises, we merge the 'completed' and 'streak' status from DB into the default list
+      let mergedExercises = state.exercises;
+      if (action.payload.exercises) {
+        // Here payload.exercises is expected to be array? No, simpler to pass map in payload?
+        // Let's assume action.payload.exercises has the merged list or we handle it before dispatch.
+        // Actually, let's keep it simple: payload contains partial state.
+        // If payload has 'exercises', use it.
+        // But wait, our 'db' helper returned undefined for exercises in loadData.
+        // We'll handle exercise merging in the useEffect before dispatching.
+        mergedExercises = (action.payload.exercises as Exercise[]) || state.exercises;
+      }
+      return {
+        ...state,
+        moodEntries: action.payload.moodEntries || state.moodEntries,
+        chatHistory: action.payload.chatHistory || state.chatHistory,
+        exercises: mergedExercises,
+      };
     default:
       return state;
   }
@@ -245,6 +266,35 @@ export function AppProvider({
       if (firebaseUser) {
         const profile = authService.getCurrentUserProfile();
         dispatch({ type: 'SET_USER', payload: profile });
+
+        // Load persistent data
+        const fetchData = async () => {
+          const userData = await loadUserData(firebaseUser.uid);
+          const completedExercises = await getCompletedExercises(firebaseUser.uid);
+
+          // Merge exercises
+          // We start with initial exercises and update their status
+          const currentExercises = [...initialState.exercises]; // Reset to initial to ensure clean slate or use state?
+          // Actually, better to use the static list and update it.
+          const updatedExercises = currentExercises.map(ex => {
+            const stored = completedExercises[ex.id];
+            if (stored) {
+              return { ...ex, completed: stored.completed, streak: stored.streak };
+            }
+            return ex;
+          });
+
+          dispatch({
+            type: 'SET_INITIAL_DATA',
+            payload: {
+              moodEntries: userData.moodEntries,
+              chatHistory: userData.chatHistory,
+              exercises: updatedExercises
+            }
+          });
+        };
+        fetchData();
+
       } else {
         dispatch({ type: 'CLEAR_USER' });
       }

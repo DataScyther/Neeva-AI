@@ -17,7 +17,7 @@ export class GeminiError extends Error {
 // In production, use the secure backend proxy. In dev, use VITE_ key directly.
 const IS_DEV = import.meta.env.DEV;
 const DEV_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const DEV_MODEL = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.0-flash';
+const DEV_MODEL = import.meta.env.VITE_GEMINI_MODEL || 'gemini-flash-latest';
 const DEV_BASE_URL = import.meta.env.VITE_GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta';
 
 if (IS_DEV) {

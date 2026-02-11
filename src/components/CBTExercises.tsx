@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -17,6 +17,7 @@ import {
 import { Textarea } from "./ui/textarea";
 import { Slider } from "./ui/slider";
 import { useAppContext } from "./AppContext";
+import { saveExerciseProgress } from "../lib/db";
 import { useAudioManager } from "./AudioManager";
 import {
   Brain,
@@ -301,6 +302,12 @@ export function CBTExercises() {
     timeLeft: 0,
     totalTime: 0,
   });
+
+  // Refs to access latest state inside timer effect without resetting it
+  const stateRef = useRef(state);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
   const [currentStep, setCurrentStep] = useState(0);
   const [journalEntries, setJournalEntries] = useState<
     JournalEntry[]
@@ -332,6 +339,17 @@ export function CBTExercises() {
         });
         // Stop audio when exercise completes
         stopAudio();
+
+        // Save progress to Firestore
+        const userId = (stateRef.current.user as any)?.uid || (stateRef.current.user as any)?.id;
+        if (activeExercise && userId) {
+          const exercise = stateRef.current.exercises.find(e => e.id === activeExercise);
+          if (exercise) {
+            // Determine new streak (it will be incremented by reducer, so we send current + 1)
+            const newStreak = exercise.streak + 1;
+            saveExerciseProgress(userId, activeExercise, newStreak);
+          }
+        }
       }
     }
 

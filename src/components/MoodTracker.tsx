@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAppContext } from "./AppContext";
+import { saveMoodEntry } from "../lib/db";
 import {
   Card,
   CardContent,
@@ -84,6 +85,12 @@ export function MoodTracker() {
     };
 
     dispatch({ type: "ADD_MOOD_ENTRY", payload: newEntry });
+
+    // Save to Firestore
+    const userId = (state.user as any)?.uid || (state.user as any)?.id;
+    if (userId) {
+      saveMoodEntry(userId, newEntry);
+    }
 
     setTimeout(() => {
       setSelectedMood(null);
