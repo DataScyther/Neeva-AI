@@ -3,36 +3,30 @@ export function checkEnvVariables(): { isValid: boolean; errors: string[]; warni
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // OpenRouter API key is now handled securely in the backend
-  // No frontend check needed
-
-  // Check if model is set (optional, but good to know)
-  // Check if model is set (optional, but good to know)
-  const model = import.meta.env.VITE_OPENROUTER_MODEL;
-  if (!model) {
-    // Just a debug log, not a warning since we have defaults
-    // console.debug('VITE_OPENROUTER_MODEL is not set. Using default model.');
+  // Check Gemini API key (used in dev mode for direct API calls)
+  const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  if (!geminiKey && import.meta.env.DEV) {
+    errors.push('VITE_GEMINI_API_KEY is not set. AI features will not work in dev mode.');
   }
 
-  // Check if base URL is set (optional, but good to know)
-  const baseUrl = import.meta.env.VITE_OPENROUTER_BASE_URL;
-  if (!baseUrl) {
-    // Just a debug log, not a warning since we have defaults
-    // console.debug('VITE_OPENROUTER_BASE_URL is not set. Using default URL.');
+  // Check Gemini model (optional, has default)
+  const model = import.meta.env.VITE_GEMINI_MODEL;
+  if (!model) {
+    // Uses default 'gemini-2.0-flash'
   }
 
   // Log warnings to console
   if (warnings.length > 0) {
-    console.warn('OpenRouter API environment warnings:', warnings.join(', '));
+    console.warn('Environment warnings:', warnings.join(', '));
   }
 
   // Log errors to console
   if (errors.length > 0) {
-    console.error('OpenRouter API environment errors:', errors.join(', '));
+    console.error('Environment errors:', errors.join(', '));
   }
 
   return {
-    isValid: errors.length === 0, // No hard errors now, only warnings
+    isValid: errors.length === 0,
     errors,
     warnings
   };

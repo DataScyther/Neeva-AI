@@ -14,8 +14,17 @@ export class GeminiError extends Error {
   }
 }
 
-// No API key in frontend - always use backend proxy for security
-console.log('🔒 Using secure backend proxy for Gemini API');
+// In production, use the secure backend proxy. In dev, use VITE_ key directly.
+const IS_DEV = import.meta.env.DEV;
+const DEV_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const DEV_MODEL = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.0-flash';
+const DEV_BASE_URL = import.meta.env.VITE_GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta';
+
+if (IS_DEV) {
+  console.log('🔧 Dev mode: calling Gemini API directly');
+} else {
+  console.log('🔒 Production: using secure backend proxy for Gemini API');
+}
 
 // System instruction for Neeva
 const SYSTEM_INSTRUCTION = `You are Neeva, a witty, warm, and deeply empathetic AI mental health companion. Think of yourself as a supportive best friend who happens to be really wise and knowledgeable about the world.
@@ -110,15 +119,28 @@ export async function callGemini(messages: GeminiMessage[]): Promise<string> {
       ...messages
     ];
 
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: contents
-      }),
-    });
+    let response: Response;
+
+    if (IS_DEV && DEV_API_KEY) {
+      // Dev mode: call Gemini API directly
+      const url = `${DEV_BASE_URL}/models/${DEV_MODEL}:generateContent?key=${DEV_API_KEY}`;
+      response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contents }),
+      });
+    } else {
+      // Production: use secure backend proxy
+      response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ contents }),
+      });
+    }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));

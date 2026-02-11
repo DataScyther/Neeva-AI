@@ -1,219 +1,383 @@
 /* Clean Mobile Navigation Styles - Optimized for Mobile Phones */
-/* Matches the design from the provided images */
+/* Icon-only design with active dot indicators */
 
-/* Force override any conflicting styles */
-.mobile-nav-container .navigation-pill,
-div.mobile-nav-container div.navigation-pill {
-  background-color: #fffefe !important;
-  background-image: none !important;
-  background: #ffffff !important;
-}
-
-@media (prefers-color-scheme: dark) {
-  .mobile-nav-container .navigation-pill,
-  div.mobile-nav-container div.navigation-pill {
-    background-color: #ffffff !important;
-    background-image: none !important;
-    background: #ffffff !important;
-  }
-}
-
-/* Mobile navigation container positioning */
+/* ============================================
+   Container — Fixed bottom, centered pill
+   ============================================ */
 .mobile-nav-container {
   position: fixed !important;
-  bottom: 20px !important;
+  bottom: 16px !important;
   left: 50% !important;
-  transform: translateX(-50%) !important;
+  transform: translateX(-50%) translateY(0) !important;
   z-index: 9999 !important;
   pointer-events: auto !important;
   width: auto !important;
-  max-width: calc(100vw - 24px) !important;
-  padding: 0 12px !important;
+  max-width: calc(100vw - 32px) !important;
+  padding: 0 !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Navigation Pill - Optimized Light Theme */
-.mobile-nav-container .navigation-pill {
-  min-width: 340px;
-  max-width: calc(100vw - 24px);
-  background: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 6px 20px rgba(0, 0, 0, 0.1), 0 3px 10px rgba(0, 0, 0, 0.05) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  /* Ensure solid appearance */
-  opacity: 1 !important;
-}
-
-/* Dark mode pill navigation - Enhanced */
-@media (prefers-color-scheme: dark) {
-  .mobile-nav-container .navigation-pill {
-    background: #ffffff !important;
-    border: 1px solid rgb(255, 255, 255) !important;
-    box-shadow: 0 10px 40px rgb(255, 255, 255), 0 6px 20px rgba(0, 0, 0, 0.6), 0 3px 10px rgba(0, 0, 0, 0.4) !important;
-  }
-}
-
-/* Navigation pill items - Enhanced for Both Themes */
-.nav-pill-item {
-  position: relative;
-  padding: 10px 6px;
-  border-radius: 18px;
-  min-width: 56px;
-  min-height: 56px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-/* Light theme interactions */
-.nav-pill-item:hover {
-  background: rgb(255, 255, 255);
-  transform: translateY(-1px) scale(1.02);
-}
-
-.nav-pill-item:active {
-  transform: scale(0.96);
-  background: rgb(255, 255, 255);
-}
-
-/* Dark theme interactions */
-@media (prefers-color-scheme: dark) {
-  .nav-pill-item:hover {
-    background: rgb(255, 255, 255);
-    transform: translateY(-1px) scale(1.02);
-  }
-
-  .nav-pill-item:active {
-    background: rgba(59, 130, 246, 0.2);
-    transform: scale(0.96);
-  }
-}
-
-/* Active state styling */
-.nav-pill-item.active {
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
-}
-
-@media (prefers-color-scheme: dark) {
-  .nav-pill-item.active {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(147, 51, 234, 0.2) 100%);
-  }
-}
-
-/* Center button styles - Optimized for Both Themes */
-.nav-center-button {
-  position: relative;
-  z-index: 10;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-  border: 3px solid #ffffff;
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4), 0 3px 8px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-/* Light theme center button interactions */
-.nav-center-button:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5), 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.nav-center-button:active {
-  transform: scale(0.94);
-  box-shadow: 0 3px 12px rgba(59, 130, 246, 0.3), 0 1px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-/* Dark theme center button */
-@media (prefers-color-scheme: dark) {
-  .nav-center-button {
-    border: 3px solid #1a1a1a;
-    box-shadow: 0 6px 20px rgb(255, 255, 255), 0 3px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  }
-
-  .nav-center-button:hover {
-    box-shadow: 0 8px 25px rgb(255, 255, 255), 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  }
-
-  .nav-center-button:active {
-    box-shadow: 0 3px 12px rgba(59, 130, 246, 0.5), 0 1px 4px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  }
-}
-
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .navigation-pill {
-    min-width: 280px;
-    padding: 12px 16px;
-  }
-
-  .navigation-pill .flex {
-    gap: 0.75rem;
-  }
-
-  .nav-pill-item {
-    min-width: 48px;
-    padding: 8px 6px;
-  }
-
-  .nav-center-button {
-    width: 52px;
-    height: 52px;
-  }
-}
-
-/* Ensure proper stacking */
-.navigation-pill {
-  z-index: 9999;
-  position: relative;
-}
-
-/* Home indicator styling */
-.home-indicator {
-  transition: opacity 0.3s ease;
-}
-
-@media (max-width: 375px) {
-  .home-indicator {
-    width: 100px;
-  }
+/* Hide state — slides down smoothly */
+.mobile-nav-container.mobile-nav-hidden {
+  transform: translateX(-50%) translateY(120%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 /* Safe area for devices with home indicator */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .mobile-nav-container {
-    padding-bottom: env(safe-area-inset-bottom);
+    bottom: calc(12px + env(safe-area-inset-bottom)) !important;
   }
 }
 
-/* Smooth entrance animation */
+/* ============================================
+   Navigation Pill — The floating bar
+   ============================================ */
+.navigation-pill {
+  z-index: 9999;
+  position: relative;
+  border-radius: 28px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* Dark mode pill */
+.dark .navigation-pill,
+[data-theme="dark"] .navigation-pill {
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  .navigation-pill {
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Force light override (keep for explicit light mode) */
+.mobile-nav-container .navigation-pill,
+div.mobile-nav-container div.navigation-pill {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  background: #ffffff !important;
+}
+
+.dark .mobile-nav-container .navigation-pill,
+.dark div.mobile-nav-container div.navigation-pill,
+[data-theme="dark"] .mobile-nav-container .navigation-pill {
+  background-color: #1a1a2e !important;
+  background-image: none !important;
+  background: #1a1a2e !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+
+  .mobile-nav-container .navigation-pill,
+  div.mobile-nav-container div.navigation-pill {
+    background-color: #1a1a2e !important;
+    background-image: none !important;
+    background: #1a1a2e !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+/* ============================================
+   Items Layout — Even spacing with gap
+   ============================================ */
+.mobile-nav-items {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 4px;
+  min-width: 280px;
+}
+
+/* ============================================
+   Nav Item — Icon + optional active dot
+   ============================================ */
+.nav-pill-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 16px;
+  min-width: 48px;
+  min-height: 48px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-pill-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.nav-pill-item:active {
+  transform: scale(0.92);
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* Dark mode hover/active */
+@media (prefers-color-scheme: dark) {
+  .nav-pill-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-pill-item:active {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.dark .nav-pill-item:hover,
+[data-theme="dark"] .nav-pill-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dark .nav-pill-item:active,
+[data-theme="dark"] .nav-pill-item:active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Active state — subtle bg glow */
+.nav-pill-item.active {
+  background: rgba(59, 130, 246, 0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .nav-pill-item.active {
+    background: rgba(59, 130, 246, 0.15);
+  }
+}
+
+.dark .nav-pill-item.active,
+[data-theme="dark"] .nav-pill-item.active {
+  background: rgba(59, 130, 246, 0.15);
+}
+
+/* ============================================
+   Icon styling
+   ============================================ */
+.nav-icon-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-icon {
+  width: 22px;
+  height: 22px;
+  color: #9ca3af;
+  transition: color 0.2s ease;
+}
+
+/* Dark mode icon color */
+@media (prefers-color-scheme: dark) {
+  .nav-icon {
+    color: #6b7280;
+  }
+}
+
+.dark .nav-icon,
+[data-theme="dark"] .nav-icon {
+  color: #6b7280;
+}
+
+/* Active icon gets its color from inline style */
+.nav-pill-item.active .nav-icon {
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+/* ============================================
+   Active Dot Indicator
+   ============================================ */
+.nav-active-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: 4px;
+  animation: dotAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes dotAppear {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Pulse Dot — Notification on chat icon
+   ============================================ */
+.nav-pulse-dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.3);
+  }
+}
+
+/* ============================================
+   Center Button — Record Mood
+   ============================================ */
+.nav-center-button {
+  position: relative;
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+  box-shadow:
+    0 4px 14px rgba(139, 92, 246, 0.4),
+    0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.nav-center-button:hover {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow:
+    0 6px 20px rgba(139, 92, 246, 0.5),
+    0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.nav-center-button:active {
+  transform: scale(0.94);
+  box-shadow:
+    0 2px 8px rgba(139, 92, 246, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.nav-center-button.active {
+  box-shadow:
+    0 4px 14px rgba(139, 92, 246, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+/* Dark mode center button */
+@media (prefers-color-scheme: dark) {
+  .nav-center-button {
+    border-color: #1a1a2e;
+    box-shadow:
+      0 4px 14px rgba(139, 92, 246, 0.5),
+      0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.dark .nav-center-button,
+[data-theme="dark"] .nav-center-button {
+  border-color: #1a1a2e;
+  box-shadow:
+    0 4px 14px rgba(139, 92, 246, 0.5),
+    0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   Responsive — Even smaller screens
+   ============================================ */
+@media (max-width: 360px) {
+  .mobile-nav-items {
+    min-width: 260px;
+    gap: 2px;
+  }
+
+  .nav-pill-item {
+    min-width: 42px;
+    padding: 6px 8px;
+  }
+
+  .nav-center-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .nav-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .navigation-pill {
+    padding: 6px 12px;
+  }
+}
+
+/* ============================================
+   Entrance Animation
+   ============================================ */
 .mobile-nav-container {
-  animation: slideUpFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: slideUpFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 @keyframes slideUpFadeIn {
   0% {
     opacity: 0;
-    transform: translateX(-50%) translateY(100px);
+    transform: translateX(-50%) translateY(80px);
   }
+
   100% {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
 }
 
-/* Ensure content doesn't overlap with navigation */
+/* ============================================
+   Body padding for nav clearance
+   ============================================ */
 body {
-  padding-bottom: 100px;
+  padding-bottom: 88px;
 }
 
 @media (min-width: 1024px) {
@@ -222,7 +386,9 @@ body {
   }
 }
 
-/* Performance optimizations */
+/* ============================================
+   Performance
+   ============================================ */
 .navigation-pill,
 .nav-pill-item,
 .nav-center-button {
@@ -231,13 +397,31 @@ body {
   -webkit-transform: translateZ(0);
 }
 
-/* Reduce motion for accessibility */
+/* ============================================
+   Accessibility — Reduced motion
+   ============================================ */
 @media (prefers-reduced-motion: reduce) {
+
   .mobile-nav-container,
   .nav-pill-item,
   .nav-center-button,
-  .navigation-pill {
-    animation: none;
-    transition: none;
+  .navigation-pill,
+  .nav-active-dot,
+  .nav-pulse-dot {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ============================================
+   Drawer Slide-in Animation
+   ============================================ */
+@keyframes drawerSlideIn {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(0);
   }
 }

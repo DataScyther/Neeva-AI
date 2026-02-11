@@ -4,7 +4,7 @@ import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { useAppContext } from "./AppContext";
 import { MobileNavigation } from "./MobileNavigation";
-import "../styles/navigation-optimize.css";
+
 import "../styles/navigation-clean.css";
 import {
   Home,
@@ -182,13 +182,12 @@ export function Navigation() {
           <div key={item.id}>
             <Button
               variant={isActive ? "default" : "ghost"}
-              className={`w-full justify-start h-11 ${
-                isActive
-                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
-                  : hasUrgent
-                    ? "hover:bg-red-50 hover:text-red-700"
-                    : "hover:bg-accent"
-              }`}
+              className={`w-full justify-start h-11 ${isActive
+                ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
+                : hasUrgent
+                  ? "hover:bg-red-50 hover:text-red-700"
+                  : "hover:bg-accent"
+                }`}
               onClick={() =>
                 dispatch({
                   type: "SET_VIEW",
@@ -197,13 +196,12 @@ export function Navigation() {
               }
             >
               <IconComponent
-                className={`w-5 h-5 mr-3 ${
-                  isActive
-                    ? "text-white"
-                    : hasUrgent
-                      ? "text-red-500"
-                      : item.color
-                }`}
+                className={`w-5 h-5 mr-3 ${isActive
+                  ? "text-white"
+                  : hasUrgent
+                    ? "text-red-500"
+                    : item.color
+                  }`}
               />
               <span className="flex-1 text-left">
                 {item.label}
@@ -322,7 +320,7 @@ export function Navigation() {
       </div>
 
       {/* Mobile Bottom Navigation - Clean Design */}
-      <MobileNavigation />
+      <MobileNavigation hidden={isMobileMenuOpen} />
 
       {/* Mobile Menu Button for other features */}
       <div className="lg:hidden fixed top-4 right-4 z-50">
@@ -345,7 +343,7 @@ export function Navigation() {
           />
 
           {/* Drawer */}
-          <div className="lg:hidden fixed inset-y-0 right-0 w-80 max-w-[85vw] bg-white dark:bg-black border-l border-border shadow-xl z-50 transform transition-transform duration-300">
+          <div className="lg:hidden fixed inset-y-0 right-0 w-80 max-w-[85vw] bg-white dark:bg-black border-l border-border shadow-xl z-50" style={{ animation: 'drawerSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards' }}>
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
@@ -405,19 +403,17 @@ export function Navigation() {
                       <Button
                         key={item.id}
                         variant={isActive ? "default" : "ghost"}
-                        className={`w-full justify-start h-11 ${
-                          isActive
-                            ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
-                            : "hover:bg-accent"
-                        }`}
+                        className={`w-full justify-start h-11 ${isActive
+                          ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
+                          : "hover:bg-accent"
+                          }`}
                         onClick={() =>
                           handleNavigation(item.view)
                         }
                       >
                         <IconComponent
-                          className={`w-5 h-5 mr-3 ${
-                            isActive ? "text-white" : item.color
-                          }`}
+                          className={`w-5 h-5 mr-3 ${isActive ? "text-white" : item.color
+                            }`}
                         />
                         <span className="flex-1 text-left">
                           {item.label}
@@ -451,19 +447,17 @@ export function Navigation() {
                       <Button
                         key={item.id}
                         variant={isActive ? "default" : "ghost"}
-                        className={`w-full justify-start h-11 ${
-                          isActive
-                            ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
-                            : "hover:bg-accent"
-                        }`}
+                        className={`w-full justify-start h-11 ${isActive
+                          ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
+                          : "hover:bg-accent"
+                          }`}
                         onClick={() =>
                           handleNavigation(item.view)
                         }
                       >
                         <IconComponent
-                          className={`w-5 h-5 mr-3 ${
-                            isActive ? "text-white" : item.color
-                          }`}
+                          className={`w-5 h-5 mr-3 ${isActive ? "text-white" : item.color
+                            }`}
                         />
                         <span className="flex-1 text-left">
                           {item.label}
@@ -492,25 +486,23 @@ export function Navigation() {
                       <Button
                         key={item.id}
                         variant={isActive ? "default" : "ghost"}
-                        className={`w-full justify-start h-11 ${
-                          isActive
-                            ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
-                            : hasUrgent
-                              ? "hover:bg-red-50 hover:text-red-700"
-                              : "hover:bg-accent"
-                        }`}
+                        className={`w-full justify-start h-11 ${isActive
+                          ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
+                          : hasUrgent
+                            ? "hover:bg-red-50 hover:text-red-700"
+                            : "hover:bg-accent"
+                          }`}
                         onClick={() =>
                           handleNavigation(item.view)
                         }
                       >
                         <IconComponent
-                          className={`w-5 h-5 mr-3 ${
-                            isActive
-                              ? "text-white"
-                              : hasUrgent
-                                ? "text-red-500"
-                                : item.color
-                          }`}
+                          className={`w-5 h-5 mr-3 ${isActive
+                            ? "text-white"
+                            : hasUrgent
+                              ? "text-red-500"
+                              : item.color
+                            }`}
                         />
                         <span className="flex-1 text-left">
                           {item.label}
