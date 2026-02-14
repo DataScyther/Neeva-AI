@@ -43,9 +43,7 @@ Neeva AI represents the future of mental health support, seamlessly blending cut
 | 🧠 **Intelligent CBT Engine** | Adaptive cognitive behavioral therapy exercises | Scientifically-backed therapeutic interventions |
 | 👥 **Community Intelligence** | Anonymous peer support with AI-moderated discussions | Safe, meaningful social connections |
 | 🚨 **Crisis Detection System** | Real-time emergency response with professional escalation | Life-saving crisis intervention |
-| 📈 **Predictive Dashboard** | Machine learning-driven wellness forecasting | Preventative mental health care |
 | 🧘 **AI-Guided Meditation** | Personalized mindfulness sessions with biofeedback | Enhanced stress reduction and relaxation |
-| 🔒 **Quantum-Safe Security** | Military-grade encryption with zero-knowledge architecture | Uncompromised privacy protection |
 
 ---
 
