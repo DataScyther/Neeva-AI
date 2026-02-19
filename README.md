@@ -15,7 +15,100 @@
 > *"Empowering minds through AI-driven mental wellness – where technology meets compassion."*
 
 Neeva AI represents the future of mental health support, seamlessly blending cutting-edge artificial intelligence with evidence-based therapeutic practices. Designed for proactive emotional maintenance and intelligent crisis intervention, our platform transforms how individuals engage with their mental well-being.
+# Neeva AI
 
+A conversational AI project exploring mood tracking, reflective journaling, and CBT-inspired exercises using modern LLM tooling.
+
+> This project is **not a medical product** and does not provide diagnosis, therapy, or crisis support.  
+> It is an experimental software project focused on human-computer interaction and behavioral self-reflection tools.
+
+---
+
+## Purpose
+
+Most mental wellness apps either:
+- track data but don’t talk to you
+- or talk to you but don’t remember anything meaningful
+
+Neeva AI prototypes a middle ground:  
+a personal conversational interface that helps users notice patterns in thoughts, habits, and emotions over time.
+
+The focus is behavioral awareness, not treatment.
+
+---
+
+## Current Status
+
+⚠️ Active development project
+
+Features are experimental and subject to change.  
+Expect incomplete flows, placeholder logic, and evolving architecture.
+
+---
+
+## Core Features
+
+| Feature | What it actually does |
+|------|------|
+| Conversational Companion | Natural language chat interface for reflection and journaling prompts |
+| Mood Tracking | Stores daily mood entries and simple trends |
+| Pattern Insights | Detects recurring keywords, topics, and emotional tone changes |
+| CBT-Inspired Exercises | Structured reflection prompts based on cognitive restructuring principles (non-clinical) |
+
+---
+
+## Technology Stack
+
+- React + Vite frontend
+- Node.js backend
+- TypeScript
+- LLM powered conversation layer
+- Local data storage (session-based memory)
+
+---
+
+## What This Project Is
+
+- A learning project
+- An HCI + AI experimentation sandbox
+- A behavioral journaling assistant
+- A portfolio-grade full-stack AI application
+
+## What This Project Is NOT
+
+- A therapist
+- A diagnosis system
+- A crisis intervention service
+- A replacement for professional help
+
+---
+
+## Planned Improvements
+
+- Long-term memory summarization
+- Better prompt engineering for reflections
+- Habit correlation detection
+- Privacy-first storage architecture
+- Response quality evaluation dataset
+
+---
+
+## Why This Exists
+
+Modern LLMs are good at conversation but bad at continuity.  
+Mental wellness tools need continuity more than intelligence.
+
+This project experiments with combining:
+
+conversation + memory + pattern tracking
+
+to see whether software can help users notice their own behavioral patterns earlier.
+
+---
+
+## License
+
+MIT
 ---
 
 ## Table of Contents
