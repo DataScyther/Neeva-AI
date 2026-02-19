@@ -123,7 +123,7 @@ to see whether software can help users notice their own behavioral patterns earl
 
 ---
 
-## Core Features
+## Core Features (In Development)
 
 | Feature | Description | Impact |
 |---------|-------------|---------|
@@ -136,7 +136,7 @@ to see whether software can help users notice their own behavioral patterns earl
 
 ---
 
-## 🛠 Technology Stack
+## 🛠 Technology Stack (Detailed)
 
 ### Frontend Architecture
 
@@ -149,16 +149,14 @@ to see whether software can help users notice their own behavioral patterns earl
 
 ### AI & Backend Infrastructure
 
-- **🧠 OpenRouter API** - Unified access to cutting-edge language models
-- **🌟 Google Gemini** - Advanced multimodal AI capabilities
-- **🗄️ Supabase** - Real-time database with built-in authentication
+- **🌟 Google Gemini API** - Advanced multimodal AI capabilities
+- **🗄️ Firebase** - Real-time database with built-in authentication
 - **🚀 Node.js** - High-performance backend runtime
-- **🐘 PostgreSQL** - Advanced relational database management
 
 ### Cross-Platform Deployment
 
 - **📱 Capacitor** - Native mobile app development
-- **☁️ Netlify** - Global CDN with automated deployments
+- **☁️ Vercel** - Global CDN with automated deployments
 - **🔄 CI/CD** - Automated testing and deployment pipelines
 
 ---
