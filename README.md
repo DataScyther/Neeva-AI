@@ -24,6 +24,22 @@ A conversational AI project exploring mood tracking, reflective journaling, and 
 
 ---
 
+## Table of Contents
+
+- Vision
+- Core Features
+- Technology Stack
+- Quick Start
+- Usage Guide
+- Documentation
+- Development
+- Contributing
+- License
+- Support
+- Live Demo
+
+---
+
 ## Purpose
 
 Most mental wellness apps either:
@@ -104,26 +120,6 @@ conversation + memory + pattern tracking
 
 to see whether software can help users notice their own behavioral patterns earlier.
 
----
-
-## License
-
-MIT
----
-
-## Table of Contents
-
-- Vision
-- Core Features
-- Technology Stack
-- Quick Start
-- Usage Guide
-- Documentation
-- Development
-- Contributing
-- License
-- Support
-- Live Demo
 
 ---
 
@@ -374,8 +370,6 @@ If you're experiencing a mental health crisis:
 ---
 
 ## 🙏 Acknowledgments
-
-Built with ❤️ by passionate developers, mental health advocates, and AI researchers committed to making mental wellness accessible to everyone.
 
 "Technology should serve humanity's deepest needs – emotional well-being is fundamental."
 
