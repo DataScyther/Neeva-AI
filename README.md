@@ -9,18 +9,19 @@
 [![Vite](https://img.shields.io/badge/Vite-6.0+-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
 
 ---
-
-## Vision
-
-> *"Empowering minds through AI-driven mental wellness – where technology meets compassion."*
-
-Neeva AI represents the future of mental health support, seamlessly blending cutting-edge artificial intelligence with evidence-based therapeutic practices. Designed for proactive emotional maintenance and intelligent crisis intervention, our platform transforms how individuals engage with their mental well-being.
 # Neeva AI
 
 A conversational AI project exploring mood tracking, reflective journaling, and CBT-inspired exercises using modern LLM tooling.
 
 > This project is **not a medical product** and does not provide diagnosis, therapy, or crisis support.  
 > It is an experimental software project focused on human-computer interaction and behavioral self-reflection tools.
+
+
+## Vision
+
+> *"Empowering minds through AI-driven mental wellness – where technology meets compassion."*
+
+Neeva AI represents the future of mental health support, seamlessly blending cutting-edge artificial intelligence with evidence-based therapeutic practices. Designed for proactive emotional maintenance and intelligent crisis intervention, our platform transforms how individuals engage with their mental well-being.
 
 ---
 
