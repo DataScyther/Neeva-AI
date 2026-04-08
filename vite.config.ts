@@ -19,6 +19,7 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+          'ui-vendor': ['lucide-react', 'framer-motion', 'tailwind-merge', 'clsx', 'class-variance-authority']
         },
       },
     },

@@ -161,7 +161,7 @@ export function GuidedMeditation() {
   const [isMuted, setIsMuted] = useState(false);
   const [currentInstruction, setCurrentInstruction] =
     useState(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (isPlaying && selectedSession) {
@@ -265,15 +265,16 @@ export function GuidedMeditation() {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-6xl mx-auto">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold flex items-center justify-center space-x-2">
-          <Headphones className="w-8 h-8 text-purple-500" />
-          <span>Guided Meditation</span>
-        </h1>
-        <p className="text-muted-foreground">
-          Find peace and clarity through guided meditation
-          practices
+    <div className="p-6 space-y-8 max-w-6xl mx-auto">
+      <div className="text-center space-y-4 mb-8">
+        <div className="flex items-center justify-center space-x-4">
+          <Headphones className="w-8 h-8 text-purple-500 stroke-[2.5]" />
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Guided Meditation
+          </h1>
+        </div>
+        <p className="text-lg text-slate-500 font-medium text-center max-w-2xl mx-auto">
+          Find peace and clarity through guided meditation practices
         </p>
       </div>
 
@@ -420,23 +421,23 @@ export function GuidedMeditation() {
       )}
 
       {/* Session Selection */}
-      <div className="space-y-4">
+      <div className="space-y-6 mb-8">
         <h2 className="text-xl font-semibold">
           Choose Your Meditation
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {meditationSessions.map((session) => {
             const IconComponent = session.icon;
             const isSelected =
               selectedSession?.id === session.id;
 
             return (
-              <div key={session.id}>
+              <div key={session.id} className="h-full">
                 <Card
-                  className={`cursor-pointer transition-all hover:shadow-lg ${
+                  className={`h-full flex flex-col cursor-pointer transition-all hover:shadow-lg border ${
                     isSelected
                       ? "border-2 border-purple-300 bg-purple-50"
-                      : ""
+                      : "border-slate-100 dark:border-slate-800"
                   }`}
                   onClick={() => handleSessionSelect(session)}
                 >

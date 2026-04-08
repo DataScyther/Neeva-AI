@@ -220,14 +220,15 @@ export function CommunityGroups() {
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold flex items-center justify-center space-x-2">
-          <Users className="w-8 h-8 text-blue-500" />
-          <span>Community Support</span>
-        </h1>
-        <p className="text-muted-foreground">
-          Connect with others on similar journeys in a safe,
-          supportive environment
+      <div className="text-center space-y-4 mb-8">
+        <div className="flex items-center justify-center space-x-4">
+          <Users className="w-8 h-8 text-blue-500 stroke-[2.5]" />
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Community Support
+          </h1>
+        </div>
+        <p className="text-lg text-slate-500 font-medium text-center max-w-2xl mx-auto">
+          Connect with others on similar journeys in a safe, supportive environment
         </p>
       </div>
 

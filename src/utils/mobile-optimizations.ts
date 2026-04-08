@@ -194,7 +194,7 @@ export const measurePerformance = (name: string) => {
 
 // Optimized scroll handler
 export const useOptimizedScroll = (callback: () => void, delay = 100) => {
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const rafRef = useRef<number>();
 
   const handleScroll = useCallback(() => {

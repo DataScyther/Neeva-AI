@@ -101,18 +101,18 @@ export function WellnessStudio() {
           transition={{ duration: 0.6 }}
           className="text-center space-y-4 py-8"
         >
-          <div className="flex items-center justify-center space-x-3 mb-4">
+          <div className="flex items-center justify-center space-x-4 mb-4">
             <motion.div
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             >
-              <Sparkles className="w-10 h-10 text-teal-500" />
+              <Sparkles className="w-8 h-8 text-teal-500 stroke-[2.5]" />
             </motion.div>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
               Wellness Studio
             </h1>
           </div>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-slate-500 font-medium text-center max-w-2xl mx-auto">
             Your personalized space for mental health and wellbeing activities 🌟
           </p>
         </motion.div>
@@ -162,18 +162,19 @@ export function WellnessStudio() {
                   transition={{ duration: 0.6, delay: 0.1 * index }}
                   whileHover={{ y: -5, scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                  className="h-full flex flex-col"
                 >
                   <Card
-                    className="cursor-pointer border-0 overflow-hidden group transition-all duration-300 hover:shadow-2xl bg-white dark:bg-slate-800"
+                    className="cursor-pointer border-0 overflow-hidden h-full flex flex-col group transition-all duration-300 hover:shadow-2xl bg-white dark:bg-slate-800"
                     onClick={activity.action}
                   >
-                    <CardContent className="p-0">
+                    <CardContent className="p-0 flex flex-col h-full">
                       <div
-                        className={`relative p-6 bg-gradient-to-r ${activity.gradient} text-white overflow-hidden`}
+                        className={`relative p-6 bg-gradient-to-r ${activity.gradient} text-white overflow-hidden shrink-0`}
                       >
                         <div className="absolute inset-0 bg-black/10" />
                         <div className="relative flex items-center space-x-4">
-                          <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
+                          <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shrink-0">
                             <IconComponent className="w-8 h-8" />
                           </div>
                           <div>
@@ -186,7 +187,7 @@ export function WellnessStudio() {
                           </div>
                         </div>
                       </div>
-                      <div className="p-4">
+                      <div className="p-4 flex flex-col flex-1 mt-auto shrink-0 justify-end">
                         <Button
                           variant="ghost"
                           className="w-full"

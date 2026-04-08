@@ -677,17 +677,25 @@ export function CBTExercises() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center space-y-4 py-8"
+          className="text-center space-y-4 py-8 px-4"
         >
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 p-2 rounded-lg shadow-lg">
-              <BookOpen className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+          <div className="flex items-center justify-center space-x-4 mb-4">
+            <svg width="0" height="0" className="absolute">
+              <linearGradient id="cbtHeaderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop stopColor="#10b981" offset="0%" />
+                <stop stopColor="#14b8a6" offset="50%" />
+                <stop stopColor="#06b6d4" offset="100%" />
+              </linearGradient>
+            </svg>
+            <BookOpen
+              className="w-10 h-10 stroke-[2.5]"
+              style={{ stroke: "url(#cbtHeaderGradient)" }}
+            />
+            <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
               CBT Wellness Studio
             </h1>
           </div>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-slate-500 font-medium text-center max-w-2xl mx-auto">
             Evidence-based exercises, guided meditations, and
             cognitive games for your mental wellness journey
           </p>
@@ -700,8 +708,7 @@ export function CBTExercises() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-emerald-50 dark:from-slate-800 dark:to-emerald-900 shadow-xl shadow-emerald-500/10">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent" />
+          <Card className="relative overflow-hidden border-0 bg-white dark:bg-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none">
             <CardContent className="relative p-6">
               <div className="flex items-center space-x-4">
                 <div className="p-3 rounded-2xl bg-emerald-500 shadow-lg shadow-emerald-500/25">
@@ -729,11 +736,8 @@ export function CBTExercises() {
               return (
                 <Card
                   key={key}
-                  className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-700 shadow-xl"
+                  className="relative overflow-hidden border-0 bg-white dark:bg-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none"
                 >
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-br ${category.bgGradient} ${category.darkBgGradient} opacity-20`}
-                  />
                   <CardContent className="relative p-6">
                     <div className="flex items-center space-x-4">
                       <div
@@ -767,15 +771,17 @@ export function CBTExercises() {
             >
               <Card className="border-0 shadow-2xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm">
                 <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-t-lg">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center space-x-3">
-                      <Play className="w-6 h-6" />
-                      <span>
-                        {
-                          getExerciseById(activeExercise)
-                            ?.exercise.title
-                        }
-                      </span>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <CardTitle className="flex flex-wrap items-center gap-3">
+                      <div className="flex items-center space-x-3">
+                        <Play className="w-6 h-6 shrink-0" />
+                        <span className="leading-tight">
+                          {
+                            getExerciseById(activeExercise)
+                              ?.exercise.title
+                          }
+                        </span>
+                      </div>
                       {/* Audio Controls */}
                       <div className="flex items-center space-x-2">
                         <Button
@@ -807,7 +813,7 @@ export function CBTExercises() {
                         )}
                       </div>
                     </CardTitle>
-                    <div className="flex items-center space-x-3">
+                    <div className="flex items-center justify-between sm:justify-start gap-4">
                       {/* Volume Control */}
                       {audioEnabled && audioIsPlaying && (
                         <div className="flex items-center space-x-2 min-w-[120px]">
@@ -985,7 +991,7 @@ export function CBTExercises() {
                       </div>
                     )}
 
-                  <div className="flex justify-center space-x-4">
+                  <div className="flex flex-wrap justify-center gap-4">
                     {timer.isActive ? (
                       <Button
                         onClick={pauseExercise}
@@ -1043,7 +1049,7 @@ export function CBTExercises() {
 
         {/* Exercise Categories */}
         <Tabs defaultValue="meditation" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 h-16">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto md:h-16 gap-1 md:gap-0">
             {Object.entries(exerciseCategories).map(
               ([key, category]) => {
                 const IconComponent = category.icon;
@@ -1051,7 +1057,7 @@ export function CBTExercises() {
                   <TabsTrigger
                     key={key}
                     value={key}
-                    className="flex flex-col items-center space-y-1 p-3"
+                    className="flex flex-col items-center space-y-1 p-3 h-auto md:h-full"
                   >
                     <IconComponent className="w-5 h-5" />
                     <span className="text-xs font-medium">
@@ -1098,23 +1104,23 @@ export function CBTExercises() {
                         whileHover={{ y: -5, scale: 1.02 }}
                       >
                         <Card
-                          className={`border-0 overflow-hidden group transition-all duration-300 hover:shadow-2xl ${isCompleted
+                          className={`border-0 overflow-hidden h-full flex flex-col group transition-all duration-300 hover:shadow-2xl ${isCompleted
                             ? "ring-2 ring-green-200 bg-green-50/50 dark:bg-green-900/20"
                             : "hover:shadow-xl"
                             } bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-700`}
                         >
-                          <CardContent className="p-0">
+                          <CardContent className="p-0 flex flex-col h-full">
                             <div
-                              className={`relative p-6 bg-gradient-to-r ${category.gradient} text-white overflow-hidden`}
+                              className={`relative p-6 bg-gradient-to-r ${category.gradient} text-white overflow-hidden shrink-0`}
                             >
                               <div className="absolute inset-0 bg-black/10" />
                               <div className="relative flex items-center justify-between">
                                 <div className="flex items-center space-x-3">
-                                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
+                                  <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl shrink-0">
                                     <IconComponent className="w-6 h-6" />
                                   </div>
                                   <div>
-                                    <h3 className="font-bold text-lg">
+                                    <h3 className="font-bold text-lg leading-tight">
                                       {exercise.title}
                                     </h3>
                                     <div className="flex items-center space-x-2 mt-1">
@@ -1126,7 +1132,7 @@ export function CBTExercises() {
                                   </div>
                                 </div>
                                 {isCompleted && (
-                                  <div className="flex items-center space-x-2">
+                                  <div className="flex items-center space-x-2 shrink-0">
                                     <CheckCircle className="w-6 h-6" />
                                     {streak > 0 && (
                                       <Badge
@@ -1153,12 +1159,12 @@ export function CBTExercises() {
                                 }}
                               />
                             </div>
-                            <div className="p-6 space-y-4">
-                              <p className="text-muted-foreground leading-relaxed">
+                            <div className="p-6 flex flex-col flex-1 gap-4">
+                              <p className="text-muted-foreground leading-relaxed flex-1">
                                 {exercise.description}
                               </p>
 
-                              <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                              <div className="flex items-center space-x-4 text-sm text-muted-foreground shrink-0">
                                 {exercise.type ===
                                   "journal" && (
                                     <div className="flex items-center space-x-1">
@@ -1184,28 +1190,30 @@ export function CBTExercises() {
                                 )}
                               </div>
 
-                              <Button
-                                onClick={() =>
-                                  startExercise(
-                                    exercise.id,
-                                    exercise.duration,
-                                  )
-                                }
-                                disabled={
-                                  activeExercise !== null
-                                }
-                                className={`w-full bg-gradient-to-r ${category.gradient} hover:opacity-90 text-white shadow-lg`}
-                                size="lg"
-                              >
-                                <Play className="w-5 h-5 mr-2" />
-                                Start{" "}
-                                {exercise.type === "journal"
-                                  ? "Writing"
-                                  : exercise.type ===
-                                    "adhd_game"
-                                    ? "Game"
-                                    : "Session"}
-                              </Button>
+                              <div className="mt-auto shrink-0 pt-2">
+                                <Button
+                                  onClick={() =>
+                                    startExercise(
+                                      exercise.id,
+                                      exercise.duration,
+                                    )
+                                  }
+                                  disabled={
+                                    activeExercise !== null
+                                  }
+                                  className={`w-full bg-gradient-to-r ${category.gradient} hover:opacity-90 text-white shadow-lg`}
+                                  size="lg"
+                                >
+                                  <Play className="w-5 h-5 mr-2" />
+                                  Start{" "}
+                                  {exercise.type === "journal"
+                                    ? "Writing"
+                                    : exercise.type ===
+                                      "adhd_game"
+                                      ? "Game"
+                                      : "Session"}
+                                </Button>
+                              </div>
                             </div>
                           </CardContent>
                         </Card>

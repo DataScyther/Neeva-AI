@@ -99,13 +99,15 @@ export function Settings() {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-4xl mx-auto">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold flex items-center justify-center space-x-2">
-          <SettingsIcon className="w-8 h-8 text-gray-500" />
-          <span>Settings</span>
-        </h1>
-        <p className="text-muted-foreground">
+    <div className="p-6 space-y-8 max-w-4xl mx-auto">
+      <div className="text-center space-y-4 mb-8">
+        <div className="flex items-center justify-center space-x-4">
+          <SettingsIcon className="w-8 h-8 text-slate-500 stroke-[2.5]" />
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Settings
+          </h1>
+        </div>
+        <p className="text-lg text-slate-500 font-medium text-center max-w-2xl mx-auto">
           Customize your Neeva experience
         </p>
       </div>

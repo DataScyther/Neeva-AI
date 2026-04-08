@@ -60,7 +60,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   useEffect(() => {
     console.log('AuthComponent: Setting up auth state listener');
     
-    let authTimeout: NodeJS.Timeout;
+    let authTimeout: ReturnType<typeof setTimeout>;
     let isSubscribed = true;
 
     // Listen to auth state changes
@@ -741,7 +741,6 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                       <div className="text-center text-sm text-amber-600 mt-2">
                         {authMode === 'signin' && 'Please enter both email and password to login'}
                         {authMode === 'signup' && 'Please fill all required fields to create your account'}
-                        {authMode === 'forgot' && 'Please enter your email address'}
                       </div>
                     )}
                     

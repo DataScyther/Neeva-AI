@@ -163,12 +163,11 @@ export function Dashboard() {
               {greeting.text}
             </span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 dark:from-white dark:via-purple-300 dark:to-white bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
             Welcome back, {state.user?.name}!
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Ready to continue your wellness journey? Let's see
-            how you're doing today 🌟
+          <p className="text-lg text-slate-500 font-medium text-center max-w-2xl mx-auto">
+            Ready to continue your wellness journey? Let's see how you're doing today 🌟
           </p>
         </motion.div>
 
@@ -347,9 +346,10 @@ export function Dashboard() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
+            className="h-full"
           >
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-green-50 dark:from-slate-800 dark:to-green-900">
-              <CardHeader className="pb-4">
+            <Card className="h-full flex flex-col border-0 shadow-xl bg-gradient-to-br from-white to-green-50 dark:from-slate-800 dark:to-green-900">
+              <CardHeader className="pb-2">
                 <CardTitle className="flex items-center space-x-3">
                   <div className="p-2 bg-green-500 rounded-xl">
                     <TrendingUp className="w-5 h-5 text-white" />
@@ -360,78 +360,76 @@ export function Dashboard() {
                   <Rainbow className="w-5 h-5 text-purple-500" />
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-medium">
-                        Daily Exercises
-                      </span>
-                      <Badge
-                        variant="secondary"
-                        className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                      >
-                        {completedExercises.length}/
-                        {state.exercises.length}
-                      </Badge>
-                    </div>
-                    <div className="relative">
-                      <Progress
-                        value={
-                          (completedExercises.length /
-                            state.exercises.length) *
-                          100
-                        }
-                        className="h-3 bg-green-100 dark:bg-green-900"
-                      />
-                    </div>
+              <CardContent className="flex-1 flex flex-col justify-around gap-6 py-4">
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center px-1">
+                    <span className="font-medium">
+                      Daily Exercises
+                    </span>
+                    <Badge
+                      variant="secondary"
+                      className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                    >
+                      {completedExercises.length}/
+                      {state.exercises.length}
+                    </Badge>
                   </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-medium">
-                        Mood Logs
-                      </span>
-                      <Badge
-                        variant="secondary"
-                        className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                      >
-                        {todayMoodEntries.length}
-                      </Badge>
-                    </div>
-                    <div className="relative">
-                      <Progress
-                        value={Math.min(
-                          todayMoodEntries.length * 33.33,
-                          100,
-                        )}
-                        className="h-3 bg-blue-100 dark:bg-blue-900"
-                      />
-                    </div>
+                  <div className="relative">
+                    <Progress
+                      value={
+                        (completedExercises.length /
+                          (state.exercises.length || 1)) *
+                        100
+                      }
+                      className="h-3 bg-green-100 dark:bg-green-900"
+                    />
                   </div>
+                </div>
 
-                  <div>
-                    <div className="flex justify-between items-center mb-3">
-                      <span className="font-medium">
-                        Chat Sessions
-                      </span>
-                      <Badge
-                        variant="secondary"
-                        className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-                      >
-                        {state.chatHistory.length > 0
-                          ? "1"
-                          : "0"}
-                      </Badge>
-                    </div>
-                    <div className="relative">
-                      <Progress
-                        value={
-                          state.chatHistory.length > 0 ? 100 : 0
-                        }
-                        className="h-3 bg-purple-100 dark:bg-purple-900"
-                      />
-                    </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center px-1">
+                    <span className="font-medium">
+                      Mood Logs
+                    </span>
+                    <Badge
+                      variant="secondary"
+                      className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                    >
+                      {todayMoodEntries.length}
+                    </Badge>
+                  </div>
+                  <div className="relative">
+                    <Progress
+                      value={Math.min(
+                        todayMoodEntries.length * 33.33,
+                        100,
+                      )}
+                      className="h-3 bg-blue-100 dark:bg-blue-900"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center px-1">
+                    <span className="font-medium">
+                      Chat Sessions
+                    </span>
+                    <Badge
+                      variant="secondary"
+                      className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
+                    >
+                      {state.chatHistory.length > 0
+                        ? "1"
+                        : "0"}
+                    </Badge>
+                  </div>
+                  <div className="relative">
+                    <Progress
+                      value={
+                        state.chatHistory.length > 0 ? 100 : 0
+                      }
+                      className="h-3 bg-purple-100 dark:bg-purple-900"
+                    />
                   </div>
                 </div>
               </CardContent>

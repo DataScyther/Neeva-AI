@@ -233,8 +233,9 @@ export function Chatbot() {
                         type: "ADD_CHAT_MESSAGE",
                         payload: fallbackResponse,
                     });
-                    if (state.user?.uid) {
-                        saveChatMessage(state.user.uid, fallbackResponse);
+                    const retryUserId = (state.user as any)?.uid || (state.user as any)?.id;
+                    if (retryUserId) {
+                        saveChatMessage(retryUserId, fallbackResponse);
                     }
                 }
                 setIsTyping(false);
@@ -269,15 +270,13 @@ export function Chatbot() {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-8"
                 >
-                    <div className="flex items-center justify-center space-x-3 mb-4">
-                        <div className="p-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl shadow-lg">
-                            <Bot className="w-8 h-8 text-white" />
-                        </div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    <div className="flex items-center justify-center space-x-4 mb-4">
+                        <Bot className="w-8 h-8 text-indigo-500 stroke-[2.5]" />
+                        <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
                             Neeva AI Companion
                         </h1>
                     </div>
-                    <p className="text-lg text-muted-foreground">
+                    <p className="text-lg text-slate-500 font-medium text-center max-w-2xl mx-auto">
                         Your safe space for support, guidance, and growth 🌱
                     </p>
                 </motion.div>

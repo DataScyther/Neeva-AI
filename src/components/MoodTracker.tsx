@@ -122,17 +122,14 @@ export function MoodTracker() {
           transition={{ duration: 0.6 }}
           className="text-center space-y-4 py-8"
         >
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="p-2 bg-pink-100 dark:bg-pink-900/30 rounded-full">
-              <Heart className="w-8 h-8 text-pink-500" />
-            </div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+          <div className="flex items-center justify-center space-x-4 mb-4">
+            <Heart className="w-8 h-8 text-pink-500 stroke-[2.5]" />
+            <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
               Mood Tracker
             </h1>
           </div>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Your emotions matter. Let's track how you're feeling
-            today 💙
+          <p className="text-lg text-slate-500 font-medium text-center max-w-2xl mx-auto">
+            Your emotions matter. Let's track how you're feeling today 💙
           </p>
         </motion.div>
 
@@ -175,27 +172,25 @@ export function MoodTracker() {
                               ? "default"
                               : "outline"
                           }
-                          className={`h-32 w-full flex flex-col space-y-3 relative overflow-hidden transition-all duration-300 ${selectedMood === mood.value
-                            ? `bg-gradient-to-br ${mood.gradient} text-white border-0 shadow-2xl ${mood.borderColor}`
-                            : `hover:shadow-xl ${mood.bgColor} ${mood.borderColor} border-2`
+                          className={`h-32 w-full flex flex-col items-center justify-center gap-2 p-4 relative overflow-hidden transition-all duration-300 ${selectedMood === mood.value
+                            ? `bg-gradient-to-br ${mood.gradient} text-white border-0 shadow-2xl shadow-${mood.gradient.split('-')[mood.gradient.split('-').length - 1]}/30`
+                            : `hover:shadow-xl hover:-translate-y-1 ${mood.bgColor} ${mood.borderColor} border-2`
                             }`}
                           onClick={() =>
                             setSelectedMood(mood.value)
                           }
                         >
-                          <span className="text-4xl">
+                          <span className="text-4xl relative z-10 transition-transform duration-300 group-hover:scale-110">
                             {mood.emoji}
                           </span>
-                          <div className="text-center">
-                            <span className="font-bold text-sm">
-                              {mood.label}
-                            </span>
-                          </div>
+                          <span className="font-bold text-sm relative z-10">
+                            {mood.label}
+                          </span>
                           {selectedMood === mood.value && (
                             <motion.div
                               className="absolute inset-0 bg-white/20"
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
                               transition={{ duration: 0.3 }}
                             />
                           )}
@@ -250,13 +245,13 @@ export function MoodTracker() {
                     />
                   </div>
 
-                  <div className="w-full h-14 text-lg bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg">
+                  <div className="w-full h-14 mt-4 mb-2 text-lg bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl shadow-lg">
                     <Button
                       onClick={handleMoodSubmit}
                       disabled={
                         selectedMood === null || isSubmitting
                       }
-                      className="w-full h-full bg-transparent hover:bg-transparent text-white font-semibold"
+                      className="w-full h-full bg-transparent hover:bg-transparent text-white font-semibold shadow-none border-0"
                     >
                       {isSubmitting ? (
                         <div className="flex items-center space-x-2">
@@ -275,6 +270,69 @@ export function MoodTracker() {
                 </CardContent>
               </Card>
             </motion.div>
+
+            {/* Recent Entries moved under main card for proper alignment */}
+            {state.moodEntries.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="mt-8"
+              >
+                <Card className="border-0 shadow-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <TrendingUp className="w-5 h-5 text-green-500" />
+                      <span>Recent Entries</span>
+                      <Sparkles className="w-4 h-4 text-purple-500" />
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-4">
+                      {state.moodEntries
+                        .slice(-5)
+                        .reverse()
+                        .map((entry, index) => {
+                          const moodOption = moodOptions.find(
+                            (m) => m.value === entry.mood,
+                          );
+                          return (
+                            <motion.div
+                              key={entry.id}
+                              initial={{ opacity: 0, x: -20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              className={`flex items-start space-x-4 p-4 rounded-2xl ${moodOption?.bgColor} ${moodOption?.borderColor} border-2 relative overflow-hidden group`}
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                              <div className="text-4xl">
+                                {moodOption?.emoji}
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex items-center justify-between mb-1">
+                                  <span className="font-bold text-lg">
+                                    {moodOption?.label}
+                                  </span>
+                                  <span className="text-sm text-muted-foreground font-medium">
+                                    {new Date(
+                                      entry.timestamp,
+                                    ).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                {entry.note && (
+                                  <p className="mt-2 text-sm font-medium bg-white/50 dark:bg-slate-700/50 p-3 rounded-xl shadow-sm">
+                                    "{entry.note}"
+                                  </p>
+                                )}
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
           </div>
 
           <div className="space-y-6">
@@ -323,7 +381,7 @@ export function MoodTracker() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/30 rounded-xl">
+                <div className="flex items-center justify-between p-3 mb-2 bg-green-50 dark:bg-green-900/30 rounded-xl">
                   <span className="font-medium">
                     Total entries
                   </span>
@@ -338,66 +396,6 @@ export function MoodTracker() {
             </Card>
           </div>
 
-          {/* Recent Entries */}
-          {state.moodEntries.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <Card className="border-0 shadow-xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <TrendingUp className="w-5 h-5 text-green-500" />
-                    <span>Recent Entries</span>
-                    <Sparkles className="w-4 h-4 text-purple-500" />
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4">
-                    {state.moodEntries
-                      .slice(-5)
-                      .reverse()
-                      .map((entry, index) => {
-                        const moodOption = moodOptions.find(
-                          (m) => m.value === entry.mood,
-                        );
-                        return (
-                          <motion.div
-                            key={entry.id}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                            className={`flex items-start space-x-4 p-4 rounded-2xl ${moodOption?.bgColor} ${moodOption?.borderColor} border-2`}
-                          >
-                            <div className="text-3xl">
-                              {moodOption?.emoji}
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="font-bold text-lg">
-                                  {moodOption?.label}
-                                </span>
-                                <span className="text-sm text-muted-foreground font-medium">
-                                  {new Date(
-                                    entry.timestamp,
-                                  ).toLocaleDateString()}
-                                </span>
-                              </div>
-                              {entry.note && (
-                                <p className="mt-2 text-sm font-medium bg-white/50 dark:bg-slate-700/50 p-2 rounded-lg">
-                                  "{entry.note}"
-                                </p>
-                              )}
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
         </div>
       </div>
     </div>

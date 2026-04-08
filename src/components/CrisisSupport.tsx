@@ -240,12 +240,14 @@ export function CrisisSupport() {
 
   return (
     <div className="p-6 space-y-6 max-w-6xl mx-auto">
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold flex items-center justify-center space-x-2">
-          <Shield className="w-8 h-8 text-red-500" />
-          <span>Crisis Support</span>
-        </h1>
-        <p className="text-muted-foreground">
+      <div className="text-center space-y-4 mb-8">
+        <div className="flex items-center justify-center space-x-4">
+          <Shield className="w-8 h-8 text-red-500 stroke-[2.5]" />
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
+            Crisis Support
+          </h1>
+        </div>
+        <p className="text-lg text-slate-500 font-medium text-center max-w-2xl mx-auto">
           Immediate help and resources for mental health crises
         </p>
       </div>
@@ -276,13 +278,13 @@ export function CrisisSupport() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {urgentResources.map((resource) => {
               const IconComponent = resource.icon;
               return (
                 <Card
                   key={resource.id}
-                  className="border-red-200 hover:shadow-md transition-shadow"
+                  className="border-red-200 hover:shadow-md transition-shadow h-full"
                 >
                   <CardContent className="p-4">
                     <div className="flex items-start space-x-3">
@@ -376,7 +378,7 @@ export function CrisisSupport() {
           </div>
 
           {/* Resource Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredResources.map((resource) => {
               const IconComponent = resource.icon;
               return (
