@@ -35,46 +35,59 @@ const convertTimestamps = (data: any) => {
 // -- Read Operations --
 
 export const loadUserData = async (uid: string): Promise<Partial<AppState>> => {
+    if (!uid || uid.trim().length === 0) {
+        console.error('Cannot load user data: Invalid user ID');
+        return {};
+    }
+
     try {
         console.log(`Loading data for user: ${uid}`);
 
-        // 1. Load Mood Entries
-        const moodsRef = collection(db, USERS_COLLECTION, uid, 'moods');
-        const moodsQuery = query(moodsRef, orderBy('timestamp', 'asc')); // Oldest first to match array push
-        const moodsSnapshot = await getDocs(moodsQuery);
+        // Run all three collection fetches in parallel for better performance
+        const [moodsSnapshot, chatsSnapshot, exercisesSnapshot] = await Promise.all([
+            // 1. Load Mood Entries
+            (async () => {
+                const moodsRef = collection(db, USERS_COLLECTION, uid, 'moods');
+                const moodsQuery = query(moodsRef, orderBy('timestamp', 'asc'));
+                return await getDocs(moodsQuery);
+            })(),
+
+            // 2. Load Chat History
+            (async () => {
+                const chatsRef = collection(db, USERS_COLLECTION, uid, 'chats');
+                const chatsQuery = query(chatsRef, orderBy('timestamp', 'asc'));
+                return await getDocs(chatsQuery);
+            })(),
+
+            // 3. Load Exercises
+            (async () => {
+                const exercisesRef = collection(db, USERS_COLLECTION, uid, 'exercises');
+                return await getDocs(exercisesRef);
+            })()
+        ]);
+
+        // Process moods
         const moodEntries = moodsSnapshot.docs.map(doc => ({
             ...doc.data(),
             timestamp: (doc.data().timestamp as Timestamp).toDate(),
         } as MoodEntry));
 
-        // 2. Load Chat History
-        const chatsRef = collection(db, USERS_COLLECTION, uid, 'chats');
-        const chatsQuery = query(chatsRef, orderBy('timestamp', 'asc'));
-        const chatsSnapshot = await getDocs(chatsQuery);
+        // Process chats
         const chatHistory = chatsSnapshot.docs.map(doc => ({
             ...doc.data(),
             timestamp: (doc.data().timestamp as Timestamp).toDate(),
         } as ChatMessage));
 
-        // 3. Load Exercises (stored as individual docs in a subcollection or validiting user profile?)
-        // Plan: Store exercise progress in a subcollection 'exercises' where ID = exercise ID
-        const exercisesRef = collection(db, USERS_COLLECTION, uid, 'exercises');
-        const exercisesSnapshot = await getDocs(exercisesRef);
+        // Process exercises
         const exercisesData = exercisesSnapshot.docs.reduce((acc, doc) => {
             acc[doc.id] = doc.data();
             return acc;
         }, {} as Record<string, any>);
 
-        // return partial state to merge
         return {
             moodEntries,
             chatHistory,
-            // We will merge exercises logic in the reducer, here we just return the raw data map if needed, 
-            // or we can map it to the AppState structure if we want to replace the default list.
-            // Better strategy: The AppState has a static list of exercises. We only need to update 'completed' and 'streak'.
-            // So we'll return a map of completed exercises to merge in the reducer.
-            // actually, let's return the simplified data and handle merging in AppContext reducer.
-            exercises: undefined, // Handled separately or let the reducer merge based on IDs
+            exercises: undefined,
         };
     } catch (error) {
         console.error("Error loading user data:", error);
@@ -102,33 +115,50 @@ export const getCompletedExercises = async (uid: string): Promise<Record<string,
 
 // -- Write Operations --
 
-export const saveMoodEntry = async (uid: string, entry: MoodEntry) => {
+export const saveMoodEntry = async (uid: string, entry: MoodEntry): Promise<boolean> => {
+    if (!uid || uid.trim().length === 0) {
+        console.error('Cannot save mood entry: Invalid user ID');
+        return false;
+    }
+
     try {
         const docRef = doc(db, USERS_COLLECTION, uid, 'moods', entry.id);
         await setDoc(docRef, {
             ...entry,
             timestamp: Timestamp.fromDate(entry.timestamp)
         });
-        console.log('Mood saved to Firestore');
+        return true;
     } catch (error) {
         console.error('Error saving mood:', error);
+        throw error; // Re-throw to let caller handle
     }
 };
 
-export const saveChatMessage = async (uid: string, message: ChatMessage) => {
+export const saveChatMessage = async (uid: string, message: ChatMessage): Promise<boolean> => {
+    if (!uid || uid.trim().length === 0) {
+        console.error('Cannot save chat message: Invalid user ID');
+        return false;
+    }
+
     try {
         const docRef = doc(db, USERS_COLLECTION, uid, 'chats', message.id);
         await setDoc(docRef, {
             ...message,
             timestamp: Timestamp.fromDate(message.timestamp)
         });
-        console.log('Chat message saved to Firestore');
+        return true;
     } catch (error) {
         console.error('Error saving chat:', error);
+        throw error; // Re-throw to let caller handle
     }
 };
 
-export const saveExerciseProgress = async (uid: string, exerciseId: string, streak: number) => {
+export const saveExerciseProgress = async (uid: string, exerciseId: string, streak: number): Promise<boolean> => {
+    if (!uid || !exerciseId) {
+        console.error('Cannot save exercise progress: Invalid parameters');
+        return false;
+    }
+
     try {
         const docRef = doc(db, USERS_COLLECTION, uid, 'exercises', exerciseId);
         await setDoc(docRef, {
@@ -137,9 +167,10 @@ export const saveExerciseProgress = async (uid: string, exerciseId: string, stre
             streak: streak,
             lastCompletedAt: serverTimestamp()
         }, { merge: true });
-        console.log('Exercise progress saved');
+        return true;
     } catch (error) {
         console.error('Error saving exercise:', error);
+        throw error; // Re-throw to let caller handle
     }
 };
 

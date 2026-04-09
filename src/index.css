@@ -50,6 +50,40 @@
     }
 }
 
+/* Text overflow containment for chat bubbles */
+.overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+/* Neeva Orb Mascot */
+.neeva-orb {
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ec4899, #8b5cf6 50%, #3b82f6);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.neeva-orb::before,
+.neeva-orb::after {
+    content: "";
+    position: absolute;
+    top: 32%;
+    width: 22%;
+    height: 22%;
+    background: white;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    filter: blur(0.5px);
+}
+
+.neeva-orb::before {
+    left: 28%;
+}
+
+.neeva-orb::after {
+    right: 28%;
+}
+
 /* Apply initial hidden state for animated elements */
 .stats-card,
 .quick-action-card,

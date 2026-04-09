@@ -287,7 +287,7 @@ export function MoodTracker() {
                       <Sparkles className="w-4 h-4 text-purple-500" />
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pb-6">
                     <div className="grid gap-4">
                       {state.moodEntries
                         .slice(-5)
@@ -302,7 +302,7 @@ export function MoodTracker() {
                               initial={{ opacity: 0, x: -20 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: index * 0.1 }}
-                              className={`flex items-start space-x-4 p-4 rounded-2xl ${moodOption?.bgColor} ${moodOption?.borderColor} border-2 relative overflow-hidden group`}
+                              className={`flex items-center space-x-4 p-4 rounded-2xl ${moodOption?.bgColor} ${moodOption?.borderColor} border-2 relative overflow-hidden group`}
                             >
                               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                               <div className="text-4xl">

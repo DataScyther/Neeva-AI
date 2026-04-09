@@ -1,7 +1,7 @@
 // Mobile Performance Optimizations
 // Provides utilities for seamless mobile experience
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 // Debounce hook for optimizing frequent updates
 export function useDebounce<T>(value: T, delay: number): T {
@@ -26,15 +26,21 @@ export function useThrottle<T extends (...args: any[]) => any>(
   delay: number
 ): T {
   const lastRun = useRef(Date.now());
+  const callbackRef = useRef(callback);
+
+  // Update callback ref on every render to avoid stale closure
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
 
   return useCallback(
     ((...args) => {
       if (Date.now() - lastRun.current >= delay) {
-        callback(...args);
+        callbackRef.current(...args);
         lastRun.current = Date.now();
       }
     }) as T,
-    [callback, delay]
+    [delay]
   );
 }
 
@@ -118,10 +124,10 @@ export const getViewportSize = () => {
 
 // Network status detection
 export const getNetworkStatus = () => {
-  const connection = (navigator as any).connection || 
-                     (navigator as any).mozConnection || 
-                     (navigator as any).webkitConnection;
-  
+  const connection = (navigator as any).connection ||
+    (navigator as any).mozConnection ||
+    (navigator as any).webkitConnection;
+
   if (connection) {
     return {
       effectiveType: connection.effectiveType,
@@ -130,7 +136,7 @@ export const getNetworkStatus = () => {
       saveData: connection.saveData,
     };
   }
-  
+
   return null;
 };
 
@@ -177,7 +183,7 @@ export const safeLocalStorage = {
 export const measurePerformance = (name: string) => {
   const startMark = `${name}-start`;
   const endMark = `${name}-end`;
-  
+
   return {
     start: () => performance.mark(startMark),
     end: () => {
@@ -216,37 +222,55 @@ export const useOptimizedScroll = (callback: () => void, delay = 100) => {
   }, [handleScroll]);
 };
 
-// Prevent double tap zoom on iOS
+// Prevent double tap zoom on iOS (returns cleanup function)
+let cleanupDoubleTapZoom: (() => void) | null = null;
+
 export const preventDoubleTapZoom = () => {
+  // Remove previous listener if exists
+  if (cleanupDoubleTapZoom) {
+    cleanupDoubleTapZoom();
+  }
+
   let lastTouchEnd = 0;
-  
-  document.addEventListener('touchend', (event) => {
+
+  const handler = (event: TouchEvent) => {
     const now = Date.now();
     if (now - lastTouchEnd <= 300) {
       event.preventDefault();
     }
     lastTouchEnd = now;
-  }, false);
+  };
+
+  document.addEventListener('touchend', handler, { passive: false });
+
+  cleanupDoubleTapZoom = () => {
+    document.removeEventListener('touchend', handler);
+  };
+
+  return cleanupDoubleTapZoom;
 };
 
 // Haptic feedback for mobile
 export const triggerHapticFeedback = (type: 'light' | 'medium' | 'heavy' = 'light') => {
   if ('vibrate' in navigator) {
-    switch (type) {
-      case 'light':
-        navigator.vibrate(10);
-        break;
-      case 'medium':
-        navigator.vibrate(20);
-        break;
-      case 'heavy':
-        navigator.vibrate(30);
-        break;
+    try {
+      switch (type) {
+        case 'light':
+          navigator.vibrate(10);
+          break;
+        case 'medium':
+          navigator.vibrate(20);
+          break;
+        case 'heavy':
+          navigator.vibrate(30);
+          break;
+      }
+    } catch (error) {
+      // Vibration permission denied or not supported
+      console.debug('Haptic feedback not available:', error);
     }
   }
 };
-
-import { useState } from 'react';
 
 export default {
   useDebounce,

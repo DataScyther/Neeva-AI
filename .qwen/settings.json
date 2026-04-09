@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/taigunnk/Downloads/**)",
+      "Bash(npm run *)"
+    ]
+  },
+  "$version": 3
+}
