@@ -44,7 +44,7 @@
     "express": "^5.1.0",
     "firebase": "^11.2.0",
     "framer-motion": "^10.18.0",
-    "hono": "^4.6.17",
+    "hono": "^4.12.14",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.487.0",
     "node-fetch": "^3.3.2",
@@ -75,7 +75,7 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
-    "vite": "^6.4.1"
+    "vite": "^6.4.2"
   },
   "scripts": {
     "dev": "vite",
