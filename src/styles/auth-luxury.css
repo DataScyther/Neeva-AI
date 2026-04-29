@@ -1,0 +1,67 @@
+.luxury-gradient-bg {
+  background: linear-gradient(-45deg, #0f172a, #312e81, #1e1b4b, #020617);
+  background-size: 400% 400%;
+  animation: luxuryGradient 15s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes luxuryGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.luxury-glass-overlay {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.dark .luxury-gradient-bg {
+  background: linear-gradient(-45deg, #020617, #1e1b4b, #312e81, #0f172a);
+  background-size: 400% 400%;
+  animation: luxuryGradient 15s ease infinite;
+}
+
+.luxury-input {
+  transition: all 0.3s ease;
+  background: transparent;
+  border: 1px solid rgba(156, 163, 175, 0.3);
+}
+
+.luxury-input:focus {
+  border-color: #818cf8;
+  box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2);
+}
+
+.luxury-button {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: 50%;
+  transition: transform 0.5s ease;
+}
+
+.luxury-button:hover::after {
+  transform: translate(-50%, -50%) scale(1);
+}

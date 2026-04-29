@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { authService, UserProfile } from '../lib/auth';
 import { useAppContext } from './AppContext';
 import {
@@ -26,6 +27,7 @@ import {
 import { Alert, AlertDescription } from './ui/alert';
 import { validateEmail, validatePassword, PasswordValidationResult, EmailValidationResult } from '../utils/validation';
 import PasswordStrengthIndicator from './PasswordStrengthIndicator';
+import '../styles/auth-luxury.css';
 
 interface AuthComponentProps {
   onAuthSuccess?: () => void;
@@ -426,427 +428,437 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   // Show loading state during authentication
   if ((isAuthenticating || authCompleted) && !error) {
     return (
-      <div className="min-h-screen min-h-[100dvh] bg-white flex items-center justify-center p-4">
-        <Card className="w-full max-w-md mx-auto shadow-xl border border-gray-200 bg-white">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
-              <User className="w-8 h-8 text-white" />
+      <div className="flex min-h-screen w-full flex-col md:flex-row bg-background">
+        <div className="luxury-gradient-bg relative flex flex-1 flex-col items-center justify-center p-8 text-white">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="luxury-glass-overlay z-10 flex w-full max-w-md flex-col items-center justify-center rounded-2xl py-12 text-center shadow-2xl"
+          >
+            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 shadow-xl backdrop-blur-md">
+              <Loader2 className="h-8 w-8 animate-spin text-white" />
             </div>
-            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h2 className="mb-2 text-2xl font-bold text-white">
               {authCompleted ? `Welcome back${user?.name ? `, ${user.name}` : ''}!` : 'Authenticating...'}
-            </CardTitle>
-            <CardDescription>
-              {authCompleted ? 'Redirecting to your dashboard...' : 'Please wait while we sign you in...'}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
-            </div>
+            </h2>
+            <p className="text-white/80">
+              {authCompleted ? 'Preparing your luxury experience...' : 'Please wait while we verify your identity...'}
+            </p>
             {isMobile && (
-              <p className="text-xs text-gray-500 text-center">
+              <p className="mt-4 text-xs text-white/60">
                 This may take a moment on mobile devices
               </p>
             )}
-          </CardContent>
-        </Card>
+          </motion.div>
+        </div>
       </div>
     );
   }
 
   const copy = {
     signin: {
-      title: 'Login',
-      description: 'Enter your credentials to access your account.'
+      title: 'Welcome Back',
+      description: 'Enter your credentials to access your personal AI space.'
     },
     signup: {
-      title: 'Create account',
-      description: 'Join Neeva to unlock your personal companion.'
+      title: 'Join Neeva',
+      description: 'Unlock your premium personal companion today.'
     },
     forgot: {
-      title: 'Forgot password',
-      description: 'Enter your email to receive a reset link.'
+      title: 'Reset Password',
+      description: 'Enter your email to receive a secure reset link.'
     }
   };
 
   const activeCopy = copy[authMode];
 
   return (
-    <div className="min-h-screen bg-slate-50/80 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-      <Card className="relative w-full max-w-md overflow-hidden border border-slate-100 bg-white/95 shadow-[0_30px_80px_rgba(15,23,42,0.12)] rounded-[32px] backdrop-blur-xl p-6 sm:p-8">
-        <CardHeader className="px-0 pt-0 space-y-2">
-          <CardTitle className="text-3xl font-semibold text-slate-900 tracking-tight">
-            {activeCopy.title}
-          </CardTitle>
-          <CardDescription className="text-base text-slate-500">
-            {activeCopy.description}
-          </CardDescription>
-        </CardHeader>
+    <div className="flex min-h-screen w-full flex-col md:flex-row bg-background dark:bg-zinc-950">
+      
+      {/* Left Pane - Animated Gradient Branding */}
+      <div className="luxury-gradient-bg relative hidden flex-1 flex-col items-center justify-center p-8 text-white md:flex">
+        <div className="absolute inset-0 bg-black/10 dark:bg-black/30" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="luxury-glass-overlay z-10 flex flex-col items-center rounded-3xl p-12 text-center"
+        >
+          <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/10 shadow-2xl backdrop-blur-md">
+            <Sparkles className="h-12 w-12 text-white" />
+          </div>
+          <h1 className="mb-4 text-5xl font-extrabold tracking-tight">
+            Neeva AI
+          </h1>
+          <p className="max-w-md text-lg font-light leading-relaxed text-white/90">
+            Elevate your personal space with an intelligent, luxury companion designed for unparalleled focus and well-being.
+          </p>
+        </motion.div>
+      </div>
 
-        <CardContent className="px-0 space-y-6">
-          {error && (
-            <Alert className="border-red-200 bg-red-50">
-              <AlertDescription className="text-red-800">
-                {error}
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {/* Forgot Password Success State */}
-          {forgotPasswordSent ? (
-            <div className="text-center space-y-4">
-              <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-8 h-8 text-green-600" />
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  Check Your Email
-                </h3>
-                <p className="text-gray-600">
-                  We've sent a password reset link to <strong>{email}</strong>
-                </p>
-                <p className="text-sm text-gray-500">
-                  Click the link in the email to reset your password. The link will expire in 1 hour.
-                </p>
-                <Button
-                  onClick={() => {
-                    setForgotPasswordSent(false);
-                    setAuthMode('signin');
-                    setError(null);
-                  }}
-                  variant="outline"
-                  className="w-full mt-4"
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Sign In
-                </Button>
-              </div>
+      {/* Right Pane - Auth Form */}
+      <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:px-20 xl:px-24">
+        <div className="mx-auto w-full max-w-md">
+          {/* Mobile Header (Hidden on Desktop) */}
+          <div className="mb-10 text-center md:hidden">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 shadow-lg">
+              <Sparkles className="h-8 w-8 text-primary" />
             </div>
-          ) : (
-            <>
-              {/* Forgot Password Mode */}
-              {authMode === 'forgot' ? (
-                <div className="space-y-4">
-                  <div className="text-center space-y-2">
-                    <h3 className="text-xl font-semibold text-gray-900">
-                      Reset Your Password
-                    </h3>
-                    <p className="text-gray-600 text-sm">
-                      Enter your email address and we'll send you a link to reset your password.
-                    </p>
-                  </div>
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+              Neeva AI
+            </h1>
+          </div>
 
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                      Email
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your.email@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading}
-                      className="h-12 text-base"
-                      autoComplete="email"
-                      autoCapitalize="none"
-                      autoCorrect="off"
-                      inputMode="email"
-                    />
-                  </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={authMode}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.3 }}
+              className="w-full"
+            >
+              <div className="mb-8 space-y-2 text-center md:text-left">
+                <h2 className="text-3xl font-bold tracking-tight text-foreground">
+                  {activeCopy.title}
+                </h2>
+                <p className="text-muted-foreground">
+                  {activeCopy.description}
+                </p>
+              </div>
 
-                  <Button
-                    onClick={handleForgotPassword}
-                    disabled={isLoading || !email}
-                    className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-base font-medium"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        Sending Reset Email...
-                      </>
-                    ) : (
-                      'Send Reset Email'
-                    )}
-                  </Button>
-
-                  <Button
-                    onClick={() => {
-                      setAuthMode('signin');
-                      setError(null);
-                      setForgotPasswordSent(false);
-                    }}
-                    variant="ghost"
-                    disabled={isLoading}
-                    className="w-full text-sm text-gray-600 hover:text-gray-900"
-                  >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Sign In
-                  </Button>
-                </div>
-              ) : (
-                /* Sign In/Sign Up Form */
-                <div className="space-y-4">
-                  {authMode === 'signup' && (
-                    <div className="space-y-2">
-                      <label htmlFor="name" className="text-sm font-medium text-gray-700">
-                        Full Name
-                      </label>
-                      <Input
-                        id="name"
-                        type="text"
-                        placeholder="John Doe"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        disabled={isLoading}
-                        className="h-12 text-base"
-                        autoComplete="name"
-                        autoCapitalize="words"
-                        inputMode="text"
-                      />
-                    </div>
+              <div className="space-y-6">
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                    >
+                      <Alert variant="destructive" className="mb-4 border-red-500/50 bg-red-500/10 text-red-600 dark:text-red-400">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertDescription>{error}</AlertDescription>
+                      </Alert>
+                    </motion.div>
                   )}
+                </AnimatePresence>
 
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                      Email
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="your.email@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isLoading}
-                      className={`h-12 text-base ${
-                        emailValidation && !emailValidation.isValid
-                          ? 'border-red-500 focus:ring-red-500'
-                          : emailValidation && emailValidation.isValid
-                          ? 'border-green-500 focus:ring-green-500'
-                          : ''
-                      }`}
-                      autoComplete="email"
-                      autoCapitalize="none"
-                      autoCorrect="off"
-                      inputMode="email"
-                    />
-                    {/* Email validation feedback */}
-                    {emailValidation && !emailValidation.isValid && (
-                      <div className="flex items-start gap-1.5 text-xs text-red-600 mt-1">
-                        <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                        <span>{emailValidation.error}</span>
-                      </div>
-                    )}
-                    {emailSuggestion && (
-                      <div className="flex items-start gap-1.5 text-xs text-blue-600 mt-1">
-                        <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const suggestion = emailSuggestion.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
-                            if (suggestion) setEmail(suggestion[1]);
-                          }}
-                          className="underline hover:no-underline"
+                {/* Forgot Password Success State */}
+                {forgotPasswordSent ? (
+                  <motion.div 
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    className="text-center space-y-6 py-8"
+                  >
+                    <div className="mx-auto w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center border border-green-500/20 shadow-lg shadow-green-500/10">
+                      <CheckCircle className="w-10 h-10 text-green-500" />
+                    </div>
+                    <div className="space-y-2">
+                      <h3 className="text-2xl font-semibold text-foreground">Check Your Email</h3>
+                      <p className="text-muted-foreground text-lg">
+                        We've sent a secure reset link to <br/><strong className="text-foreground">{email}</strong>
+                      </p>
+                      <p className="text-sm text-muted-foreground/80 mt-4">
+                        Click the link in the email to reset your password. The link will expire in 1 hour.
+                      </p>
+                      <Button
+                        variant="outline"
+                        className="w-full mt-8 h-12 text-md"
+                        onClick={() => {
+                          setForgotPasswordSent(false);
+                          setAuthMode('signin');
+                          setError(null);
+                        }}
+                      >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Back to Sign In
+                      </Button>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <>
+                    {/* Forgot Password Mode */}
+                    {authMode === 'forgot' ? (
+                      <div className="space-y-6">
+                        <div className="space-y-2">
+                          <label htmlFor="email" className="text-sm font-medium leading-none text-foreground">Email Address</label>
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="your.email@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={isLoading}
+                            className="luxury-input h-12"
+                            autoComplete="email"
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            inputMode="email"
+                          />
+                        </div>
+
+                        <Button
+                          className="luxury-button h-12 w-full text-md font-medium"
+                          onClick={handleForgotPassword}
+                          disabled={isLoading || !email}
                         >
-                          {emailSuggestion}
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                          {isLoading ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Sending...</>
+                          ) : (
+                            'Send Reset Email'
+                          )}
+                        </Button>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label htmlFor="password" className="text-sm font-medium text-gray-700">
-                        Password
-                      </label>
-                      {authMode === 'signin' && (
-                        <button
-                          type="button"
-                          onClick={() => setAuthMode('forgot')}
-                          className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                        <Button
+                          variant="ghost"
+                          className="w-full text-muted-foreground hover:text-foreground h-12"
+                          onClick={() => {
+                            setAuthMode('signin');
+                            setError(null);
+                            setForgotPasswordSent(false);
+                          }}
                           disabled={isLoading}
                         >
-                          Forgot Password?
-                        </button>
-                      )}
-                    </div>
-                    <div className="relative flex items-center">
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        disabled={isLoading}
-                        className="h-12 pr-12 text-base w-full"
-                        autoComplete={authMode === 'signin' ? 'current-password' : 'new-password'}
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-6/6 -translate-y-6/6 z-10 flex items-center justify-center w-8 h-8 text-gray-500 hover:text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
-                        disabled={isLoading}
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                      >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                    {/* Password Strength Indicator for Sign Up */}
-                    {authMode === 'signup' && showPasswordRequirements && (
-                      <PasswordStrengthIndicator
-                        validation={passwordValidation}
-                        password={password}
-                      />
-                    )}
-                  </div>
+                          <ArrowLeft className="w-4 h-4 mr-2" />
+                          Back to Sign In
+                        </Button>
+                      </div>
+                    ) : (
+                      /* Sign In/Sign Up Form */
+                      <div className="space-y-5">
+                        <AnimatePresence>
+                          {authMode === 'signup' && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="space-y-2 overflow-hidden"
+                            >
+                              <label htmlFor="name" className="text-sm font-medium leading-none text-foreground">Full Name</label>
+                              <Input
+                                id="name"
+                                type="text"
+                                placeholder="John Doe"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                disabled={isLoading}
+                                className="luxury-input h-12"
+                                autoComplete="name"
+                                autoCapitalize="words"
+                                inputMode="text"
+                              />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
 
-                  <div className="space-y-3">
-                    <div className="flex flex-col gap-3">
-                      <Button
-                        onClick={authMode === 'signin' ? handleEmailSignIn : handleEmailSignUp}
-                        disabled={isLoading || !formValid}
-                        className="w-full h-12 rounded-2xl bg-slate-900 text-white hover:bg-slate-800 text-base font-medium"
-                      >
-                        {isLoading ? (
-                          <>
-                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                            {authMode === 'signin' ? 'Signing in...' : 'Creating account...'}
-                          </>
-                        ) : (
-                          authMode === 'signin' ? 'Login' : 'Create account'
-                        )}
-                      </Button>
+                        <div className="space-y-2">
+                          <label htmlFor="email" className="text-sm font-medium leading-none text-foreground">Email Address</label>
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="your.email@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            disabled={isLoading}
+                            className={`luxury-input h-12 ${
+                              emailValidation && !emailValidation.isValid
+                                ? 'border-red-500 focus-visible:ring-red-500'
+                                : emailValidation && emailValidation.isValid
+                                ? 'border-green-500 focus-visible:ring-green-500'
+                                : ''
+                            }`}
+                            autoComplete="email"
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            inputMode="email"
+                          />
+                          {/* Email validation feedback */}
+                          {emailValidation && !emailValidation.isValid && (
+                            <div className="flex items-start gap-1.5 text-xs text-red-500 mt-1">
+                              <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                              <span>{emailValidation.error}</span>
+                            </div>
+                          )}
+                          {emailSuggestion && (
+                            <div className="flex items-start gap-1.5 text-xs text-blue-500 mt-1">
+                              <Info className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const suggestion = emailSuggestion.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+                                  if (suggestion) setEmail(suggestion[1]);
+                                }}
+                                className="underline hover:no-underline"
+                              >
+                                {emailSuggestion}
+                              </button>
+                            </div>
+                          )}
+                        </div>
 
-                      <Button
-                        onClick={() => {
-                          setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
-                          setError(null);
-                          setForgotPasswordSent(false);
-                          if (authMode === 'signin') {
-                            setName('');
-                          }
-                        }}
-                        variant="outline"
-                        disabled={isLoading}
-                        className="w-full h-12 rounded-2xl text-base font-medium relative overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(15,23,42,0.18)] active:translate-y-0"
-                      >
-                        {authMode === 'signin' ? 'Register' : 'Back to Login'}
-                      </Button>
-                    </div>
-                    
-                    {/* Form validation status message */}
-                    {!formValid && (
-                      <div className="text-center text-sm text-amber-600 mt-2">
-                        {authMode === 'signin' && 'Please enter both email and password to login'}
-                        {authMode === 'signup' && 'Please fill all required fields to create your account'}
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <label htmlFor="password" className="text-sm font-medium leading-none text-foreground">Password</label>
+                            {authMode === 'signin' && (
+                              <button
+                                type="button"
+                                onClick={() => setAuthMode('forgot')}
+                                className="text-sm font-medium text-primary hover:underline transition-all"
+                                disabled={isLoading}
+                              >
+                                Forgot Password?
+                              </button>
+                            )}
+                          </div>
+                          <div className="relative flex items-center">
+                            <Input
+                              id="password"
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Enter your secure password"
+                              value={password}
+                              onChange={(e) => setPassword(e.target.value)}
+                              disabled={isLoading}
+                              className="luxury-input h-12 pr-10"
+                              autoComplete={authMode === 'signin' ? 'current-password' : 'new-password'}
+                              autoCapitalize="none"
+                              autoCorrect="off"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center w-8 h-8 text-muted-foreground hover:text-foreground transition-colors"
+                              disabled={isLoading}
+                              aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
+                          {/* Password Strength Indicator for Sign Up */}
+                          {authMode === 'signup' && showPasswordRequirements && (
+                            <div className="mt-2 p-3 rounded-md bg-secondary/30 border border-border/30">
+                              <PasswordStrengthIndicator
+                                validation={passwordValidation}
+                                password={password}
+                              />
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="space-y-4 pt-4">
+                          <Button
+                            className="luxury-button h-12 w-full text-md font-medium shadow-md shadow-primary/20"
+                            onClick={authMode === 'signin' ? handleEmailSignIn : handleEmailSignUp}
+                            disabled={isLoading || !formValid}
+                          >
+                            {isLoading ? (
+                              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />{authMode === 'signin' ? 'Authenticating...' : 'Creating account...'}</>
+                            ) : (
+                              authMode === 'signin' ? 'Sign In to Neeva' : 'Create Account'
+                            )}
+                          </Button>
+
+                          {/* Form validation status message */}
+                          {!formValid && (
+                            <div className="text-center text-xs text-muted-foreground">
+                              {authMode === 'signin' && 'Please enter your email and password'}
+                              {authMode === 'signup' && 'Please fill all fields to continue'}
+                            </div>
+                          )}
+                          
+                          <div className="relative py-6">
+                            <div className="absolute inset-0 flex items-center">
+                              <span className="w-full border-t border-border/60" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                              <span className="bg-background px-4 text-muted-foreground font-medium">
+                                Or zero-friction sign-in
+                              </span>
+                            </div>
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            type="button"
+                            className="luxury-input h-12 w-full font-medium hover:bg-secondary/50 transition-colors"
+                            onClick={handleGoogleSignIn}
+                            disabled={isLoading || isAuthenticating}
+                            data-google-signin
+                          >
+                            {isLoading ? (
+                              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Signing in...</>
+                            ) : (
+                              <>
+                                <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                                </svg>
+                                Continue with Google
+                              </>
+                            )}
+                          </Button>
+                          
+                          <div className="flex flex-col items-center gap-4 pt-4">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const guestProfile: UserProfile = {
+                                  uid: `guest-${Date.now()}`,
+                                  name: 'Guest User',
+                                  email: `guest-${Date.now()}@example.com`,
+                                  createdAt: new Date(),
+                                  updatedAt: new Date(),
+                                  lastLoginAt: new Date(),
+                                  preferences: { theme: 'light', notifications: false, language: 'en' },
+                                  stats: { totalSessions: 1, totalMinutes: 0, streakDays: 0, lastActivityDate: new Date() },
+                                };
+                                dispatch({ type: 'SET_USER', payload: guestProfile });
+                                if (onAuthSuccess) onAuthSuccess();
+                              }}
+                              className="text-sm font-medium text-muted-foreground hover:text-foreground underline underline-offset-4 transition-all hover:scale-105"
+                            >
+                              Explore as Guest
+                            </button>
+                            
+                            <p className="text-sm text-muted-foreground">
+                              {authMode === 'signin' ? "Don't have an account? " : "Already have an account? "}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setAuthMode(authMode === 'signin' ? 'signup' : 'signin');
+                                  setError(null);
+                                  setForgotPasswordSent(false);
+                                  if (authMode === 'signin') setName('');
+                                }}
+                                className="font-semibold text-primary hover:underline"
+                                disabled={isLoading}
+                              >
+                                {authMode === 'signin' ? 'Sign up' : 'Sign in'}
+                              </button>
+                            </p>
+                          </div>
+
+                        </div>
                       </div>
                     )}
-                    
-                    {/* Skip login option */}
-                    <div className="mt-4 text-center">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          // Create a guest user profile
-                          const guestProfile: UserProfile = {
-                            uid: `guest-${Date.now()}`,
-                            name: 'Guest User',
-                            email: `guest-${Date.now()}@example.com`,
-                            createdAt: new Date(),
-                            updatedAt: new Date(),
-                            lastLoginAt: new Date(),
-                            preferences: {
-                              theme: 'light',
-                              notifications: false,
-                              language: 'en',
-                            },
-                            stats: {
-                              totalSessions: 1,
-                              totalMinutes: 0,
-                              streakDays: 0,
-                              lastActivityDate: new Date(),
-                            },
-                          };
-                          
-                          // Update app context with guest user
-                          dispatch({
-                            type: 'SET_USER',
-                            payload: guestProfile,
-                          });
-                          
-                          // Call the auth success callback
-                          if (onAuthSuccess) {
-                            onAuthSuccess();
-                          }
-                        }}
-                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                      >
-                        Continue without login
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
+                  </>
+                )}
 
-          <div className="relative">
-            <Separator className="my-6" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="bg-white px-3 text-xs text-gray-500 uppercase tracking-wide">
-                Or continue with
-              </span>
-            </div>
-          </div>
-
-          <Button
-            onClick={handleGoogleSignIn}
-            disabled={isLoading || isAuthenticating}
-            data-google-signin
-            className="w-full h-12 rounded-2xl bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 shadow-sm text-base font-medium touch-manipulation transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_45px_rgba(15,23,42,0.2)] active:translate-y-0">
-            {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-3 animate-spin" />
-                Signing in...
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  />
-                </svg>
-                Continue with Google
-              </>
-            )}
-          </Button>
-
-          <div className="text-center text-sm text-gray-500 space-y-1">
-            <p className="flex items-center justify-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-500" />
-              Personalized mental health support
+              </div>
+            </motion.div>
+          </AnimatePresence>
+          
+          {/* Footer Terms */}
+          <div className="mt-12 text-center text-xs text-muted-foreground/80">
+            <p>
+              By continuing, you agree to Neeva's{' '}
+              <a href="#" className="underline hover:text-foreground">Terms of Service</a>
+              {' '}and{' '}
+              <a href="#" className="underline hover:text-foreground">Privacy Policy</a>.
             </p>
-            <p>100% confidential and secure</p>
           </div>
-        </CardContent>
-
-        <div className="pointer-events-none absolute inset-x-10 bottom-4 h-[1px] rounded-full bg-gradient-to-r from-blue-500 via-purple-400 to-pink-400" />
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
