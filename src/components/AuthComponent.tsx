@@ -476,25 +476,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
     <div className="flex min-h-screen w-full flex-col md:flex-row bg-background dark:bg-zinc-950">
       
       {/* Left Pane - Animated Gradient Branding */}
-      <div className="luxury-gradient-bg relative hidden flex-1 flex-col items-center justify-center p-8 text-white md:flex">
-        <div className="absolute inset-0 bg-black/10 dark:bg-black/30" />
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="luxury-glass-overlay z-10 flex flex-col items-center rounded-3xl p-12 text-center"
-        >
-          <div className="mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-white/10 shadow-2xl backdrop-blur-md">
-            <Sparkles className="h-12 w-12 text-white" />
-          </div>
-          <h1 className="mb-4 text-5xl font-extrabold tracking-tight">
-            Neeva AI
-          </h1>
-          <p className="max-w-md text-lg font-light leading-relaxed text-white/90">
-            Elevate your personal space with an intelligent, luxury companion designed for unparalleled focus and well-being.
-          </p>
-        </motion.div>
-      </div>
+      <div className="luxury-gradient-bg relative hidden flex-1 md:flex" />
 
       {/* Right Pane - Auth Form */}
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:px-20 xl:px-24">
