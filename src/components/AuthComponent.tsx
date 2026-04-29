@@ -23,6 +23,7 @@ import {
   AlertTriangle,
   Info,
 } from 'lucide-react';
+import { NeevaOrb } from './NeevaOrb';
 
 import { Alert, AlertDescription } from './ui/alert';
 import { validateEmail, validatePassword, PasswordValidationResult, EmailValidationResult } from '../utils/validation';
@@ -481,14 +482,51 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       {/* Right Pane - Auth Form */}
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-md">
-          {/* Mobile Header (Hidden on Desktop) */}
-          <div className="mb-10 text-center md:hidden">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 shadow-lg">
-              <Sparkles className="h-8 w-8 text-primary" />
+
+          {/* ── Logo Header: Visible on ALL screen sizes ── */}
+          <div className="mb-8 flex flex-col items-center text-center">
+            {/* Optical-flow orb — layered pulse + orbit ring + shimmer */}
+            <div className="relative mb-5 flex items-center justify-center">
+              {/* Outermost slow-pulse glow ring */}
+              <motion.div
+                className="absolute rounded-full"
+                style={{ width: 88, height: 88, background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)' }}
+                animate={{ scale: [1, 1.22, 1], opacity: [0.6, 0.2, 0.6] }}
+                transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              {/* Mid orbit ring — rotates slowly */}
+              <motion.div
+                className="absolute rounded-full border border-violet-400/25"
+                style={{ width: 72, height: 72 }}
+                animate={{ rotate: 360, scale: [1, 1.06, 1] }}
+                transition={{ rotate: { duration: 8, repeat: Infinity, ease: 'linear' }, scale: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } }}
+              />
+              {/* Inner fast shimmer ring */}
+              <motion.div
+                className="absolute rounded-full border border-pink-400/20"
+                style={{ width: 58, height: 58 }}
+                animate={{ rotate: -360, opacity: [0.4, 1, 0.4] }}
+                transition={{ rotate: { duration: 5, repeat: Infinity, ease: 'linear' }, opacity: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } }}
+              />
+              {/* The actual orb — breathing scale */}
+              <motion.div
+                animate={{ scale: [1, 1.07, 1], filter: ['drop-shadow(0 0 8px rgba(139,92,246,0.35))', 'drop-shadow(0 0 18px rgba(139,92,246,0.6))', 'drop-shadow(0 0 8px rgba(139,92,246,0.35))'] }}
+                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                <NeevaOrb size="md" animated={false} />
+              </motion.div>
             </div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+
+            {/* Wordmark */}
+            <motion.h1
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="text-2xl font-bold tracking-tight bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent"
+              style={{ fontFamily: 'Outfit, Inter, sans-serif' }}
+            >
               Neeva AI
-            </h1>
+            </motion.h1>
           </div>
 
           <AnimatePresence mode="wait">

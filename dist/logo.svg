@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <!-- Main orb radial gradient: pink → violet → blue -->
+    <radialGradient id="orbGrad" cx="35%" cy="32%" r="70%">
+      <stop offset="0%"   stop-color="#ec4899"/>
+      <stop offset="45%"  stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </radialGradient>
+    <!-- Soft outer glow -->
+    <radialGradient id="glowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#a78bfa" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#a78bfa" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Inner shine highlight -->
+    <radialGradient id="shineGrad" cx="38%" cy="30%" r="55%">
+      <stop offset="0%"   stop-color="#ffffff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer soft glow ring -->
+  <circle cx="50" cy="50" r="48" fill="url(#glowGrad)"/>
+
+  <!-- Main orb sphere -->
+  <circle cx="50" cy="50" r="42" fill="url(#orbGrad)" filter="url(#glow)"/>
+
+  <!-- Inner shine overlay -->
+  <circle cx="50" cy="50" r="42" fill="url(#shineGrad)"/>
+
+  <!-- Left eye highlight -->
+  <ellipse cx="38" cy="38" rx="5" ry="6.5" fill="white" opacity="0.82" transform="rotate(-10, 38, 38)"/>
+
+  <!-- Right eye highlight -->
+  <ellipse cx="55" cy="36" rx="3.5" ry="4.5" fill="white" opacity="0.55" transform="rotate(-10, 55, 36)"/>
+</svg>
