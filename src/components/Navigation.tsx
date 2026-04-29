@@ -235,7 +235,7 @@ export function Navigation() {
             <div className="flex items-center space-x-3">
               <NeevaOrb size="sm" animated={false} />
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-fuchsia-700 via-violet-600 to-blue-600 dark:from-pink-400 dark:via-violet-400 dark:to-blue-400 bg-clip-text text-transparent" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>
                   Neeva AI
                 </h1>
                 <p className="text-xs text-muted-foreground">
@@ -349,7 +349,7 @@ export function Navigation() {
                 <div className="flex items-center space-x-3">
                   <NeevaOrb size="sm" animated={false} />
                   <div>
-                    <h2 className="font-semibold bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>Neeva AI</h2>
+                    <h2 className="font-semibold bg-gradient-to-r from-fuchsia-700 via-violet-600 to-blue-600 dark:from-pink-400 dark:via-violet-400 dark:to-blue-400 bg-clip-text text-transparent" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>Neeva AI</h2>
                     <p className="text-xs text-muted-foreground">
                       Mental Wellness Companion
                     </p>

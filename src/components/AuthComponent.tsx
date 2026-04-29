@@ -522,7 +522,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="text-2xl font-bold tracking-tight bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent"
+              className="text-2xl font-bold tracking-tight bg-gradient-to-r from-fuchsia-700 via-violet-600 to-blue-600 dark:from-pink-400 dark:via-violet-400 dark:to-blue-400 bg-clip-text text-transparent"
               style={{ fontFamily: 'Outfit, Inter, sans-serif' }}
             >
               Neeva AI

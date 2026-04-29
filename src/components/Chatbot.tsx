@@ -402,7 +402,7 @@ export function Chatbot() {
                             <span className="chatbot-status-dot" />
                         </div>
                         <div className="min-w-0">
-                            <h2 className="text-[14px] font-bold bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent truncate leading-tight" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>
+                            <h2 className="text-[14px] font-bold bg-gradient-to-r from-fuchsia-700 via-violet-600 to-blue-600 dark:from-pink-400 dark:via-violet-400 dark:to-blue-400 bg-clip-text text-transparent truncate leading-tight" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>
                                 Neeva AI
                             </h2>
                             <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-tight mt-0.5">
