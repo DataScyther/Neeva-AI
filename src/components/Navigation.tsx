@@ -4,6 +4,7 @@ import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { useAppContext } from "./AppContext";
 import { MobileNavigation } from "./MobileNavigation";
+import { NeevaOrb } from "./NeevaOrb";
 
 import "../styles/navigation-clean.css";
 import {
@@ -232,15 +233,13 @@ export function Navigation() {
           {/* Logo */}
           <div className="flex items-center h-16 px-6 border-b border-border">
             <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg">
-                <Heart className="w-6 h-6 text-white" />
-              </div>
+              <NeevaOrb size="sm" animated={false} />
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Neeva
+                <h1 className="text-xl font-bold bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>
+                  Neeva AI
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  Mental Health Companion
+                  Mental Wellness Companion
                 </p>
               </div>
             </div>
@@ -348,13 +347,11 @@ export function Navigation() {
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <div className="flex items-center space-x-3">
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg">
-                    <Heart className="w-5 h-5 text-white" />
-                  </div>
+                  <NeevaOrb size="sm" animated={false} />
                   <div>
-                    <h2 className="font-semibold">Neeva</h2>
+                    <h2 className="font-semibold bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>Neeva AI</h2>
                     <p className="text-xs text-muted-foreground">
-                      Mental Health Companion
+                      Mental Wellness Companion
                     </p>
                   </div>
                 </div>

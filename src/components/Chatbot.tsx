@@ -402,8 +402,8 @@ export function Chatbot() {
                             <span className="chatbot-status-dot" />
                         </div>
                         <div className="min-w-0">
-                            <h2 className="text-[13px] font-semibold text-slate-800 dark:text-white truncate leading-tight">
-                                {conversationTitle}
+                            <h2 className="text-[14px] font-bold bg-gradient-to-r from-pink-500 via-violet-500 to-blue-500 bg-clip-text text-transparent truncate leading-tight" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>
+                                Neeva AI
                             </h2>
                             <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-tight mt-0.5">
                                 {state.chatHistory.length} message{state.chatHistory.length !== 1 ? 's' : ''} · Online
