@@ -473,7 +473,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
   const activeCopy = copy[authMode];
 
   return (
-    <div className="flex min-h-screen w-full flex-col md:flex-row bg-background dark:bg-zinc-950">
+    <div className="flex min-h-screen w-full flex-col md:flex-row bg-background">
       
       {/* Left Pane - Animated Gradient Branding */}
       <div className="luxury-gradient-bg relative hidden flex-1 md:flex" />

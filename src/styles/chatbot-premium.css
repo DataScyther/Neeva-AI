@@ -20,15 +20,6 @@
     );
 }
 
-@media (prefers-color-scheme: dark) {
-    .chatbot-shell {
-        background: linear-gradient(135deg,
-            #111827 0%,
-            #1e1b4b 50%,
-            #0f172a 100%
-        );
-    }
-}
 
 :root.dark .chatbot-shell,
 .dark .chatbot-shell {
