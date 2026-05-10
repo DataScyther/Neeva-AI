@@ -23,7 +23,7 @@ import {
   AlertTriangle,
   Info,
 } from 'lucide-react';
-import { NeevaOrb } from './NeevaOrb';
+
 
 import { Alert, AlertDescription } from './ui/alert';
 import { validateEmail, validatePassword, PasswordValidationResult, EmailValidationResult } from '../utils/validation';
@@ -485,48 +485,18 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
 
           {/* ── Logo Header: Visible on ALL screen sizes ── */}
           <div className="mb-8 flex flex-col items-center text-center">
-            {/* Optical-flow orb — layered pulse + orbit ring + shimmer */}
-            <div className="relative mb-5 flex items-center justify-center">
-              {/* Outermost slow-pulse glow ring */}
-              <motion.div
-                className="absolute rounded-full"
-                style={{ width: 88, height: 88, background: 'radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%)' }}
-                animate={{ scale: [1, 1.22, 1], opacity: [0.6, 0.2, 0.6] }}
-                transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut' }}
-              />
-              {/* Mid orbit ring — rotates slowly */}
-              <motion.div
-                className="absolute rounded-full border border-violet-400/25"
-                style={{ width: 72, height: 72 }}
-                animate={{ rotate: 360, scale: [1, 1.06, 1] }}
-                transition={{ rotate: { duration: 8, repeat: Infinity, ease: 'linear' }, scale: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } }}
-              />
-              {/* Inner fast shimmer ring */}
-              <motion.div
-                className="absolute rounded-full border border-pink-400/20"
-                style={{ width: 58, height: 58 }}
-                animate={{ rotate: -360, opacity: [0.4, 1, 0.4] }}
-                transition={{ rotate: { duration: 5, repeat: Infinity, ease: 'linear' }, opacity: { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } }}
-              />
-              {/* The actual orb — breathing scale */}
-              <motion.div
-                animate={{ scale: [1, 1.07, 1], filter: ['drop-shadow(0 0 8px rgba(139,92,246,0.35))', 'drop-shadow(0 0 18px rgba(139,92,246,0.6))', 'drop-shadow(0 0 8px rgba(139,92,246,0.35))'] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <NeevaOrb size="md" animated={false} />
-              </motion.div>
-            </div>
-
-            {/* Wordmark */}
-            <motion.h1
+            <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="text-2xl font-bold tracking-tight bg-gradient-to-r from-fuchsia-700 via-violet-600 to-blue-600 dark:from-pink-400 dark:via-violet-400 dark:to-blue-400 bg-clip-text text-transparent"
-              style={{ fontFamily: 'Outfit, Inter, sans-serif' }}
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
-              Neeva AI
-            </motion.h1>
+              <img
+                src="/neeva-ai-logo.png"
+                alt="Neeva AI"
+                className="h-16 w-auto object-contain"
+                draggable={false}
+              />
+            </motion.div>
           </div>
 
           <AnimatePresence mode="wait">
