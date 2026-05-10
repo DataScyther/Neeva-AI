@@ -483,18 +483,17 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
       <div className="flex flex-1 flex-col justify-center px-6 py-12 sm:px-12 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-md">
 
-          {/* ── Logo Header: Visible on ALL screen sizes ── */}
+          {/* ── Brand Header: Brain Logo Only ── */}
           <div className="mb-8 flex flex-col items-center text-center">
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              <img
-                src="/neeva-ai-logo.png"
-                alt="Neeva AI"
-                className="h-16 w-auto object-contain"
-                draggable={false}
+              <img 
+                src={new URL('../assets/e5963ce5-f0fe-4f91-9239-b9ef2e8289c5.jpg', import.meta.url).href} 
+                alt="Neeva AI" 
+                style={{ width: '8rem', height: 'auto' }}
               />
             </motion.div>
           </div>

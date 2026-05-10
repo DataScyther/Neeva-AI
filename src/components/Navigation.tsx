@@ -4,7 +4,7 @@ import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { useAppContext } from "./AppContext";
 import { MobileNavigation } from "./MobileNavigation";
-import { NeevaOrb } from "./NeevaOrb";
+
 
 import "../styles/navigation-clean.css";
 import {
@@ -233,7 +233,9 @@ export function Navigation() {
           {/* Logo */}
           <div className="flex items-center h-16 px-6 border-b border-border">
             <div className="flex items-center space-x-3">
-              <NeevaOrb size="sm" animated={false} />
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-fuchsia-600 via-violet-600 to-blue-600 flex items-center justify-center shadow-md">
+                <span className="text-white font-bold text-sm" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>N</span>
+              </div>
               <div>
                 <h1 className="text-xl font-bold bg-gradient-to-r from-fuchsia-700 via-violet-600 to-blue-600 dark:from-pink-400 dark:via-violet-400 dark:to-blue-400 bg-clip-text text-transparent" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>
                   Neeva AI
@@ -347,7 +349,9 @@ export function Navigation() {
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <div className="flex items-center space-x-3">
-                  <NeevaOrb size="sm" animated={false} />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-fuchsia-600 via-violet-600 to-blue-600 flex items-center justify-center shadow-md">
+                    <span className="text-white font-bold text-sm" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>N</span>
+                  </div>
                   <div>
                     <h2 className="font-semibold bg-gradient-to-r from-fuchsia-700 via-violet-600 to-blue-600 dark:from-pink-400 dark:via-violet-400 dark:to-blue-400 bg-clip-text text-transparent" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>Neeva AI</h2>
                     <p className="text-xs text-muted-foreground">
