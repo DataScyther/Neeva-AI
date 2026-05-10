@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useAppContext } from "./AppContext";
-import { NeevaLogo } from "./NeevaLogo";
 import {
   Card,
   CardContent,
@@ -147,7 +146,7 @@ export function Dashboard() {
   const GreetingIcon = greeting.icon;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900">
       <div className="p-6 space-y-8 max-w-7xl mx-auto">
         {/* Hero Header */}
         <motion.div
@@ -157,9 +156,6 @@ export function Dashboard() {
           className="text-center space-y-4 py-8"
         >
           <div className="flex items-center justify-center space-x-3 mb-4">
-            <NeevaLogo size="lg" breathe glow />
-          </div>
-          <div className="flex items-center justify-center space-x-3 mb-2">
             <GreetingIcon
               className={`w-8 h-8 ${greeting.color}`}
             />
@@ -182,7 +178,7 @@ export function Dashboard() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          <Card className="stats-card relative overflow-hidden border-0 shadow-xl shadow-blue-500/10" style={{ background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.3)' }}>
+          <Card className="stats-card relative overflow-hidden border-0 bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-blue-900 shadow-xl shadow-blue-500/10">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
             <CardContent className="relative p-6">
               <div className="flex items-center space-x-4">

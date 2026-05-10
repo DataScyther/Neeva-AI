@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import "./styles/neeva-brand.css";
 import { checkEnvVariables } from "./utils/env-check";
 import { authService } from "./lib/auth";
 import { isMobileDevice, measurePerformance, triggerHapticFeedback } from "./utils/mobile-optimizations";
@@ -34,20 +33,6 @@ function AppContent() {
   const { state, dispatch } = useAppContext();
 
 
-
-  // Dismiss splash screen on mount
-  useEffect(() => {
-    const splash = document.getElementById('neeva-splash');
-    if (splash) {
-      // Small delay for smooth transition
-      const timer = setTimeout(() => {
-        splash.classList.add('splash-hidden');
-        // Remove from DOM after transition
-        setTimeout(() => splash.remove(), 700);
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-  }, []);
 
   // Check environment variables on app start
   useEffect(() => {
@@ -163,7 +148,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen neeva-ambient-bg text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       <Navigation />
 
       {/* Main Content - Added safe padding for navigation */}

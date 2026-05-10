@@ -4,7 +4,7 @@ import { Badge } from "./ui/badge";
 import { Separator } from "./ui/separator";
 import { useAppContext } from "./AppContext";
 import { MobileNavigation } from "./MobileNavigation";
-import { NeevaLogo } from "./NeevaLogo";
+import { NeevaOrb } from "./NeevaOrb";
 
 import "../styles/navigation-clean.css";
 import {
@@ -228,14 +228,14 @@ export function Navigation() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:border-r lg:border-white/20 dark:lg:border-white/5 lg:shadow-sm" style={{ background: 'rgba(255,255,255,0.70)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}>
+      <div className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 lg:bg-background lg:border-r lg:border-border lg:shadow-sm">
         <div className="flex flex-col flex-1 min-h-0">
           {/* Logo */}
           <div className="flex items-center h-16 px-6 border-b border-border">
             <div className="flex items-center space-x-3">
-              <NeevaLogo size="sm" glow />
+              <NeevaOrb size="sm" animated={false} />
               <div>
-                <h1 className="text-xl font-bold neeva-wordmark" style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif" }}>
+                <h1 className="text-xl font-bold bg-gradient-to-r from-fuchsia-700 via-violet-600 to-blue-600 dark:from-pink-400 dark:via-violet-400 dark:to-blue-400 bg-clip-text text-transparent" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>
                   Neeva AI
                 </h1>
                 <p className="text-xs text-muted-foreground">
@@ -342,14 +342,14 @@ export function Navigation() {
           />
 
           {/* Drawer */}
-          <div className="lg:hidden fixed inset-y-0 right-0 w-80 max-w-[85vw] border-l border-white/20 dark:border-white/5 shadow-xl z-50" style={{ background: 'rgba(255,255,255,0.80)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)', animation: 'drawerSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards' }}>
+          <div className="lg:hidden fixed inset-y-0 right-0 w-80 max-w-[85vw] bg-white dark:bg-black border-l border-border shadow-xl z-50" style={{ animation: 'drawerSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards' }}>
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <div className="flex items-center space-x-3">
-                  <NeevaLogo size="sm" glow />
+                  <NeevaOrb size="sm" animated={false} />
                   <div>
-                    <h2 className="font-semibold neeva-wordmark" style={{ fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif" }}>Neeva AI</h2>
+                    <h2 className="font-semibold bg-gradient-to-r from-fuchsia-700 via-violet-600 to-blue-600 dark:from-pink-400 dark:via-violet-400 dark:to-blue-400 bg-clip-text text-transparent" style={{ fontFamily: 'Outfit, Inter, sans-serif' }}>Neeva AI</h2>
                     <p className="text-xs text-muted-foreground">
                       Mental Wellness Companion
                     </p>

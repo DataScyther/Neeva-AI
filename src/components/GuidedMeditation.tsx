@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { NeevaLogo } from "./NeevaLogo";
 import {
   Card,
   CardContent,
@@ -269,7 +268,7 @@ export function GuidedMeditation() {
     <div className="p-6 space-y-8 max-w-6xl mx-auto">
       <div className="text-center space-y-4 mb-8">
         <div className="flex items-center justify-center space-x-4">
-          <NeevaLogo size="md" glow />
+          <Headphones className="w-8 h-8 text-purple-500 stroke-[2.5]" />
           <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
             Guided Meditation
           </h1>
