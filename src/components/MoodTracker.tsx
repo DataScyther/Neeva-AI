@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAppContext } from "./AppContext";
+import { NeevaLogo } from "./NeevaLogo";
 import { saveMoodEntry } from "../lib/db";
 import {
   Card,
@@ -114,7 +115,7 @@ export function MoodTracker() {
       : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 dark:from-pink-900 dark:via-purple-900 dark:to-indigo-900">
+    <div className="min-h-screen">
       <div className="p-6 space-y-8 max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -123,7 +124,7 @@ export function MoodTracker() {
           className="text-center space-y-4 py-8"
         >
           <div className="flex items-center justify-center space-x-4 mb-4">
-            <Heart className="w-8 h-8 text-pink-500 stroke-[2.5]" />
+            <NeevaLogo size="md" glow />
             <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
               Mood Tracker
             </h1>

@@ -1,0 +1,216 @@
+/* ═══════════════════════════════════════════════
+   NEEVA AI — Brand Design System
+   Emotionally intelligent · Calm · Soft-Intelligent
+   ═══════════════════════════════════════════════ */
+
+/* ─── Brand Color Tokens ─── */
+:root {
+  /* Primary palette — derived from brain logo gradient */
+  --neeva-pink: #ec4899;
+  --neeva-rose: #f472b6;
+  --neeva-violet: #8b5cf6;
+  --neeva-purple: #a78bfa;
+  --neeva-blue: #3b82f6;
+  --neeva-sky: #60a5fa;
+  --neeva-cyan: #22d3ee;
+  --neeva-teal: #14b8a6;
+
+  /* Ambient glow colors */
+  --neeva-glow-soft: rgba(139, 92, 246, 0.15);
+  --neeva-glow-medium: rgba(139, 92, 246, 0.25);
+  --neeva-glow-strong: rgba(139, 92, 246, 0.4);
+  --neeva-glow-pink: rgba(236, 72, 153, 0.15);
+  --neeva-glow-blue: rgba(59, 130, 246, 0.15);
+
+  /* Glass surface tokens */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-bg-strong: rgba(255, 255, 255, 0.80);
+  --glass-border: rgba(255, 255, 255, 0.35);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  --glass-blur: 20px;
+
+  /* Typography */
+  --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+/* Dark mode overrides */
+.dark, [data-theme="dark"] {
+  --glass-bg: rgba(15, 23, 42, 0.65);
+  --glass-bg-strong: rgba(15, 23, 42, 0.80);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  --neeva-glow-soft: rgba(139, 92, 246, 0.12);
+  --neeva-glow-medium: rgba(139, 92, 246, 0.20);
+  --neeva-glow-strong: rgba(139, 92, 246, 0.35);
+}
+
+/* ─── Global Typography ─── */
+body {
+  font-family: var(--font-body) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6,
+.font-display {
+  font-family: var(--font-display) !important;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Breathing Animation — Calm, slow pulse ─── */
+@keyframes neeva-breathe {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.035);
+    filter: brightness(1.05);
+  }
+}
+
+/* ─── Reactive Pulse — Faster, for active states ─── */
+@keyframes neeva-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--neeva-glow-medium);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 20px 6px var(--neeva-glow-strong);
+    transform: scale(1.05);
+  }
+}
+
+/* ─── Glow Pulse — Ambient halo effect ─── */
+@keyframes neeva-glow-pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+}
+
+/* ─── Float — Gentle vertical hovering ─── */
+@keyframes neeva-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* ─── Holo Rotate — For SVG gradient rotation ─── */
+@keyframes neeva-holo-rotate {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
+}
+
+/* ─── Glass Surface Utility ─── */
+.glass-surface {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+
+.glass-surface-strong {
+  background: var(--glass-bg-strong) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+
+/* ─── Ambient Background — Replaces solid bg ─── */
+.neeva-ambient-bg {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(236, 72, 153, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+    linear-gradient(135deg, #fafbff 0%, #f0f4ff 50%, #faf5ff 100%);
+}
+
+.dark .neeva-ambient-bg,
+[data-theme="dark"] .neeva-ambient-bg {
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(236, 72, 153, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.04) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
+    linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+}
+
+/* ─── Neeva Logo Utility Classes ─── */
+.neeva-logo-breathe {
+  animation: neeva-breathe 4s ease-in-out infinite;
+}
+
+.neeva-logo-pulse {
+  animation: neeva-pulse 2s ease-in-out infinite;
+}
+
+.neeva-logo-float {
+  animation: neeva-float 6s ease-in-out infinite;
+}
+
+.neeva-logo-holo {
+  animation: neeva-holo-rotate 12s linear infinite;
+}
+
+/* ─── Glow Halo — Ambient circle behind logo ─── */
+.neeva-glow-halo {
+  position: absolute;
+  inset: -25%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.2) 0%,
+    rgba(236, 72, 153, 0.08) 40%,
+    transparent 70%
+  );
+  animation: neeva-glow-pulse 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dark .neeva-glow-halo,
+[data-theme="dark"] .neeva-glow-halo {
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.15) 0%,
+    rgba(236, 72, 153, 0.06) 40%,
+    transparent 70%
+  );
+}
+
+/* ─── Wordmark Brand Style ─── */
+.neeva-wordmark {
+  font-family: var(--font-display) !important;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--neeva-violet) 0%, var(--neeva-pink) 50%, var(--neeva-blue) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  .neeva-logo-breathe,
+  .neeva-logo-pulse,
+  .neeva-logo-float,
+  .neeva-logo-holo,
+  .neeva-glow-halo {
+    animation: none !important;
+  }
+}

@@ -13,6 +13,7 @@ import { Checkbox } from "./ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Progress } from "./ui/progress";
 import { useAppContext } from "./AppContext";
+import { NeevaLogo } from "./NeevaLogo";
 import {
   Heart,
   Brain,
@@ -409,8 +410,8 @@ export function Onboarding() {
       case 5:
         return (
           <div className="text-center space-y-6">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-full w-24 h-24 mx-auto flex items-center justify-center">
-              <CheckCircle className="w-12 h-12 text-white" />
+            <div className="mx-auto flex items-center justify-center">
+              <NeevaLogo size="xl" breathe glow />
             </div>
             <div className="space-y-4">
               <h2 className="text-3xl font-bold">
@@ -476,7 +477,7 @@ export function Onboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen neeva-ambient-bg flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         {/* Progress Bar */}
         <div className="mb-8">
@@ -498,7 +499,7 @@ export function Onboarding() {
         </div>
 
         {/* Main Content */}
-        <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-xl">
+        <Card className="border-0 shadow-xl" style={{ background: 'rgba(255,255,255,0.70)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.3)' }}>
           <CardContent className="p-8">
             {renderStepContent()}
           </CardContent>

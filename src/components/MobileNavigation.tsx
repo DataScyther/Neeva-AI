@@ -1,5 +1,6 @@
 import React from "react";
 import { useAppContext } from "./AppContext";
+import { NeevaLogo } from "./NeevaLogo";
 import {
   Home,
   MessageCircle,
@@ -47,7 +48,7 @@ export function MobileNavigation({ hidden = false }: MobileNavigationProps) {
                   onClick={() => handleNavigation(item.view)}
                   aria-label={item.label}
                 >
-                  <IconComponent className="w-5 h-5 text-white" />
+                  <NeevaLogo size="xs" />
                 </button>
               );
             }

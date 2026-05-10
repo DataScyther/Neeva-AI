@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from "framer-motion";
-import { NeevaOrb } from "./NeevaOrb";
+import { NeevaLogo } from "./NeevaLogo";
 
 import "../styles/chatbot-premium.css";
 
@@ -62,7 +62,7 @@ function EmptyState({ userName }: { userName: string }) {
                 animate={{ scale: [1, 1.06, 1], rotate: [0, 2, -2, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             >
-                <NeevaOrb size="lg" />
+                <NeevaLogo size="xl" breathe glow />
             </motion.div>
             <h3 className="mt-6 text-xl font-semibold bg-gradient-to-r from-purple-600 via-violet-500 to-indigo-600 bg-clip-text text-transparent">
                 Hey {userName}! 💜
@@ -398,7 +398,7 @@ export function Chatbot() {
                 >
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div className="chatbot-header-orb">
-                            <NeevaOrb size="sm" />
+                            <NeevaLogo size="xs" />
                             <span className="chatbot-status-dot" />
                         </div>
                         <div className="min-w-0">
@@ -440,7 +440,7 @@ export function Chatbot() {
                                     </div>
                                 ) : (
                                     <div className="chatbot-avatar chatbot-avatar--ai">
-                                        <NeevaOrb size="sm" />
+                                        <NeevaLogo size="xs" />
                                     </div>
                                 )}
 
@@ -487,7 +487,7 @@ export function Chatbot() {
                             >
                                 <div className="chatbot-msg-group">
                                     <div className="chatbot-avatar chatbot-avatar--ai">
-                                        <NeevaOrb size="sm" />
+                                        <NeevaLogo size="xs" />
                                     </div>
                                     <div className="chatbot-bubble chatbot-bubble--ai chatbot-bubble--typing">
                                         <span className="chatbot-bubble-label">Neeva</span>
