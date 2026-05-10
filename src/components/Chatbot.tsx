@@ -17,12 +17,6 @@ import { NeevaOrb } from "./NeevaOrb";
 import "../styles/chatbot-premium.css";
 
 /* ─── Static data ───────────────────────────────────────────── */
-const QUICK_SUGGESTIONS = [
-    { text: "I'm feeling anxious today", emoji: "😰", icon: Wind, bg: "linear-gradient(135deg, #f43f5e, #e11d48)", shadow: "0 4px 14px -3px rgba(244,63,94,0.35)" },
-    { text: "Help me with breathing exercises", emoji: "🫁", icon: Wind, bg: "linear-gradient(135deg, #0ea5e9, #0891b2)", shadow: "0 4px 14px -3px rgba(14,165,233,0.35)" },
-    { text: "I can't sleep well", emoji: "😴", icon: Moon, bg: "linear-gradient(135deg, #6366f1, #7c3aed)", shadow: "0 4px 14px -3px rgba(99,102,241,0.35)" },
-    { text: "I need motivation", emoji: "💪", icon: Flame, bg: "linear-gradient(135deg, #f59e0b, #ea580c)", shadow: "0 4px 14px -3px rgba(245,158,11,0.35)" },
-] as const;
 
 const ALLOWED_MIME_TYPES = [
     "image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml",
@@ -510,46 +504,6 @@ export function Chatbot() {
                     <div ref={messagesEndRef} />
                 </div>
 
-                {/* ═══ QUICK SUGGESTIONS — structured cards ═══ */}
-                <AnimatePresence>
-                    {showEmptyState && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 12 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 12 }}
-                            transition={{ duration: 0.35, delay: 0.3 }}
-                            className="chatbot-suggestions"
-                        >
-                            <p className="chatbot-suggestions-label">
-                                <Sparkles className="w-3 h-3" /> Quick Starters
-                            </p>
-                            <div className="chatbot-suggestions-grid">
-                                {QUICK_SUGGESTIONS.map((s, i) => {
-                                    const Icon = s.icon;
-                                    return (
-                                        <motion.button
-                                            key={i}
-                                            initial={{ opacity: 0, y: 8 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            transition={{ delay: 0.4 + i * 0.08 }}
-                                            whileHover={{ scale: 1.03, y: -2 }}
-                                            whileTap={{ scale: 0.97 }}
-                                            onClick={() => sendMessage(s.text)}
-                                            className="chatbot-suggestion-card"
-                                            style={{ background: s.bg, boxShadow: s.shadow }}
-                                        >
-                                            <div className="chatbot-suggestion-icon">
-                                                <Icon className="w-4 h-4" />
-                                            </div>
-                                            <span className="chatbot-suggestion-text">{s.text}</span>
-                                            <ArrowRight className="w-3 h-3 opacity-50 flex-shrink-0" />
-                                        </motion.button>
-                                    );
-                                })}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
 
                 {/* ═══ INPUT BAR — floating capsule ═══ */}
                 <motion.div
