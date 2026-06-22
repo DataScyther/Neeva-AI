@@ -28,3 +28,17 @@ client_secret_*.json
 .netlify
 .vercel
 Neeva-AI/
+
+# Markdown files
+*.md
+**/*.md
+
+# Skill files
+.agents/
+.claude/
+.kilocode/
+skills-lock.json
+
+# Confidential credential / API key files
+google-services.json
+GoogleService-Info.plist
