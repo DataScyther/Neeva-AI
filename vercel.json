@@ -1,11 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/api/chat",
-      "destination": "/api/proxy"
-    },
-    {
-      "source": "/api/(.*)",
+      "source": "/api/nvidia/(.*)",
       "destination": "/api/proxy"
     },
     {

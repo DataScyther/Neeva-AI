@@ -3,16 +3,16 @@ export function checkEnvVariables(): { isValid: boolean; errors: string[]; warni
   const errors: string[] = [];
   const warnings: string[] = [];
 
-  // Check Gemini API key (used in dev mode for direct API calls)
-  const geminiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  if (!geminiKey && import.meta.env.DEV) {
-    errors.push('VITE_GEMINI_API_KEY is not set. AI features will not work in dev mode.');
+  // Check NVIDIA API key (used in dev mode for direct API calls)
+  const nvidiaKey = import.meta.env.VITE_NVIDIA_API_KEY;
+  if (!nvidiaKey && import.meta.env.DEV) {
+    errors.push('VITE_NVIDIA_API_KEY is not set. AI features will not work in dev mode.');
   }
 
-  // Check Gemini model (optional, has default)
-  const model = import.meta.env.VITE_GEMINI_MODEL;
+  // Check NVIDIA model
+  const model = import.meta.env.VITE_NVIDIA_MODEL;
   if (!model) {
-    // Uses default 'gemini-2.0-flash'
+    // Uses default NVIDIA model from env configuration
   }
 
   // Log warnings to console

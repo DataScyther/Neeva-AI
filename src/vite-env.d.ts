@@ -10,9 +10,9 @@ interface ImportMetaEnv {
 
   readonly VITE_OPENROUTER_MODEL: string
   readonly VITE_OPENROUTER_BASE_URL: string
-  readonly VITE_GEMINI_API_KEY: string
-  readonly VITE_GEMINI_MODEL: string
-  readonly VITE_GEMINI_BASE_URL: string
+  readonly VITE_NVIDIA_API_KEY: string
+  readonly VITE_NVIDIA_MODEL: string
+  readonly VITE_NVIDIA_BASE_URL: string
   // Add other env variables as needed
 }
 

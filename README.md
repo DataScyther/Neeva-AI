@@ -150,7 +150,7 @@ to see whether software can help users notice their own behavioral patterns earl
 
 ### AI & Backend Infrastructure
 
-- **🌟 Google Gemini API** - Advanced multimodal AI capabilities
+- **🌟 NVIDIA NIM API** - High-performance LLMs (Llama 3.3 Nemotron)
 - **🗄️ Firebase** - Real-time database with built-in authentication
 - **🚀 Node.js** - High-performance backend runtime
 
@@ -276,10 +276,7 @@ npm run deploy:netlify # Deploy to Netlify
 ### Environment Variables
 
 ```env
-VITE_OPENROUTER_API_KEY=your_openrouter_key
-VITE_GEMINI_API_KEY=your_gemini_key
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_key
+VITE_NVIDIA_API_KEY=your_nvidia_api_key
 ```
 
 ---

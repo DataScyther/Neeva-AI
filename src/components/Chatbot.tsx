@@ -127,84 +127,12 @@ export function Chatbot() {
     const [rateLimitUntil, setRateLimitUntil] = useState<number | null>(null);
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [attachedFile, setAttachedFile] = useState<AttachedFile | null>(null);
-    const [isRecording, setIsRecording] = useState(false);
-    const [speechSupported, setSpeechSupported] = useState(false);
     const [inputFocused, setInputFocused] = useState(false);
     const [showCrisisBanner, setShowCrisisBanner] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const audioChunksRef = useRef<Blob[]>([]);
-    const audioStreamRef = useRef<MediaStream | null>(null);
-    const [voiceStatus, setVoiceStatus] = useState<string>('');
-
-    // Check if voice recording is supported (MediaRecorder + getUserMedia)
-    useEffect(() => {
-        const supported = !!(navigator.mediaDevices?.getUserMedia && typeof MediaRecorder !== 'undefined');
-        setSpeechSupported(supported);
-        console.log('[Voice] MediaRecorder voice input supported:', supported);
-    }, []);
-
-    /* ── Transcribe audio using Gemini API ── */
-    const transcribeAudio = useCallback(async (audioBlob: Blob): Promise<string> => {
-        console.log('[Voice] Sending audio to Gemini for transcription…', {
-            size: audioBlob.size, type: audioBlob.type
-        });
-        const arrayBuffer = await audioBlob.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
-        let binary = '';
-        for (let i = 0; i < uint8Array.length; i++) {
-            binary += String.fromCharCode(uint8Array[i]);
-        }
-        const base64Audio = btoa(binary);
-        const mimeType = audioBlob.type || 'audio/webm';
-
-        const DEV_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-        const DEV_MODEL = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.5-flash';
-        const DEV_BASE_URL = import.meta.env.VITE_GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta';
-
-        const contents = [{
-            role: 'user' as const,
-            parts: [
-                { inlineData: { mimeType, data: base64Audio } },
-                { text: 'Transcribe this audio exactly as spoken, word for word. Return ONLY the transcribed text with no additional commentary, labels, or formatting. If the audio is silent or unclear, return an empty string.' }
-            ]
-        }];
-
-        const geminiKey = typeof window !== 'undefined' ? localStorage.getItem('neeva_gemini_api_key') : null;
-        const geminiModel = (typeof window !== 'undefined' ? localStorage.getItem('neeva_gemini_model') : null) || DEV_MODEL;
-
-        const url = import.meta.env.DEV && (geminiKey || DEV_API_KEY)
-            ? `${DEV_BASE_URL}/models/${geminiModel}:generateContent?key=${geminiKey || DEV_API_KEY}`
-            : '/api/chat';
-
-        const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-            'x-ai-provider': 'gemini'
-        };
-        if (geminiKey) {
-            headers['x-gemini-key'] = geminiKey;
-        }
-
-        const response = await fetch(url, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify({
-                contents,
-                model: geminiModel
-            }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error?.message || `Transcription error: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return (data.candidates?.[0]?.content?.parts?.[0]?.text || '').trim();
-    }, []);
 
     /* ── Derived state ── */
     const conversationTitle = useMemo(() => {
@@ -369,112 +297,7 @@ export function Chatbot() {
         e.target.value = '';
     }, []);
 
-    /* ── Voice recording (MediaRecorder + Gemini transcription) ── */
-    const toggleRecording = useCallback(async () => {
-        if (isRecording) {
-            // ─── STOP RECORDING ───
-            console.log('[Voice] 🛑 User stopped recording');
-            setVoiceStatus('⏳ Transcribing…');
 
-            if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-                mediaRecorderRef.current.stop();
-            }
-            if (audioStreamRef.current) {
-                audioStreamRef.current.getTracks().forEach(track => track.stop());
-                audioStreamRef.current = null;
-            }
-            setIsRecording(false);
-            return;
-        }
-
-        // ─── START RECORDING ───
-        setVoiceStatus('🎤 Requesting mic…');
-        console.log('[Voice] 🎤 Starting voice recording…');
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 48000 }
-            });
-            audioStreamRef.current = stream;
-            console.log('[Voice] ✅ Mic access granted');
-
-            // Pick best supported format
-            let mimeType = 'audio/webm;codecs=opus';
-            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'audio/webm';
-            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'audio/mp4';
-            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = '';
-            console.log('[Voice] 📼 Format:', mimeType || 'default');
-
-            const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-            audioChunksRef.current = [];
-
-            recorder.ondataavailable = (e) => {
-                if (e.data.size > 0) {
-                    audioChunksRef.current.push(e.data);
-                    console.log('[Voice] 📦 Chunk:', e.data.size, 'bytes');
-                }
-            };
-
-            recorder.onstop = async () => {
-                console.log('[Voice] 📼 Stopped, chunks:', audioChunksRef.current.length);
-                if (audioChunksRef.current.length === 0) {
-                    setVoiceStatus('⚠️ No audio captured');
-                    setTimeout(() => setVoiceStatus(''), 2500);
-                    return;
-                }
-
-                const audioBlob = new Blob(audioChunksRef.current, { type: recorder.mimeType || 'audio/webm' });
-                console.log('[Voice] 📼 Blob:', audioBlob.size, 'bytes');
-
-                if (audioBlob.size < 1000) {
-                    setVoiceStatus('⚠️ Too short — try speaking longer');
-                    setTimeout(() => setVoiceStatus(''), 2500);
-                    return;
-                }
-
-                setVoiceStatus('⏳ Transcribing your voice…');
-                try {
-                    const transcript = await transcribeAudio(audioBlob);
-                    console.log('[Voice] ✅ Transcript:', transcript);
-                    if (transcript && transcript.length > 0) {
-                        setMessage(prev => prev ? prev + ' ' + transcript : transcript);
-                        setVoiceStatus('✅ Transcribed — review & send');
-                    } else {
-                        setVoiceStatus('🔇 No speech detected — try again');
-                    }
-                } catch (err: any) {
-                    console.error('[Voice] ❌ Transcription failed:', err);
-                    setVoiceStatus('⚠️ Transcription failed — try again');
-                }
-                setTimeout(() => setVoiceStatus(''), 3000);
-            };
-
-            recorder.onerror = (event: any) => {
-                console.error('[Voice] ❌ Recorder error:', event.error);
-                setVoiceStatus('⚠️ Recording error');
-                setIsRecording(false);
-                stream.getTracks().forEach(t => t.stop());
-            };
-
-            recorder.start(1000);
-            mediaRecorderRef.current = recorder;
-            setIsRecording(true);
-            setVoiceStatus('🎤 Recording — speak now…');
-            setMessage('');
-            if (isMobileDevice()) triggerHapticFeedback('light');
-            console.log('[Voice] ✅ Recording started');
-
-        } catch (err: any) {
-            console.error('[Voice] ❌ Failed:', err);
-            setVoiceStatus(
-                err.name === 'NotAllowedError' ? '⚠️ Mic permission denied' :
-                err.name === 'NotFoundError' ? '⚠️ No microphone found' :
-                '⚠️ Could not start recording'
-            );
-            setIsRecording(false);
-            setTimeout(() => setVoiceStatus(''), 3000);
-        }
-    }, [isRecording, transcribeAudio]);
 
     const isInputDisabled = isTyping || (rateLimitUntil !== null && Date.now() < rateLimitUntil);
     const hasContent = message.trim().length > 0 || attachedFile !== null;
@@ -704,17 +527,6 @@ export function Chatbot() {
                             </motion.div>
                         )}
                     </AnimatePresence>
-
-                    {/* Recording indicator */}
-                    <AnimatePresence>
-                        {isRecording && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="chatbot-recording">
-                                <motion.div animate={{ scale: [1, 1.4, 1] }} transition={{ duration: 1, repeat: Infinity }} className="w-2 h-2 rounded-full bg-red-500" />
-                                <span className="text-xs font-medium text-red-500">{voiceStatus || 'Listening…'}</span>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
                     {/* Input capsule */}
                     <div className={`chatbot-input-capsule ${inputFocused ? 'chatbot-input-capsule--focused' : ''}`}>
                         <motion.button
@@ -722,7 +534,7 @@ export function Chatbot() {
                             whileTap={{ scale: 0.9 }}
                             className="chatbot-input-action"
                             onClick={() => fileInputRef.current?.click()}
-                            disabled={isInputDisabled || isRecording}
+                            disabled={isInputDisabled}
                             title="Attach a file"
                         >
                             <Paperclip className="w-[15px] h-[15px]" />
@@ -733,7 +545,7 @@ export function Chatbot() {
                                 ref={textareaRef}
                                 value={message}
                                 onChange={e => setMessage(e.target.value)}
-                                placeholder={isRecording ? (voiceStatus || "Listening… speak now") : "Share what's on your mind…"}
+                                placeholder="Share what's on your mind…"
                                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                                 onFocus={() => setInputFocused(true)}
                                 onBlur={() => setInputFocused(false)}
@@ -743,28 +555,10 @@ export function Chatbot() {
                             />
                         </div>
 
-                        {/* Action buttons — mic/stop stays visible during recording, send appears when not recording + has content */}
+                        {/* Action buttons — send appears when has content */}
                         <div className="flex items-center gap-1.5">
-                            {/* Mic / Stop button — always visible when recording, or when no content typed */}
-                            {(isRecording || !hasContent) && (
-                                <motion.button
-                                    key="mic"
-                                    initial={{ opacity: 0, scale: 0.7 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.15 }}
-                                    whileHover={{ scale: 1.12 }}
-                                    whileTap={{ scale: 0.88 }}
-                                    className={`chatbot-input-send ${isRecording ? 'chatbot-input-send--recording' : ''}`}
-                                    onClick={toggleRecording}
-                                    disabled={isInputDisabled}
-                                    title={isRecording ? "Stop recording" : "Voice input"}
-                                >
-                                    {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-                                </motion.button>
-                            )}
-
-                            {/* Send button — visible when there's content AND not actively recording */}
-                            {hasContent && !isRecording && (
+                            {/* Send button — visible when there's content */}
+                            {hasContent && (
                                 <motion.button
                                     key="send"
                                     initial={{ opacity: 0, scale: 0.7 }}
