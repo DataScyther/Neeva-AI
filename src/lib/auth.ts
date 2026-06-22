@@ -130,13 +130,18 @@ class AuthService {
       // Create user profile using helper function
       const userProfile: UserProfile = createDefaultUserProfile(user, {
         name: user.displayName || 'User',
-        theme: 'light',
-        notifications: true,
-        language: 'en',
-        totalSessions: 1,
-        totalMinutes: 0,
-        streakDays: 1,
-        lastActivityDate: new Date(),
+        preferences: {
+          theme: 'light',
+          notifications: true,
+          language: 'en',
+          tone: 'auto',
+        },
+        stats: {
+          totalSessions: 1,
+          totalMinutes: 0,
+          streakDays: 1,
+          lastActivityDate: new Date(),
+        },
       });
 
       // Set the user profile immediately to ensure auth can continue even if Firestore fails

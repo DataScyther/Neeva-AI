@@ -73,8 +73,8 @@ export function useLazyLoad(threshold = 0.1) {
 
 // Request Animation Frame hook for smooth animations
 export function useAnimationFrame(callback: (deltaTime: number) => void) {
-  const requestRef = useRef<number>();
-  const previousTimeRef = useRef<number>();
+  const requestRef = useRef<number | undefined>(undefined);
+  const previousTimeRef = useRef<number | undefined>(undefined);
 
   const animate = useCallback(
     (time: number) => {
@@ -200,8 +200,8 @@ export const measurePerformance = (name: string) => {
 
 // Optimized scroll handler
 export const useOptimizedScroll = (callback: () => void, delay = 100) => {
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
-  const rafRef = useRef<number>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const rafRef = useRef<number | undefined>(undefined);
 
   const handleScroll = useCallback(() => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);

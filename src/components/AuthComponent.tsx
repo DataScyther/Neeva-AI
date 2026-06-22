@@ -798,7 +798,7 @@ const AuthComponent: React.FC<AuthComponentProps> = ({ onAuthSuccess }) => {
                                   createdAt: new Date(),
                                   updatedAt: new Date(),
                                   lastLoginAt: new Date(),
-                                  preferences: { theme: 'light', notifications: false, language: 'en' },
+                                  preferences: { theme: 'light', notifications: false, language: 'en', tone: 'auto' },
                                   stats: { totalSessions: 1, totalMinutes: 0, streakDays: 0, lastActivityDate: new Date() },
                                 };
                                 dispatch({ type: 'SET_USER', payload: guestProfile });
