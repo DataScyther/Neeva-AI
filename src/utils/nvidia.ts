@@ -21,7 +21,7 @@ export interface AIResponse {
 }
 
 const openai = new OpenAI({
-  apiKey: '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',
+  apiKey: import.meta.env.VITE_NVIDIA_API_KEY || '',
   baseURL: typeof window !== 'undefined' ? `${window.location.origin}/api/nvidia/v1` : 'http://localhost:5175/api/nvidia/v1',
   dangerouslyAllowBrowser: true
 });
