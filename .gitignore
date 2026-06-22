@@ -32,6 +32,7 @@ Neeva-AI/
 # Markdown files
 *.md
 **/*.md
+!/README.md
 
 # Skill files
 .agents/
