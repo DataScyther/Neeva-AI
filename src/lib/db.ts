@@ -142,10 +142,17 @@ export const saveChatMessage = async (uid: string, message: ChatMessage): Promis
 
     try {
         const docRef = doc(db, USERS_COLLECTION, uid, 'chats', message.id);
-        await setDoc(docRef, {
-            ...message,
-            timestamp: Timestamp.fromDate(message.timestamp)
-        });
+        // Strip undefined fields — Firestore rejects undefined values
+        const data: Record<string, any> = {
+            id: message.id,
+            content: message.content,
+            isUser: message.isUser,
+            timestamp: Timestamp.fromDate(message.timestamp),
+        };
+        if (message.reasoning) {
+            data.reasoning = message.reasoning;
+        }
+        await setDoc(docRef, data);
         return true;
     } catch (error) {
         console.error('Error saving chat:', error);

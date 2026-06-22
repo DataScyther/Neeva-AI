@@ -33,6 +33,7 @@ export interface UserProfile {
     theme: 'light' | 'dark' | 'auto';
     notifications: boolean;
     language: string;
+    tone: 'warm' | 'motivational' | 'soothing' | 'auto';
   };
   stats: {
     totalSessions: number;
@@ -59,6 +60,7 @@ function createDefaultUserProfile(user: User, overrides: Partial<UserProfile> = 
       theme: 'auto',
       notifications: true,
       language: 'en',
+      tone: 'auto',
     },
     stats: {
       totalSessions: 0,

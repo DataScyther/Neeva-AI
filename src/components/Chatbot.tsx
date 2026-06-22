@@ -1,14 +1,15 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useAppContext } from "./AppContext";
 import { useUserId } from "../hooks/useAuthSelectors";
-import { callGemini, convertChatHistoryToGemini, GeminiError } from "../utils/gemini";
+import { callGemini, convertChatHistoryToGemini, GeminiError, AIResponse } from "../utils/nvidia";
+import { detectCrisisSignals, detectMood, getTimeOfDay } from "../prompts/mentalWellnessPrompt";
 import { saveChatMessage } from "../lib/db";
 import { measurePerformance, triggerHapticFeedback, isMobileDevice } from "../utils/mobile-optimizations";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import {
     User, Send, Mic, MicOff, Paperclip, X, Bookmark, FileText, Loader2,
-    Wind, Moon, Flame, Sparkles, Heart, ArrowRight
+    Wind, Moon, Flame, Sparkles, Heart, ArrowRight, Brain, ChevronDown, ChevronUp
 } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import { motion, AnimatePresence } from "framer-motion";
@@ -70,6 +71,52 @@ function EmptyState({ userName }: { userName: string }) {
     );
 }
 
+/* ─── Reasoning block — shows Nemotron's thinking process ──── */
+function ReasoningBlock({ reasoning }: { reasoning: string }) {
+    const [isExpanded, setIsExpanded] = useState(true);
+    const previewLength = 200;
+    const isLong = reasoning.length > previewLength;
+
+    return (
+        <div className="chatbot-reasoning-block">
+            <button
+                className="chatbot-reasoning-header"
+                onClick={() => setIsExpanded(!isExpanded)}
+            >
+                <div className="chatbot-reasoning-header-left">
+                    <Brain className="w-3 h-3" />
+                    <span>Neeva's Thinking</span>
+                </div>
+                {isLong && (
+                    isExpanded
+                        ? <ChevronUp className="w-3 h-3 text-slate-400" />
+                        : <ChevronDown className="w-3 h-3 text-slate-400" />
+                )}
+            </button>
+            <AnimatePresence initial={false}>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                        className="chatbot-reasoning-body"
+                    >
+                        <ReactMarkdown components={{
+                            p: ({ node, ...p }) => <p className="mb-1.5 last:mb-0 text-[11px] leading-relaxed" {...p} />,
+                            strong: ({ node, ...p }) => <strong className="font-semibold" {...p} />,
+                            ul: ({ node, ...p }) => <ul className="list-disc pl-3 mb-1 space-y-0.5 text-[11px]" {...p} />,
+                            ol: ({ node, ...p }) => <ol className="list-decimal pl-3 mb-1 space-y-0.5 text-[11px]" {...p} />,
+                            li: ({ node, ...p }) => <li className="mb-0.5" {...p} />,
+                            code: ({ node, ...p }) => <code className="bg-black/5 dark:bg-white/10 rounded px-1 py-0.5 text-[10px] font-mono" {...p} />,
+                        }}>{reasoning}</ReactMarkdown>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+}
+
 /* ─── Main Chatbot ──────────────────────────────────────────── */
 export function Chatbot() {
     const { state, dispatch } = useAppContext();
@@ -83,6 +130,7 @@ export function Chatbot() {
     const [isRecording, setIsRecording] = useState(false);
     const [speechSupported, setSpeechSupported] = useState(false);
     const [inputFocused, setInputFocused] = useState(false);
+    const [showCrisisBanner, setShowCrisisBanner] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -125,14 +173,28 @@ export function Chatbot() {
             ]
         }];
 
-        const url = import.meta.env.DEV && DEV_API_KEY
-            ? `${DEV_BASE_URL}/models/${DEV_MODEL}:generateContent?key=${DEV_API_KEY}`
+        const geminiKey = typeof window !== 'undefined' ? localStorage.getItem('neeva_gemini_api_key') : null;
+        const geminiModel = (typeof window !== 'undefined' ? localStorage.getItem('neeva_gemini_model') : null) || DEV_MODEL;
+
+        const url = import.meta.env.DEV && (geminiKey || DEV_API_KEY)
+            ? `${DEV_BASE_URL}/models/${geminiModel}:generateContent?key=${geminiKey || DEV_API_KEY}`
             : '/api/chat';
+
+        const headers: Record<string, string> = {
+            'Content-Type': 'application/json',
+            'x-ai-provider': 'gemini'
+        };
+        if (geminiKey) {
+            headers['x-gemini-key'] = geminiKey;
+        }
 
         const response = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents }),
+            headers,
+            body: JSON.stringify({
+                contents,
+                model: geminiModel
+            }),
         });
 
         if (!response.ok) {
@@ -172,7 +234,7 @@ export function Chatbot() {
     }, [rateLimitUntil]);
 
     /* ── AI response ── */
-    const getAIResponse = useCallback(async (userMessage: string): Promise<string> => {
+    const getAIResponse = useCallback(async (userMessage: string): Promise<AIResponse> => {
         const perf = measurePerformance('ai-response');
         perf.start();
         try {
@@ -186,16 +248,16 @@ export function Chatbot() {
         } catch (err: any) {
             const lo = userMessage.toLowerCase();
             if (err instanceof GeminiError) {
-                if (err.statusCode === 429) return "⏳ I'm receiving a lot of requests right now. Please wait a moment and try again.";
-                if (err.statusCode === 401) return "⚠️ Authentication failed. Make sure you're running 'vercel dev' for local development.";
-                if (err.statusCode === 403) return "⚠️ Access forbidden. The API key may not have permission.";
-                if (err.statusCode === 404 || err.statusCode === 500) return "⚠️ Backend unavailable. Run 'vercel dev' to start backend functions.";
-                return `⚠️ ${err.message}`;
+                if (err.statusCode === 429) return { content: "⏳ I'm receiving a lot of requests right now. Please wait a moment and try again." };
+                if (err.statusCode === 401) return { content: `⚠️ Authentication failed: ${err.message}` };
+                if (err.statusCode === 403) return { content: "⚠️ Access forbidden. The API key may not have permission." };
+                if (err.statusCode === 404 || err.statusCode === 500) return { content: `⚠️ Backend Error: ${err.message}` };
+                return { content: `⚠️ ${err.message}` };
             }
-            if (lo.includes("anxi") || lo.includes("anxiety")) return "Try the 4-7-8 breathing technique: breathe in for 4, hold for 7, exhale for 8. 🌱";
-            if (lo.includes("sleep") || lo.includes("tired")) return "Create a calming bedtime routine and avoid screens before sleep. 🌙";
-            if (lo.includes("sad") || lo.includes("down")) return "Your feelings are valid. Try gentle movement or call a friend. 💙";
-            return "I'm here to listen and support you through this. 💜";
+            if (lo.includes("anxi") || lo.includes("anxiety")) return { content: "(Offline Mode) Try the 4-7-8 breathing technique: breathe in for 4, hold for 7, exhale for 8. 🌱" };
+            if (lo.includes("sleep") || lo.includes("tired")) return { content: "(Offline Mode) Create a calming bedtime routine and avoid screens before sleep. 🌙" };
+            if (lo.includes("sad") || lo.includes("down")) return { content: "(Offline Mode) Your feelings are valid. Try gentle movement or call a friend. 💙" };
+            return { content: `(Offline Mode - Network/API Issue) I'm here to listen and support you through this. 💜 [Error details: ${err.message}]` };
         }
     }, [state.chatHistory]);
 
@@ -215,6 +277,18 @@ export function Chatbot() {
             content += content ? `\n\n📎 [${attachedFile.type.startsWith('image/') ? 'Image' : 'File'}: ${attachedFile.name}]` : `📎 [${attachedFile.type.startsWith('image/') ? 'Image' : 'File'}: ${attachedFile.name}]`;
         }
 
+        // Client-side crisis detection — show safety banner immediately
+        if (detectCrisisSignals(content)) {
+            setShowCrisisBanner(true);
+            console.log('[Neeva Safety] Crisis signal detected — banner shown, AI will activate crisis protocol');
+        }
+
+        // Track mood for session context
+        const mood = detectMood(content);
+        if (mood !== 'neutral') {
+            try { localStorage.setItem('neeva_last_mood', mood); } catch { /* silent */ }
+        }
+
         const userMsg = { id: Date.now().toString(), content, isUser: true, timestamp: new Date() };
         dispatch({ type: "ADD_CHAT_MESSAGE", payload: userMsg });
         if (userId) saveChatMessage(userId, userMsg).catch(() => { });
@@ -223,12 +297,29 @@ export function Chatbot() {
         setAttachedFile(null);
         setIsTyping(true);
 
+        // Track session count for returning-user personalization
+        try {
+            const count = parseInt(localStorage.getItem('neeva_session_count') || '0', 10);
+            localStorage.setItem('neeva_session_count', String(count + 1));
+        } catch { /* silent */ }
+
         requestAnimationFrame(async () => {
             try {
-                const aiText = await getAIResponse(content);
-                const aiMsg = { id: (Date.now() + 1).toString(), content: aiText, isUser: false, timestamp: new Date() };
+                const aiResponse = await getAIResponse(content);
+                const aiMsg = {
+                    id: (Date.now() + 1).toString(),
+                    content: aiResponse.content,
+                    isUser: false,
+                    timestamp: new Date(),
+                    reasoning: aiResponse.reasoning
+                };
                 dispatch({ type: "ADD_CHAT_MESSAGE", payload: aiMsg });
                 if (userId) saveChatMessage(userId, aiMsg);
+
+                // Auto-dismiss crisis banner after AI responds (AI handles safety in-response)
+                if (showCrisisBanner) {
+                    setTimeout(() => setShowCrisisBanner(false), 30000);
+                }
             } catch (err) {
                 if (err instanceof GeminiError && err.statusCode === 429) {
                     setRateLimitUntil(Date.now() + 60000);
@@ -242,14 +333,26 @@ export function Chatbot() {
             }
             setIsTyping(false);
         });
-    }, [message, attachedFile, getAIResponse, dispatch, rateLimitUntil, userId]);
+    }, [message, attachedFile, getAIResponse, dispatch, rateLimitUntil, userId, showCrisisBanner]);
 
-    /* ── Welcome message ── */
+    /* ── Welcome message — time-of-day aware ── */
     useEffect(() => {
         if (state.chatHistory.length === 0) {
+            const name = state.user?.name || 'there';
+            const tod = getTimeOfDay();
+            const greetings: Record<string, string> = {
+                morning: `Good morning, ${name}! ☀️ I'm **Neeva**, your wellness companion. How are you starting your day? I'm here to listen, support, or just chat — whatever you need. 💜`,
+                afternoon: `Hey ${name}! 🌤️ I'm **Neeva**, your wellness companion. How's your afternoon going? Whether you want to talk something through or just decompress, I'm here. 💜`,
+                evening: `Good evening, ${name}! 🌅 I'm **Neeva**, your wellness companion. How was your day? I'm here to listen, reflect, or help you wind down. 💜`,
+                night: `Hey ${name} 🌙 I'm **Neeva**, your wellness companion. Late nights can bring a lot of thoughts — I'm here if you want to talk, vent, or just have some company. 💜`,
+            };
+            // Store user name for system prompt personalization
+            if (state.user?.name) {
+                try { localStorage.setItem('neeva_user_name', state.user.name); } catch { /* silent */ }
+            }
             setTimeout(() => dispatch({
                 type: "ADD_CHAT_MESSAGE",
-                payload: { id: "welcome", content: `Hello ${state.user?.name || 'there'}! 👋 I'm Neeva, your AI mental health companion. How are you feeling today? I'm here to listen and support you. 💜`, isUser: false, timestamp: new Date() }
+                payload: { id: "welcome", content: greetings[tod], isUser: false, timestamp: new Date() }
             }), 500);
         }
     }, []);
@@ -417,6 +520,47 @@ export function Chatbot() {
                     </motion.button>
                 </motion.header>
 
+                {/* ═══ CRISIS SAFETY BANNER ═══ */}
+                <AnimatePresence>
+                    {showCrisisBanner && (
+                        <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="crisis-safety-banner"
+                            style={{
+                                background: 'linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(220,38,38,0.08) 100%)',
+                                borderBottom: '1px solid rgba(239,68,68,0.2)',
+                                padding: '10px 16px',
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                gap: '10px',
+                                fontSize: '12px',
+                                lineHeight: '1.5',
+                                color: 'var(--text-primary, #1e293b)',
+                            }}
+                        >
+                            <Heart className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
+                            <div style={{ flex: 1 }}>
+                                <strong style={{ color: '#dc2626' }}>You matter.</strong>{' '}
+                                If you're in crisis, please reach out:
+                                {' '}<strong>988 Suicide & Crisis Lifeline</strong> (call/text 988)
+                                {' '}· <strong>Crisis Text Line</strong> (text HOME to 741741)
+                            </div>
+                            <button
+                                onClick={() => setShowCrisisBanner(false)}
+                                style={{
+                                    background: 'none', border: 'none', cursor: 'pointer',
+                                    padding: '2px', color: '#94a3b8', flexShrink: 0,
+                                }}
+                            >
+                                <X className="w-3.5 h-3.5" />
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
                 {/* ═══ MESSAGES ═══ */}
                 <div className="chatbot-messages">
                     {showEmptyState && <EmptyState userName={state.user?.name?.split(' ')[0] || 'there'} />}
@@ -446,6 +590,12 @@ export function Chatbot() {
                                     {!msg.isUser && (
                                         <span className="chatbot-bubble-label">Neeva</span>
                                     )}
+
+                                    {/* Reasoning Section — visible for AI messages with reasoning */}
+                                    {!msg.isUser && msg.reasoning && (
+                                        <ReasoningBlock reasoning={msg.reasoning} />
+                                    )}
+
                                     <div className="chatbot-bubble-content">
                                         {msg.isUser ? (
                                             <p className="whitespace-pre-line">{msg.content}</p>
@@ -473,7 +623,7 @@ export function Chatbot() {
                         </motion.div>
                     ))}
 
-                    {/* Typing indicator */}
+                    {/* Typing / Reasoning indicator */}
                     <AnimatePresence>
                         {isTyping && (
                             <motion.div
@@ -484,21 +634,38 @@ export function Chatbot() {
                             >
                                 <div className="chatbot-msg-group">
                                     <div className="chatbot-avatar chatbot-avatar--ai">
-                                        <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+                                        <motion.div
+                                            animate={{ rotate: [0, 15, -15, 0] }}
+                                            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                        >
+                                            <Brain className="w-3.5 h-3.5 text-purple-500" />
+                                        </motion.div>
                                     </div>
                                     <div className="chatbot-bubble chatbot-bubble--ai chatbot-bubble--typing">
                                         <span className="chatbot-bubble-label">Neeva</span>
-                                        <div className="chatbot-typing-dots">
-                                            {[0, 1, 2].map(i => (
-                                                <motion.span
-                                                    key={i}
-                                                    animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
-                                                    transition={{ duration: 0.7, repeat: Infinity, delay: i * 0.15, ease: "easeInOut" }}
-                                                    className="chatbot-typing-dot"
-                                                />
-                                            ))}
+                                        <div className="chatbot-reasoning-indicator">
+                                            <motion.div
+                                                className="chatbot-reasoning-pulse"
+                                                animate={{ opacity: [0.4, 1, 0.4], scale: [0.95, 1.05, 0.95] }}
+                                                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                                            >
+                                                <Brain className="w-3 h-3" />
+                                            </motion.div>
+                                            <div className="chatbot-reasoning-text">
+                                                <span className="chatbot-reasoning-label">reasoning deeply</span>
+                                                <div className="chatbot-typing-dots" style={{ marginLeft: 4 }}>
+                                                    {[0, 1, 2].map(i => (
+                                                        <motion.span
+                                                            key={i}
+                                                            animate={{ y: [0, -4, 0], opacity: [0.3, 1, 0.3] }}
+                                                            transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.12, ease: "easeInOut" }}
+                                                            className="chatbot-typing-dot"
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
-                                        <span className="text-[9px] text-slate-400 mt-1">thinking…</span>
+                                        <span className="text-[9px] text-slate-400 mt-1">this may take a moment — Neeva is thinking carefully</span>
                                     </div>
                                 </div>
                             </motion.div>

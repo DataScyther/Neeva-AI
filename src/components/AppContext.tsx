@@ -43,6 +43,7 @@ interface ChatMessage {
   content: string;
   isUser: boolean;
   timestamp: Date;
+  reasoning?: string;
 }
 
 interface Exercise {

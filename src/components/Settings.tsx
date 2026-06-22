@@ -38,6 +38,9 @@ import {
   Mail,
   Lock,
   Database,
+  Sparkles,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 
 export function Settings() {
@@ -53,6 +56,58 @@ export function Settings() {
     analytics: true,
     dataSharing: false,
   });
+
+  const [provider, setProvider] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('neeva_ai_provider') : 'gemini') || 'gemini';
+  });
+  const [geminiKey, setGeminiKey] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('neeva_gemini_api_key') : '') || '';
+  });
+  const [nvidiaKey, setNvidiaKey] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('neeva_nvidia_api_key') : '') || '';
+  });
+  const [geminiModel, setGeminiModel] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('neeva_gemini_model') : '') || '';
+  });
+  const [nvidiaModel, setNvidiaModel] = useState<string>(() => {
+    return (typeof window !== 'undefined' ? localStorage.getItem('neeva_nvidia_model') : '') || '';
+  });
+
+  const [showGeminiKey, setShowGeminiKey] = useState(false);
+  const [showNvidiaKey, setShowNvidiaKey] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
+
+  const handleSaveAISettings = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('neeva_ai_provider', provider);
+      localStorage.setItem('neeva_gemini_api_key', geminiKey.trim());
+      localStorage.setItem('neeva_nvidia_api_key', nvidiaKey.trim());
+      localStorage.setItem('neeva_gemini_model', geminiModel.trim());
+      localStorage.setItem('neeva_nvidia_model', nvidiaModel.trim());
+      
+      setSaveStatus('Success! AI Settings updated.');
+      setTimeout(() => setSaveStatus(null), 3000);
+    }
+  };
+
+  const handleResetAISettings = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('neeva_ai_provider');
+      localStorage.removeItem('neeva_gemini_api_key');
+      localStorage.removeItem('neeva_nvidia_api_key');
+      localStorage.removeItem('neeva_gemini_model');
+      localStorage.removeItem('neeva_nvidia_model');
+      
+      setProvider('gemini');
+      setGeminiKey('');
+      setNvidiaKey('');
+      setGeminiModel('');
+      setNvidiaModel('');
+
+      setSaveStatus('Settings cleared successfully.');
+      setTimeout(() => setSaveStatus(null), 3000);
+    }
+  };
 
   const handleThemeChange = (
     theme: "light" | "dark" | "auto",
@@ -113,7 +168,7 @@ export function Settings() {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger
             value="profile"
             className="flex items-center space-x-2"
@@ -150,6 +205,13 @@ export function Settings() {
           >
             <Database className="w-4 h-4" />
             <span className="hidden sm:inline">Data</span>
+          </TabsTrigger>
+          <TabsTrigger
+            value="ai-provider"
+            className="flex items-center space-x-2"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span className="hidden sm:inline">AI Settings</span>
           </TabsTrigger>
         </TabsList>
 
@@ -534,6 +596,140 @@ export function Settings() {
                   Account deletion is permanent and cannot be
                   undone. All your data will be lost.
                 </p>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        {/* AI Provider Settings */}
+        <TabsContent value="ai-provider">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Sparkles className="w-5 h-5 text-purple-500" />
+                  <span>AI Chatbot Integration</span>
+                </CardTitle>
+                <CardDescription>
+                  Configure which LLM provider and models power your Neeva AI wellness companion.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {saveStatus && (
+                  <div className={`p-3 rounded-lg text-sm font-medium ${saveStatus.includes('Success') ? 'bg-green-100/80 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'}`}>
+                    {saveStatus}
+                  </div>
+                )}
+
+                {/* Provider Selector */}
+                <div className="space-y-2">
+                  <Label htmlFor="provider-select">Active AI Provider</Label>
+                  <Select value={provider} onValueChange={(val) => setProvider(val)}>
+                    <SelectTrigger id="provider-select">
+                      <SelectValue placeholder="Select AI Provider" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="gemini">Google Gemini (Default)</SelectItem>
+                      <SelectItem value="nvidia">NVIDIA NIM API (Gemma/Llama)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Gemini Specific settings */}
+                {provider === 'gemini' && (
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="space-y-2">
+                      <Label htmlFor="gemini-key">Custom Gemini API Key</Label>
+                      <div className="relative">
+                        <Input
+                          id="gemini-key"
+                          type={showGeminiKey ? "text" : "password"}
+                          value={geminiKey}
+                          onChange={(e) => setGeminiKey(e.target.value)}
+                          placeholder="AIzaSy... (Leave empty to use backend default)"
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowGeminiKey(!showGeminiKey)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                          {showGeminiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Your custom key is saved locally in your browser and is never stored on our servers.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="gemini-model-select">Preferred Gemini Model</Label>
+                      <Select value={geminiModel} onValueChange={(val) => setGeminiModel(val)}>
+                        <SelectTrigger id="gemini-model-select">
+                          <SelectValue placeholder="gemini-2.0-flash (Default)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="gemini-2.0-flash">gemini-2.0-flash</SelectItem>
+                          <SelectItem value="gemini-1.5-flash">gemini-1.5-flash</SelectItem>
+                          <SelectItem value="gemini-1.5-pro">gemini-1.5-pro</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+
+                {/* Nvidia Specific settings */}
+                {provider === 'nvidia' && (
+                  <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="space-y-2">
+                      <Label htmlFor="nvidia-key">Nvidia API Key</Label>
+                      <div className="relative">
+                        <Input
+                          id="nvidia-key"
+                          type={showNvidiaKey ? "text" : "password"}
+                          value={nvidiaKey}
+                          onChange={(e) => setNvidiaKey(e.target.value)}
+                          placeholder="nvapi-... (Leave empty to use backend default)"
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNvidiaKey(!showNvidiaKey)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                        >
+                          {showNvidiaKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Requires a valid NVIDIA NIM API Key (e.g. from Build Nvidia program).
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="nvidia-model">Nvidia Model Name</Label>
+                      <Select value={nvidiaModel} onValueChange={(val) => setNvidiaModel(val)}>
+                        <SelectTrigger id="nvidia-model">
+                          <SelectValue placeholder="google/gemma-2-2b-it (Default)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="google/gemma-2-2b-it">google/gemma-2-2b-it</SelectItem>
+                          <SelectItem value="meta/llama3-8b-instruct">meta/llama-3.1-8b-instruct</SelectItem>
+                          <SelectItem value="meta/llama3-70b-instruct">meta/llama-3.1-70b-instruct</SelectItem>
+                          <SelectItem value="mistralai/mixtral-8x7b-instruct-v0.1">mixtral-8x7b</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-4">
+                  <Button onClick={handleSaveAISettings} className="flex-1">
+                    Save AI Settings
+                  </Button>
+                  <Button variant="outline" onClick={handleResetAISettings}>
+                    Reset Default
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>

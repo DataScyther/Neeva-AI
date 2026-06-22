@@ -22,6 +22,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
+  MessageCircle,
 } from "lucide-react";
 // Simplified without animations for stability
 
@@ -31,6 +32,7 @@ interface OnboardingData {
   reminderTime: string;
   interests: string[];
   challenges: string[];
+  tone: string;
 }
 
 const onboardingSteps = [
@@ -60,6 +62,12 @@ const onboardingSteps = [
   },
   {
     id: 5,
+    title: "Communication Style",
+    description: "How should Neeva talk to you?",
+    icon: MessageCircle,
+  },
+  {
+    id: 6,
     title: "You're All Set!",
     description: "Let's begin your wellness journey",
     icon: CheckCircle,
@@ -127,6 +135,24 @@ const interestOptions = [
   { id: "cbt", label: "CBT Techniques" },
 ];
 
+const toneOptions = [
+  {
+    id: "warm",
+    label: "Warm & Empathetic",
+    description: "Friendly, compassionate, and understanding 💜",
+  },
+  {
+    id: "motivational",
+    label: "Motivational",
+    description: "Uplifting, encouraging, and goal-oriented 🚀",
+  },
+  {
+    id: "soothing",
+    label: "Soothing & Gentle",
+    description: "Calming, peaceful, and relaxing 🌙",
+  },
+];
+
 export function Onboarding() {
   const { dispatch } = useAppContext();
   const [currentStep, setCurrentStep] = useState(1);
@@ -137,6 +163,7 @@ export function Onboarding() {
       reminderTime: "09:00",
       interests: [],
       challenges: [],
+      tone: "warm",
     });
 
   const handleGoalToggle = (goalId: string) => {
@@ -177,6 +204,8 @@ export function Onboarding() {
         return onboardingData.experience !== "";
       case 4:
         return onboardingData.interests.length > 0;
+      case 5:
+        return onboardingData.tone !== "";
       default:
         return true;
     }
@@ -407,6 +436,65 @@ export function Onboarding() {
         );
 
       case 5:
+        return (
+          <div className="space-y-6">
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold">
+                Communication Style
+              </h2>
+              <p className="text-muted-foreground">
+                How would you like Neeva to talk to you?
+              </p>
+            </div>
+            <RadioGroup
+              value={onboardingData.tone}
+              onValueChange={(value) =>
+                setOnboardingData((prev) => ({
+                  ...prev,
+                  tone: value,
+                }))
+              }
+              className="space-y-4"
+            >
+              {toneOptions.map((option) => (
+                <Card
+                  key={option.id}
+                  className={`cursor-pointer transition-all hover:shadow-md ${
+                    onboardingData.tone === option.id
+                      ? "border-2 border-blue-500 bg-blue-50"
+                      : "border border-gray-200"
+                  }`}
+                  onClick={() =>
+                    setOnboardingData((prev) => ({
+                      ...prev,
+                      tone: option.id,
+                    }))
+                  }
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start space-x-3">
+                      <RadioGroupItem
+                        value={option.id}
+                        id={option.id}
+                        className="mt-1"
+                      />
+                      <div>
+                        <h3 className="font-semibold">
+                          {option.label}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {option.description}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </RadioGroup>
+          </div>
+        );
+
+      case 6:
         return (
           <div className="text-center space-y-6">
             <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-6 rounded-full w-24 h-24 mx-auto flex items-center justify-center">

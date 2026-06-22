@@ -555,3 +555,126 @@
     color: #fbbf24;
     background: rgba(251, 191, 36, 0.12);
 }
+
+/* ─── Reasoning Block (collapsible thinking section in messages) ─── */
+.chatbot-reasoning-block {
+    margin: 4px 14px 2px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.06), rgba(99, 102, 241, 0.04));
+    border: 1px solid rgba(139, 92, 246, 0.12);
+    overflow: hidden;
+    transition: all 0.25s ease;
+}
+
+.chatbot-reasoning-block:hover {
+    border-color: rgba(139, 92, 246, 0.2);
+}
+
+.dark .chatbot-reasoning-block {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(99, 102, 241, 0.05));
+    border-color: rgba(139, 92, 246, 0.15);
+}
+
+.dark .chatbot-reasoning-block:hover {
+    border-color: rgba(139, 92, 246, 0.25);
+}
+
+.chatbot-reasoning-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+    color: #7c3aed;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+}
+
+.chatbot-reasoning-header:hover {
+    color: #6d28d9;
+}
+
+.dark .chatbot-reasoning-header {
+    color: #a78bfa;
+}
+
+.dark .chatbot-reasoning-header:hover {
+    color: #c4b5fd;
+}
+
+.chatbot-reasoning-header-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chatbot-reasoning-body {
+    padding: 0 12px 10px;
+    color: #64748b;
+    overflow: hidden;
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 92, 246, 0.15) transparent;
+}
+
+.chatbot-reasoning-body::-webkit-scrollbar {
+    width: 3px;
+}
+
+.chatbot-reasoning-body::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.2);
+    border-radius: 3px;
+}
+
+.dark .chatbot-reasoning-body {
+    color: #94a3b8;
+}
+
+/* ─── Reasoning indicator (shown during API call) ─── */
+.chatbot-reasoning-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.chatbot-reasoning-pulse {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.1));
+    color: #8b5cf6;
+}
+
+.dark .chatbot-reasoning-pulse {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(99, 102, 241, 0.15));
+    color: #a78bfa;
+}
+
+.chatbot-reasoning-text {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.chatbot-reasoning-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #7c3aed;
+    letter-spacing: 0.01em;
+}
+
+.dark .chatbot-reasoning-label {
+    color: #a78bfa;
+}
+
