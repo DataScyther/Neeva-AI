@@ -1,48 +1,8 @@
-import { useEffect } from "react";
+import React from "react";
 import { useAppContext } from "./AppContext";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Progress } from "./ui/progress";
-import {
-  MessageCircle,
-  Heart,
-  BookOpen,
-  Users,
-  Sun,
-  Moon,
-  Zap,
-  Sparkles,
-  ChevronRight,
-  TrendingUp,
-  Rainbow,
-  Star,
-  Flame,
-  Target,
-} from "lucide-react";
-import { motion } from "framer-motion";
 
 export function Dashboard() {
   const { state, dispatch } = useAppContext();
-
-  // Add subtle animations on mount
-  useEffect(() => {
-    // Animate stats cards
-    const statsCards = document.querySelectorAll('.stats-card');
-    statsCards.forEach((card, index) => {
-      (card as HTMLElement).style.animation = `fadeInUp 0.8s ease-out ${index * 0.1}s forwards`;
-    });
-
-    // Animate quick action cards
-    const actionCards = document.querySelectorAll('.quick-action-card');
-    actionCards.forEach((card, index) => {
-      (card as HTMLElement).style.animation = `scaleIn 0.6s ease-out ${0.3 + index * 0.08}s forwards`;
-    });
-  }, []);
 
   const todayMoodEntries = state.moodEntries.filter((entry) => {
     const today = new Date();
@@ -50,490 +10,525 @@ export function Dashboard() {
     return entryDate.toDateString() === today.toDateString();
   });
 
-  const completedExercises = state.exercises.filter(
-    (ex) => ex.completed,
-  );
-  const totalStreak = state.exercises.reduce(
-    (sum, ex) => sum + ex.streak,
-    0,
-  );
+  const completedExercises = state.exercises.filter((ex) => ex.completed);
+  const totalStreak = state.exercises.reduce((sum, ex) => sum + ex.streak, 0);
 
   const averageMood =
     todayMoodEntries.length > 0
-      ? todayMoodEntries.reduce(
-        (sum, entry) => sum + entry.mood,
-        0,
-      ) / todayMoodEntries.length
+      ? todayMoodEntries.reduce((sum, entry) => sum + entry.mood, 0) /
+        todayMoodEntries.length
       : 0;
-
-  const quickActions = [
-    {
-      title: "Chat with Neeva",
-      description: "Get personalized support & guidance",
-      icon: MessageCircle,
-      action: () =>
-        dispatch({ type: "SET_VIEW", payload: "chatbot" }),
-      gradient: "from-violet-500 via-purple-500 to-indigo-500",
-      shadowColor: "shadow-violet-500/25",
-      iconBg: "bg-violet-100 dark:bg-violet-900/30",
-      iconColor: "text-violet-600 dark:text-violet-400",
-    },
-    {
-      title: "Track Your Mood",
-      description: "Express how you're feeling today",
-      icon: Heart,
-      action: () =>
-        dispatch({ type: "SET_VIEW", payload: "mood" }),
-      gradient: "from-rose-500 via-pink-500 to-fuchsia-500",
-      shadowColor: "shadow-rose-500/25",
-      iconBg: "bg-rose-100 dark:bg-rose-900/30",
-      iconColor: "text-rose-600 dark:text-rose-400",
-    },
-    {
-      title: "CBT Exercises",
-      description: "Practice mindfulness & grow stronger",
-      icon: BookOpen,
-      action: () =>
-        dispatch({ type: "SET_VIEW", payload: "exercises" }),
-      gradient: "from-emerald-500 via-green-500 to-teal-500",
-      shadowColor: "shadow-emerald-500/25",
-      iconBg: "bg-emerald-100 dark:bg-emerald-900/30",
-      iconColor: "text-emerald-600 dark:text-emerald-400",
-    },
-    {
-      title: "Support Groups",
-      description: "Connect with your community",
-      icon: Users,
-      action: () =>
-        dispatch({ type: "SET_VIEW", payload: "community" }),
-      gradient: "from-orange-500 via-amber-500 to-yellow-500",
-      shadowColor: "shadow-orange-500/25",
-      iconBg: "bg-orange-100 dark:bg-orange-900/30",
-      iconColor: "text-orange-600 dark:text-orange-400",
-    },
-  ];
 
   const getMoodEmoji = (mood: number) => {
     if (mood >= 4.5) return "😊";
     if (mood >= 3.5) return "🙂";
     if (mood >= 2.5) return "😐";
     if (mood >= 1.5) return "😕";
-    return "😢";
+    if (mood > 0) return "😢";
+    return "😶"; // No mood logged
   };
 
   const getTimeOfDayGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12)
-      return {
-        text: "Good morning",
-        icon: Sun,
-        color: "text-amber-500",
-      };
-    if (hour < 17)
-      return {
-        text: "Good afternoon",
-        icon: Sun,
-        color: "text-orange-500",
-      };
-    return {
-      text: "Good evening",
-      icon: Moon,
-      color: "text-indigo-500",
-    };
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
   };
 
-  const greeting = getTimeOfDayGreeting();
-  const GreetingIcon = greeting.icon;
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900">
-      <div className="p-6 space-y-8 max-w-7xl mx-auto">
-        {/* Hero Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center space-y-4 py-8"
+    <>
+      {/* Background Decorative Blobs */}
+      <div className="abstract-blobs pointer-events-none">
+        <div className="blob-1"></div>
+        <div className="blob-2"></div>
+        <svg
+          className="absolute top-[15%] left-0 w-full h-64 text-blue-100/40 fill-current"
+          preserveAspectRatio="none"
+          viewBox="0 0 1440 320"
         >
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <GreetingIcon
-              className={`w-8 h-8 ${greeting.color}`}
-            />
-            <span className="text-lg text-muted-foreground font-medium">
-              {greeting.text}
-            </span>
-          </div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Welcome back, {state.user?.name}!
-          </h1>
-          <p className="text-lg text-slate-500 font-medium text-center max-w-2xl mx-auto">
-            Ready to continue your wellness journey? Let's see how you're doing today 🌟
+          <path d="M0,160L48,170.7C96,181,192,203,288,192C384,181,480,139,576,133.3C672,128,768,160,864,181.3C960,203,1056,213,1152,197.3C1248,181,1344,139,1392,117.3L1440,96L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
+        </svg>
+      </div>
+
+      <main className="flex-1 p-8 lg:p-12 overflow-y-auto">
+        {/* Header Section */}
+        <header className="text-center mb-12">
+          <p className="text-slate-500 text-xl font-medium mb-1">
+            {getTimeOfDayGreeting()}
           </p>
-        </motion.div>
+          <h2 className="text-4xl font-bold text-slate-800 mb-2">
+            Welcome back, {state.user?.name || "Guest User"}!
+          </h2>
+          <p className="text-slate-500">
+            Ready to continue your wellness journey? Let's see how you're doing
+            today ✨
+          </p>
+        </header>
 
-        {/* Stats Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          <Card className="stats-card relative overflow-hidden border-0 bg-gradient-to-br from-white to-blue-50 dark:from-slate-800 dark:to-blue-900 shadow-xl shadow-blue-500/10">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
-            <CardContent className="relative p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 rounded-2xl bg-blue-500 shadow-lg shadow-blue-500/25">
-                  <Heart className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">
-                    Today's Mood
-                  </p>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold">
-                      {averageMood > 0
-                        ? averageMood.toFixed(1)
-                        : "--"}
-                    </span>
-                    <span className="text-2xl">
-                      {getMoodEmoji(averageMood)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="stats-card relative overflow-hidden border-0 bg-gradient-to-br from-white to-emerald-50 dark:from-slate-800 dark:to-emerald-900 shadow-xl shadow-emerald-500/10">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent" />
-            <CardContent className="relative p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 rounded-2xl bg-emerald-500 shadow-lg shadow-emerald-500/25">
-                  <Target className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">
-                    Exercises Done
-                  </p>
-                  <p className="text-2xl font-bold">
-                    {completedExercises.length}/
-                    {state.exercises.length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="stats-card relative overflow-hidden border-0 bg-gradient-to-br from-white to-purple-50 dark:from-slate-800 dark:to-purple-900 shadow-xl shadow-purple-500/10">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent" />
-            <CardContent className="relative p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 rounded-2xl bg-purple-500 shadow-lg shadow-purple-500/25">
-                  <Flame className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">
-                    Current Streak
-                  </p>
-                  <p className="text-2xl font-bold">
-                    {totalStreak} days
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="stats-card relative overflow-hidden border-0 bg-gradient-to-br from-white to-amber-50 dark:from-slate-800 dark:to-amber-900 shadow-xl shadow-amber-500/10">
-            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent" />
-            <CardContent className="relative p-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 rounded-2xl bg-amber-500 shadow-lg shadow-amber-500/25">
-                  <Star className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-1">
-                    Days Active
-                  </p>
-                  <p className="text-2xl font-bold">7 days</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Quick Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="flex items-center space-x-3 mb-6">
-            <Zap className="w-6 h-6 text-amber-500" />
-            <h2 className="text-2xl font-bold">
-              Quick Actions
-            </h2>
-            <Sparkles className="w-5 h-5 text-purple-500" />
+        {/* Top Stats Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {/* Mood Card */}
+          <div className="glass-card p-6 rounded-[2.5rem] flex items-center justify-between border-purple-200/50 bg-purple-50/30">
+            <div>
+              <p className="text-slate-600 text-sm font-medium mb-1">
+                Today's Mood
+              </p>
+              <span className="text-3xl">{getMoodEmoji(averageMood)}</span>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+              <svg
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+              </svg>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {quickActions.map((action, index) => {
-              const IconComponent = action.icon;
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: 0.1 * index,
-                  }}
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+          {/* Exercises Card */}
+          <div className="glass-card p-6 rounded-[2.5rem] flex items-center justify-between border-emerald-200/50 bg-emerald-50/30">
+            <div>
+              <p className="text-slate-600 text-sm font-medium mb-1">
+                Exercises Done
+              </p>
+              <h3 className="text-2xl font-bold text-slate-800">
+                {completedExercises.length}/{state.exercises.length || 8}
+              </h3>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+              <svg
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+              </svg>
+            </div>
+          </div>
+          {/* Streak Card */}
+          <div className="glass-card p-6 rounded-[2.5rem] flex items-center justify-between border-blue-200/50 bg-blue-50/30">
+            <div>
+              <p className="text-slate-600 text-sm font-medium mb-1">
+                Current Streak
+              </p>
+              <h3 className="text-2xl font-bold text-slate-800">
+                {totalStreak} days
+              </h3>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+              <svg
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+              </svg>
+            </div>
+          </div>
+          {/* Active Days Card */}
+          <div className="glass-card p-6 rounded-[2.5rem] flex items-center justify-between border-orange-200/50 bg-orange-50/30">
+            <div>
+              <p className="text-slate-600 text-sm font-medium mb-1">
+                Days Active
+              </p>
+              <h3 className="text-2xl font-bold text-slate-800">7 days</h3>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+              <svg
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
+          </div>
+        </section>
+
+        {/* Quick Actions Section */}
+        <section className="mb-12">
+          <div className="flex items-center gap-2 mb-6">
+            <h2 className="text-2xl font-bold text-slate-800">Quick Actions</h2>
+            <span className="text-xl">⚡</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Chat Card */}
+            <div
+              className="glass-card glass-card-hover p-8 rounded-[3rem] border-indigo-100/50 cursor-pointer"
+              onClick={() => dispatch({ type: "SET_VIEW", payload: "chatbot" })}
+            >
+              <div className="w-12 h-12 flex items-center justify-center text-indigo-500 shadow-sm mb-6 bg-indigo-100 rounded-full">
+                <svg
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <Card
-                    className={`quick-action-card cursor-pointer border-0 overflow-hidden group transition-all duration-300 hover:shadow-2xl ${action.shadowColor} bg-gradient-to-br from-white to-gray-50 dark:from-slate-800 dark:to-slate-700`}
-                    onClick={action.action}
-                  >
-                    <CardContent className="p-0">
-                      <div
-                        className={`relative p-6 bg-gradient-to-r ${action.gradient} text-white overflow-hidden`}
-                      >
-                        <div className="absolute inset-0 bg-black/10" />
-                        <div className="relative flex items-center space-x-4">
-                          <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
-                            <IconComponent className="w-8 h-8" />
-                          </div>
-                          <div>
-                            <h3 className="text-xl font-bold mb-1">
-                              {action.title}
-                            </h3>
-                            <p className="text-white/90 text-sm">
-                              {action.description}
-                            </p>
-                          </div>
-                        </div>
-                        <motion.div
-                          className="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full"
-                          animate={{
-                            scale: [1, 1.1, 1],
-                            rotate: [0, 180, 360],
-                          }}
-                          transition={{
-                            duration: 20,
-                            repeat: Infinity,
-                            ease: "linear",
-                          }}
-                        />
-                      </div>
-                      <div className="p-6">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-muted-foreground">
-                            Let's get started
-                          </span>
-                          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                Chat with Neeva
+              </h3>
+              <p className="text-slate-500 mb-8">Chat with Neeva</p>
+              <button className="inline-flex items-center text-indigo-600 font-semibold group">
+                Let's get started
+                <svg
+                  className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg>
+              </button>
+            </div>
+            {/* Mood Card */}
+            <div
+              className="glass-card glass-card-hover p-8 rounded-[3rem] border-pink-100/50 cursor-pointer"
+              onClick={() => dispatch({ type: "SET_VIEW", payload: "mood" })}
+            >
+              <div className="w-12 h-12 flex items-center justify-center text-pink-500 shadow-sm mb-6 bg-pink-50 rounded-full">
+                <svg
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                Track Your Mood
+              </h3>
+              <p className="text-slate-500 mb-8">Track your mood</p>
+              <button className="inline-flex items-center text-pink-600 font-semibold group">
+                Let's get started
+                <svg
+                  className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg>
+              </button>
+            </div>
+            {/* CBT Card */}
+            <div
+              className="glass-card glass-card-hover p-8 rounded-[3rem] border-emerald-100/50 cursor-pointer"
+              onClick={() => dispatch({ type: "SET_VIEW", payload: "exercises" })}
+            >
+              <div className="w-12 h-12 flex items-center justify-center text-emerald-500 shadow-sm mb-6 bg-emerald-100 rounded-full">
+                <svg
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+                  <path d="M8 7h6"></path>
+                  <path d="M8 11h8"></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                CBT Exercises
+              </h3>
+              <p className="text-slate-500 mb-8">Learn and book</p>
+              <button className="inline-flex items-center text-emerald-600 font-semibold group">
+                Let's get started
+                <svg
+                  className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg>
+              </button>
+            </div>
+            {/* Support Card */}
+            <div
+              className="glass-card glass-card-hover p-8 rounded-[3rem] border-orange-100/50 cursor-pointer"
+              onClick={() => dispatch({ type: "SET_VIEW", payload: "community" })}
+            >
+              <div className="w-12 h-12 flex items-center justify-center text-orange-500 shadow-sm mb-6 bg-orange-100 rounded-full">
+                <svg
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
+                Support Groups
+              </h3>
+              <p className="text-slate-500 mb-8">Support groups</p>
+              <button className="inline-flex items-center text-orange-600 font-semibold group">
+                Let's get started
+                <svg
+                  className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg>
+              </button>
+            </div>
           </div>
-        </motion.div>
+        </section>
 
-        {/* Progress and Activity */}
+        {/* Lower Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="h-full"
-          >
-            <Card className="h-full flex flex-col border-0 shadow-xl bg-gradient-to-br from-white to-green-50 dark:from-slate-800 dark:to-green-900">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center space-x-3">
-                  <div className="p-2 bg-green-500 rounded-xl">
-                    <TrendingUp className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-xl">
-                    Today's Progress
+          {/* Progress Section */}
+          <section className="glass-card p-8 rounded-[2.5rem]">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-bold text-slate-800">
+                Today's Progress
+              </h2>
+              <div className="flex gap-2">
+                <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-400">
+                  <svg
+                    fill="none"
+                    height="20"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    width="20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M3 3v18h18"></path>
+                    <path d="M18 17V9"></path>
+                    <path d="M13 17V5"></path>
+                    <path d="M8 17v-3"></path>
+                  </svg>
+                </button>
+                <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-400">
+                  <svg
+                    fill="none"
+                    height="20"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                    width="20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect height="18" rx="2" ry="2" width="18" x="3" y="3"></rect>
+                    <circle cx="12" cy="10" r="3"></circle>
+                    <path d="M7 21v-2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="h-48 flex items-center justify-center">
+              {/* Custom SVG Donut Chart for Progress */}
+              <div className="relative w-40 h-40">
+                <svg className="w-full h-full transform -rotate-90">
+                  <circle
+                    className="text-slate-100"
+                    cx="80"
+                    cy="80"
+                    fill="transparent"
+                    r="70"
+                    stroke="currentColor"
+                    strokeWidth="12"
+                  ></circle>
+                  <circle
+                    className="text-blue-500"
+                    cx="80"
+                    cy="80"
+                    fill="transparent"
+                    r="70"
+                    stroke="currentColor"
+                    strokeDasharray="440"
+                    strokeDashoffset={440 - (440 * (completedExercises.length / (state.exercises.length || 8) * 100)) / 100}
+                    strokeWidth="12"
+                    strokeLinecap="round"
+                    style={{ transition: "stroke-dashoffset 0.5s ease-in-out" }}
+                  ></circle>
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-3xl font-bold text-slate-800">
+                    {Math.round((completedExercises.length / (state.exercises.length || 8)) * 100)}%
                   </span>
-                  <Rainbow className="w-5 h-5 text-purple-500" />
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col justify-around gap-6 py-4">
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center px-1">
-                    <span className="font-medium">
-                      Daily Exercises
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                    >
-                      {completedExercises.length}/
-                      {state.exercises.length}
-                    </Badge>
-                  </div>
-                  <div className="relative">
-                    <Progress
-                      value={
-                        (completedExercises.length /
-                          (state.exercises.length || 1)) *
-                        100
-                      }
-                      className="h-3 bg-green-100 dark:bg-green-900"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center px-1">
-                    <span className="font-medium">
-                      Mood Logs
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
-                    >
-                      {todayMoodEntries.length}
-                    </Badge>
-                  </div>
-                  <div className="relative">
-                    <Progress
-                      value={Math.min(
-                        todayMoodEntries.length * 33.33,
-                        100,
-                      )}
-                      className="h-3 bg-blue-100 dark:bg-blue-900"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center px-1">
-                    <span className="font-medium">
-                      Chat Sessions
-                    </span>
-                    <Badge
-                      variant="secondary"
-                      className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-                    >
-                      {state.chatHistory.length > 0
-                        ? "1"
-                        : "0"}
-                    </Badge>
-                  </div>
-                  <div className="relative">
-                    <Progress
-                      value={
-                        state.chatHistory.length > 0 ? 100 : 0
-                      }
-                      className="h-3 bg-purple-100 dark:bg-purple-900"
-                    />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            <Card className="border-0 shadow-xl bg-gradient-to-br from-white to-indigo-50 dark:from-slate-800 dark:to-indigo-900">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center space-x-3">
-                  <div className="p-2 bg-indigo-500 rounded-xl">
-                    <Sparkles className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-xl">
-                    Recent Activity
+                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                    Goal
                   </span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {state.moodEntries
-                  .slice(-3)
-                  .reverse()
-                  .map((entry, index) => (
-                    <motion.div
-                      key={entry.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-center space-x-4 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border border-indigo-100 dark:border-indigo-800"
-                    >
-                      <div className="text-3xl">
-                        {getMoodEmoji(entry.mood)}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold">
-                          Mood: {entry.mood}/5
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(
-                            entry.timestamp,
-                          ).toLocaleTimeString()}
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
 
-                {completedExercises
-                  .slice(-2)
-                  .map((exercise, index) => (
-                    <motion.div
-                      key={exercise.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{
-                        delay:
-                          (state.moodEntries.length + index) *
-                          0.1,
-                      }}
-                      className="flex items-center space-x-4 p-4 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-100 dark:border-green-800"
+          {/* Activity Section */}
+          <section className="glass-card p-8 rounded-[2.5rem]">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-bold text-slate-800">
+                Recent Activity
+              </h2>
+              <button className="text-slate-400 hover:text-slate-600">
+                <svg
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="19" cy="12" r="1"></circle>
+                  <circle cx="5" cy="12" r="1"></circle>
+                </svg>
+              </button>
+            </div>
+            <div className="space-y-6 overflow-y-auto max-h-[220px] pr-2">
+              {completedExercises.slice(-1).map((ex) => (
+                <div key={ex.id} className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 flex-shrink-0">
+                    <svg
+                      fill="none"
+                      height="20"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                      width="20"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <div className="p-2 bg-green-500 rounded-xl shadow-lg">
-                        <BookOpen className="w-5 h-5 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-semibold">
-                          Completed: {exercise.title}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Streak: {exercise.streak} days
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
+                      <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-slate-800">
+                      Completed "{ex.title}"
+                    </p>
+                    <p className="text-sm text-slate-500">Recently</p>
+                  </div>
+                </div>
+              ))}
 
-                {state.moodEntries.length === 0 &&
-                  completedExercises.length === 0 && (
-                    <div className="text-center py-12">
-                      <motion.div
-                        animate={{ y: [0, -10, 0] }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                        }}
+              {state.moodEntries
+                .slice(-2)
+                .reverse()
+                .map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="flex items-start gap-4 opacity-80"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-pink-500 flex-shrink-0">
+                      <svg
+                        fill="none"
+                        height="20"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        width="20"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
-                        <Heart className="w-16 h-16 mx-auto mb-4 text-pink-400" />
-                      </motion.div>
-                      <h3 className="text-xl font-bold mb-2">
-                        Ready to start your journey?
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Track your mood or complete an exercise
-                        to see your activity here ✨
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-slate-800">
+                        Mood logged: {entry.mood}/5
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {new Date(entry.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
                       </p>
                     </div>
-                  )}
-              </CardContent>
-            </Card>
-          </motion.div>
+                  </div>
+                ))}
+              {state.moodEntries.length === 0 &&
+                completedExercises.length === 0 && (
+                  <div className="text-center py-4 text-slate-500">
+                    No recent activity. Try completing an exercise!
+                  </div>
+                )}
+            </div>
+          </section>
         </div>
-      </div>
-    </div>
+      </main>
+    </>
   );
 }
+

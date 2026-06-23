@@ -56,6 +56,64 @@
     word-break: break-word;
 }
 
+/* Glassmorphism Dashboard Custom CSS */
+.abstract-blobs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: blur(80px);
+    opacity: 0.5;
+}
+
+.blob-1 {
+    position: absolute;
+    top: 10%;
+    left: 20%;
+    width: 600px;
+    height: 400px;
+    background: #818cf8;
+    border-radius: 50%;
+    animation: drift 20s infinite alternate;
+}
+
+.blob-2 {
+    position: absolute;
+    bottom: 20%;
+    right: 10%;
+    width: 500px;
+    height: 500px;
+    background: #fbcfe8;
+    border-radius: 50%;
+    animation: drift 25s infinite alternate-reverse;
+}
+
+@keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(100px, 50px) scale(1.1); }
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+}
+
+.glass-card-hover:hover {
+    background: rgba(255, 255, 255, 0.6);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.active-nav {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
 /* Neeva Orb Mascot */
 .neeva-orb {
     border-radius: 50%;

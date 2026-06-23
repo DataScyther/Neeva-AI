@@ -148,15 +148,13 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="h-screen w-full flex bg-slate-50 text-slate-800 overflow-hidden relative">
       <Navigation />
 
-      {/* Main Content - Added safe padding for navigation */}
-      <main className="lg:pl-64 pb-20 lg:pb-0 main-content">
-        <div className="min-h-screen">
-          {renderCurrentView()}
-        </div>
-      </main>
+      {/* Main Content Container */}
+      <div className="flex-1 h-full flex flex-col relative z-0 overflow-hidden">
+        {renderCurrentView()}
+      </div>
 
       <Toaster />
     </div>
