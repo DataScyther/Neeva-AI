@@ -43,6 +43,12 @@ flaky-fusion/
 .kilocode/
 skills-lock.json
 
+# Kilo agent worktree data
+.kilo/
+
+# Astro internal cache (if ever generated)
+.astro/
+
 # Confidential credential / API key files
 google-services.json
 GoogleService-Info.plist
