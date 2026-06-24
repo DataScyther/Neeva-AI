@@ -297,7 +297,7 @@ export function Chatbot() {
     /* ── Welcome message — time-of-day aware ── */
     const welcomeSentRef = useRef(false);
     useEffect(() => {
-        let t: NodeJS.Timeout;
+        let t: ReturnType<typeof setTimeout>;
         if (state.chatHistory.length === 0 && !state.isLoading && !welcomeSentRef.current) {
             welcomeSentRef.current = true;
             const name = state.user?.name || 'there';
