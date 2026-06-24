@@ -1,0 +1,5 @@
+- [ ] Phase 2: Frontend Migration (Chatbot.tsx -> /api/ai/chat streaming via Fetch)
+- [ ] Phase 2: Frontend Provider Cleanup (src/utils/nvidia.ts rename/remove provider exec; update imports)
+- [ ] Phase 2: Security Cleanup (ensure no NVIDIA credentials in frontend)
+- [ ] Phase 2: Context Builder Scope (optional for this step: backend uses chat history + user profile + preferred tone; mood optional)
+- [ ] Phase 2: NVIDIA Proxy Decommission (mark deprecated; do not remove yet)
