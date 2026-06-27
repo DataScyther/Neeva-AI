@@ -25,7 +25,7 @@ export function SignupScreen({ onNavigate, onSuccess }: SignupScreenProps) {
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     mode: 'onChange',
-    defaultValues: { name: '', email: '', password: '', confirmPassword: '', acceptTerms: false, acceptPrivacy: false },
+    defaultValues: { name: '', email: '', password: '', confirmPassword: '', acceptTerms: false as any, acceptPrivacy: false as any },
   });
 
   const password = watch('password') || '';
@@ -44,8 +44,9 @@ export function SignupScreen({ onNavigate, onSuccess }: SignupScreenProps) {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1 bg-surface-
-interface SignupScreenProps 
+      className="flex-1 bg-app-dark"
+    >
+      <ScrollView
         contentContainerClassName="flex-grow justify-center px-5 py-12"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -53,15 +54,18 @@ interface SignupScreenProps
         <View className="mb-8">
           <Text className="text-white text-section-title font-display font-bold mb-2">
             {AUTH_STRINGS.SIGNUP_TITLE}
-          </T    resolver: zodResolver(sign="text-white/50 text-body">
+          </Text>
+          <Text className="text-white/50 text-body">
             {AUTH_STRINGS.SIGNUP_SUBTITLE}
           </Text>
         </View>
 
         {error && (
-          <GlassCard intensity="dark" className="mb-6 border-status-error/30">
-            <Text className="text-status-error text-body-sm">{err      try {
-        clearError();
+          <GlassCard intensity="dark" className="mb-6 border-red-500/30">
+            <Text className="text-red-400 text-body-sm">
+              {error}
+            </Text>
+          </GlassCard>
         )}
 
         <GlassCard intensity="dark" className="mb-6">
@@ -75,9 +79,8 @@ interface SignupScreenProps
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
-              >
-        <View className="mb-8">
-             autoCapitalize="words"
+                error={errors.name?.message}
+                autoCapitalize="words"
                 returnKeyType="next"
                 editable={!loading}
               />
@@ -88,7 +91,8 @@ interface SignupScreenProps
             control={control}
             name="email"
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextFiel          <GlassCalabel={AUTH_STRINGS.SIGNUP_EMAIL_LABEL}
+              <TextField
+                label={AUTH_STRINGS.SIGNUP_EMAIL_LABEL}
                 placeholder={AUTH_STRINGS.SIGNUP_EMAIL_PLACEHOLDER}
                 value={value}
                 onChangeText={onChange}
@@ -100,13 +104,16 @@ interface SignupScreenProps
                 returnKeyType="next"
                 editable={!loading}
               />
-                  value={value}
-         ontroller
+            )}
+          />
+
+          <Controller
             control={control}
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
               <PasswordField
-                label={AUTH_STRINGS.SIGNUP_PASSWORD                editable={!loading}={AUTH_STRINGS.SIGNUP_PASSWORD_PLACEHOLDER}
+                label={AUTH_STRINGS.SIGNUP_PASSWORD_LABEL}
+                placeholder={AUTH_STRINGS.SIGNUP_PASSWORD_PLACEHOLDER}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -127,8 +134,8 @@ interface SignupScreenProps
               <PasswordField
                 label={AUTH_STRINGS.SIGNUP_CONFIRM_PASSWORD_LABEL}
                 placeholder={AUTH_STRINGS.SIGNUP_CONFIRM_PASSWORD_PLACEHOLDER}
-                 name="password"
-             onChangeText={onChange}
+                value={value}
+                onChangeText={onChange}
                 onBlur={onBlur}
                 error={errors.confirmPassword?.message}
                 autoCapitalize="none"
@@ -151,8 +158,8 @@ interface SignupScreenProps
                 />
               )}
             />
-                  <PasswordField
-          ol={control}
+            <Controller
+              control={control}
               name="acceptPrivacy"
               render={({ field: { onChange, value } }) => (
                 <Checkbox
@@ -166,7 +173,8 @@ interface SignupScreenProps
 
           <Button
             title={AUTH_STRINGS.SIGNUP_BUTTON}
-            onPress={handle                edi           disabled={!isValid}
+            onPress={handleSubmit(onSubmit)}
+            disabled={!isValid || loading}
             loading={loading}
             variant="primary"
             size="lg"
@@ -180,8 +188,9 @@ interface SignupScreenProps
           </Text>
           <Pressable
             onPress={() => onNavigate('login')}
-            disabled={loading              )}
-         <Text className="text-neeva-purple-400 text-body-sm font-semibold">
+            disabled={loading}
+          >
+            <Text className="text-neeva-cyan-400 text-body-sm font-semibold">
               {AUTH_STRINGS.SIGNUP_LOGIN_CTA}
             </Text>
           </Pressable>

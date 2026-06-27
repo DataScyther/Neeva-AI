@@ -404,29 +404,37 @@ export const useAppStore = create<AppStore>()(
           theme: state.ui.theme,
         },
       }),
+      merge: (persistedState: any, currentState: AppStore) => {
+        if (!persistedState) return currentState;
+        return {
+          ...currentState,
+          ...persistedState,
+          ui: {
+            ...currentState.ui,
+            ...(persistedState.ui || {}),
+          },
+          session: {
+            ...currentState.session,
+            ...(persistedState.session || {}),
+          },
+        };
+      },
       storage: createJSONStorage(() => {
         try {
-          return createJSONStorage(() =>
-            require('expo-secure-store')
-              ? {
-                  getItem: async (name: string) => {
-                    const { getItemAsync } = require('expo-secure-store');
-                    return getItemAsync(name);
-                  },
-                  setItem: async (name: string, value: string) => {
-                    const { setItemAsync } = require('expo-secure-store');
-                    return setItemAsync(name, value);
-                  },
-                  removeItem: async (name: string) => {
-                    const { deleteItemAsync } = require('expo-secure-store');
-                    return deleteItemAsync(name);
-                  },
-                }
-              : undefined
-          );
-        } catch {
-          return undefined;
-        }
+          const secureStore = require('expo-secure-store');
+          if (secureStore) {
+            return {
+              getItem: (name: string) => secureStore.getItemAsync(name),
+              setItem: (name: string, value: string) => secureStore.setItemAsync(name, value),
+              removeItem: (name: string) => secureStore.deleteItemAsync(name),
+            };
+          }
+        } catch {}
+        return {
+          getItem: () => null,
+          setItem: () => {},
+          removeItem: () => {},
+        };
       }),
     }
   )

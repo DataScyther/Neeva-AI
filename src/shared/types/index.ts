@@ -36,6 +36,12 @@ export interface UserProfile {
   lastLoginAt: Date;
   preferences: UserPreferences;
   stats: UserStats;
+  onboardingCompleted?: boolean;
+  displayName?: string;
+  primaryGoals?: string[];
+  initialMood?: string;
+  reminderPreference?: string;
+  notificationsEnabled?: boolean;
 }
 
 // ─── Mood ───────────────────────────────────────────────────────────────

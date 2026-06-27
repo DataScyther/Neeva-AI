@@ -39,19 +39,12 @@ const textVariants = cva('font-semibold text-white', {
   },
 });
 
-const iconVariants = cva('', {
-  variants: {
-    size: {
-      sm: 14,
-      md: 18,
-      lg: 24,
-      xl: 36,
-    },
-  },
-  defaultVariants: {
-    size: 'md',
-  },
-});
+const iconSizes = {
+  sm: 14,
+  md: 18,
+  lg: 24,
+  xl: 36,
+};
 
 interface AvatarProps extends VariantProps<typeof avatarVariants> {
   photoURL?: string | null;
@@ -70,7 +63,7 @@ export function Avatar({ photoURL, name, size, className = '' }: AvatarProps) {
       .slice(0, 2);
   }, [name]);
 
-  const iconSize = iconVariants({ size }) as number;
+  const iconSize = iconSizes[size || 'md'];
 
   if (photoURL) {
     return (

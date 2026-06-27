@@ -12,7 +12,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-interface TextFieldProps extends Omit<TextInputProps, 'className'> {
+export interface TextFieldProps extends Omit<TextInputProps, 'className'> {
   label?: string;
   error?: string;
   hint?: string;

@@ -10,6 +10,7 @@ import { Button } from '@/shared/components/Button';
 import { TextField } from '@/shared/components/TextField';
 import { loginSchema, type LoginFormData } from '@/shared/schemas/auth';
 import { authService } from '@/services/auth';
+import type { AuthCredentials } from '@/services/auth/types';
 import { isFirebaseConfigured } from '@/lib/firebase';
 
 const { width } = Dimensions.get('window');
@@ -32,7 +33,7 @@ export default function LoginScreen() {
     setIsLoading(true);
     setAuthError(null);
     try {
-      await authService.signInWithEmail(data);
+      await authService.signInWithEmail(data as AuthCredentials);
       router.replace('/');
     } catch (error: any) {
       setAuthError(error?.message || 'Something went wrong.');

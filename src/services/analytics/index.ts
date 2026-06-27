@@ -18,12 +18,16 @@ export type AnalyticsEvent =
   | 'auth_signin'
   | 'auth_signup'
   | 'auth_signout'
+  | 'onboarding_started'
+  | 'onboarding_step_completed'
   | 'onboarding_completed'
+  | 'onboarding_abandoned'
   | 'crisis_resource_accessed'
   | 'error_occurred'
   | 'login_attempt'
   | 'login_success'
-  | 'login_failed';
+  | 'login_failed'
+  | 'password_reset';
 
 export interface AnalyticsProperties {
   [key: string]: string | number | boolean | undefined | null;

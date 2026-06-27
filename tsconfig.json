@@ -46,7 +46,12 @@
     "node_modules",
     "dist",
     "build",
-    ".expo"
+    ".expo",
+    "src/components",
+    "src/styles",
+    "src/App.tsx",
+    "src/main.tsx",
+    "src/vite-env.d.ts"
   ],
   "extends": "expo/tsconfig.base"
 }

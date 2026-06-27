@@ -99,3 +99,27 @@ app/src/main/assets/public
 app/src/main/assets/capacitor.config.json
 app/src/main/assets/capacitor.plugins.json
 app/src/main/res/xml/config.xml
+
+# Google Services
+google-services.json
+GoogleService-Info.plist
+
+# Firebase
+firebase-debug.log
+firebase-export-token
+firebase-debug.log*
+firebase-export-token*
+
+# Firebase Debug Log and Export Token
+firebase-debug.log*
+firebase-export-token*
+
+# Local Environment Variables
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+.cline/rules.json
+.cline/rules.json.lock
+.cline.md

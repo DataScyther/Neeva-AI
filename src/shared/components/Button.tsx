@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { Pressable, Text, ActivityIndicator } from 'react-native';
+import { Pressable, Text, ActivityIndicator, type PressableProps } from 'react-native';
 import Animated, { useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { cva, type VariantProps } from 'class-variance-authority';
 
@@ -53,10 +53,8 @@ const textVariants = cva('font-semibold', {
   },
 });
 
-interface ButtonProps extends VariantProps<typeof buttonVariants> {
+interface ButtonProps extends Omit<PressableProps, 'children' | 'className'>, VariantProps<typeof buttonVariants> {
   title: string;
-  onPress?: () => void;
-  disabled?: boolean;
   loading?: boolean;
   icon?: React.ReactNode;
   className?: string;
@@ -73,6 +71,7 @@ export function Button({
   variant,
   size,
   className = '',
+  ...pressableProps
 }: ButtonProps) {
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -86,6 +85,7 @@ export function Button({
       disabled={disabled || loading}
       className={`${buttonVariants({ variant, size })} ${className}`}
       style={animatedStyle}
+      {...pressableProps}
     >
       {loading ? (
         <ActivityIndicator

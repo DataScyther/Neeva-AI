@@ -9,13 +9,12 @@ import { View, Text, Pressable, Modal as RNModal, Dimensions } from 'react-nativ
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedGestureHandler,
   withTiming,
   withSpring,
   runOnJS,
   Easing,
 } from 'react-native-reanimated';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const SHEET_MAX_HEIGHT = SCREEN_HEIGHT * 0.75;
@@ -50,20 +49,19 @@ export function BottomSheet({
     }
   }, [visible, translateY, backdropOpacity]);
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onActive: (event) => {
+  const panGesture = Gesture.Pan()
+    .onUpdate((event) => {
       if (event.translationY > 0) {
         translateY.value = event.translationY;
       }
-    },
-    onEnd: (event) => {
+    })
+    .onEnd((event) => {
       if (event.translationY > sheetHeight * 0.3) {
         runOnJS(onClose)();
       } else {
         translateY.value = withSpring(0, { damping: 20, stiffness: 200 });
       }
-    },
-  });
+    });
 
   const backdropStyle = useAnimatedStyle(() => ({
     opacity: backdropOpacity.value,
@@ -86,7 +84,7 @@ export function BottomSheet({
           <Pressable className="flex-1" onPress={onClose} />
         </Animated.View>
 
-        <PanGestureHandler onGestureEvent={gestureHandler}>
+        <GestureDetector gesture={panGesture}>
           <Animated.View
             style={[
               sheetStyle,
@@ -109,7 +107,7 @@ export function BottomSheet({
             {/* Content */}
             <View className="px-5 pb-6">{children}</View>
           </Animated.View>
-        </PanGestureHandler>
+        </GestureDetector>
       </View>
     </RNModal>
   );
