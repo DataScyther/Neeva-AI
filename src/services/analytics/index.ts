@@ -20,7 +20,10 @@ export type AnalyticsEvent =
   | 'auth_signout'
   | 'onboarding_completed'
   | 'crisis_resource_accessed'
-  | 'error_occurred';
+  | 'error_occurred'
+  | 'login_attempt'
+  | 'login_success'
+  | 'login_failed';
 
 export interface AnalyticsProperties {
   [key: string]: string | number | boolean | undefined | null;
