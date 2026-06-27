@@ -1,38 +1,67 @@
-// src/lib/firebase.ts
-import { initializeApp } from 'firebase/app';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import {
+  getAuth,
+  initializeAuth,
+  getReactNativePersistence,
+  Auth,
+  connectAuthEmulator,
+} from 'firebase/auth';
+import { getFirestore, Firestore, connectFirestoreEmulator } from 'firebase/firestore';
+import { env } from '@/core/config/env';
 
-// Firebase configuration - with fallbacks for local development
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  apiKey: env.firebaseApiKey,
+  authDomain: env.firebaseAuthDomain,
+  projectId: env.firebaseProjectId,
+  storageBucket: env.firebaseStorageBucket,
+  messagingSenderId: env.firebaseMessagingSenderId,
+  appId: env.firebaseAppId,
+  ...(env.firebaseMeasurementId ? { measurementId: env.firebaseMeasurementId } : {}),
 };
 
-// Safety check for missing API key
-if (!firebaseConfig.apiKey) {
-  console.error('CRITICAL ERROR: Firebase API Key is missing! Check your .env file and ensure VITE_FIREBASE_API_KEY is set.');
+let app: FirebaseApp | null = null;
+let auth: Auth | null = null;
+let db: Firestore | null = null;
+
+function createAuth(firebaseApp: FirebaseApp): Auth {
+  if (Platform.OS === 'web') {
+    return getAuth(firebaseApp);
+  }
+
+  try {
+    return initializeAuth(firebaseApp, {
+      persistence: getReactNativePersistence(AsyncStorage),
+    });
+  } catch {
+    // Hot reload can re-run module init; reuse existing auth instance.
+    return getAuth(firebaseApp);
+  }
 }
 
-console.log('Firebase config:', { ...firebaseConfig, apiKey: '***REDACTED***' }); // Log config for debugging
+if (firebaseConfig.apiKey) {
+  try {
+    app = getApps().length > 0 ? getApps()[0] : initializeApp(firebaseConfig);
+    auth = createAuth(app);
+    db = getFirestore(app);
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-// Initialize Firebase services
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-
-// Use emulators for local development if configured
-if (import.meta.env.DEV && import.meta.env.VITE_USE_FIREBASE_EMULATORS === 'true') {
-  connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
-  connectFirestoreEmulator(db, 'localhost', 8080);
-  console.log('Using Firebase emulators for development');
+    if (env.isDev && env.useFirebaseEmulators) {
+      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+      connectFirestoreEmulator(db, 'localhost', 8080);
+      console.log('[Firebase] Using emulators');
+    }
+  } catch (error) {
+    console.warn('[Firebase] Initialization failed:', error);
+  }
+} else {
+  console.warn(
+    '[Firebase] Missing EXPO_PUBLIC_FIREBASE_API_KEY — add it to .env or run npm run firebase:sync-env',
+  );
 }
 
-export default app;
+export function isFirebaseConfigured(): boolean {
+  return Boolean(app && auth && db);
+}
+
+export { app as default, auth, db };

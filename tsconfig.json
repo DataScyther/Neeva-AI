@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "useDefineForClassFields": true,
     "lib": [
       "ES2020",
       "DOM",
@@ -19,7 +18,9 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "types": [],
+    "types": [
+      "nativewind/types"
+    ],
     "typeRoots": [
       "./node_modules/@types"
     ],
@@ -30,16 +31,22 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@neeva/*": [
+        "./src/*"
       ]
     }
   },
   "include": [
-    "src",
-    "src/**/*"
+    "**/*.ts",
+    "**/*.tsx",
+    "nativewind-env.d.ts"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "build"
-  ]
+    "build",
+    ".expo"
+  ],
+  "extends": "expo/tsconfig.base"
 }

@@ -1,8 +1,16 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
-export default defineConfig({
+/** Mirror public env vars into `process.env` for shared modules (no import.meta). */
+function publicEnvDefine(mode: string): Record<string, string> {
+  const loaded = loadEnv(mode, process.cwd(), ['EXPO_PUBLIC_', 'VITE_']);
+  return Object.fromEntries(
+    Object.entries(loaded).map(([key, value]) => [`process.env.${key}`, JSON.stringify(value)]),
+  );
+}
+
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
@@ -19,7 +27,7 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
-          'ui-vendor': ['lucide-react', 'framer-motion', 'tailwind-merge', 'clsx', 'class-variance-authority']
+          'ui-vendor': ['lucide-react', 'framer-motion', 'tailwind-merge', 'clsx', 'class-variance-authority'],
         },
       },
     },
@@ -32,16 +40,17 @@ export default defineConfig({
       '/api/nvidia': {
         target: 'https://integrate.api.nvidia.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/nvidia/, ''),
+        rewrite: (rewritePath) => rewritePath.replace(/^\/api\/nvidia/, ''),
       },
     },
   },
   base: '/',
   optimizeDeps: {
     include: ['react', 'react-dom', 'firebase/app', 'firebase/auth', 'firebase/firestore'],
-    exclude: ['@radix-ui/react-slot'], // Let Vite handle this dynamically
+    exclude: ['@radix-ui/react-slot'],
   },
   define: {
     global: 'globalThis',
+    ...publicEnvDefine(mode),
   },
-})
+}));

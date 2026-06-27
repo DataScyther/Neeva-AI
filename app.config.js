@@ -1,0 +1,131 @@
+/**
+ * Expo dynamic config — loads .env and injects EXPO_PUBLIC_* into app extra.
+ * Required for Expo Go to receive Firebase credentials at runtime.
+ */
+const path = require('path');
+const fs = require('fs');
+
+function loadDotEnv(filePath) {
+  if (!fs.existsSync(filePath)) return {};
+  const env = {};
+  for (const line of fs.readFileSync(filePath, 'utf8').split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const eq = trimmed.indexOf('=');
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    env[key] = value;
+  }
+  return env;
+}
+
+/** Read API key from google-services.json when present (Android Firebase config). */
+function loadFromGoogleServices() {
+  const candidates = [
+    path.join(__dirname, 'google-services.json'),
+    path.join(__dirname, '.expo', 'google-services.json'),
+  ];
+  const filePath = candidates.find((candidate) => fs.existsSync(candidate));
+  if (!filePath) return {};
+
+  try {
+    const json = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    const client = json.client?.[0];
+    const apiKey = client?.api_key?.[0]?.current_key;
+    const projectId = json.project_info?.project_id;
+    const storageBucket = json.project_info?.storage_bucket;
+    const messagingSenderId = json.project_info?.project_number;
+    const appId = client?.client_info?.mobilesdk_app_id;
+    const packageName = client?.client_info?.android_client_info?.package_name;
+
+    const derived = {};
+    if (apiKey) derived.EXPO_PUBLIC_FIREBASE_API_KEY = apiKey;
+    if (projectId) {
+      derived.EXPO_PUBLIC_FIREBASE_PROJECT_ID = projectId;
+      derived.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN = `${projectId}.firebaseapp.com`;
+    }
+    if (storageBucket) derived.EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET = storageBucket;
+    if (messagingSenderId) derived.EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = String(messagingSenderId);
+    if (appId) derived.EXPO_PUBLIC_FIREBASE_APP_ID = appId;
+    if (packageName) derived.ANDROID_PACKAGE = packageName;
+    return derived;
+  } catch {
+    return {};
+  }
+}
+
+const dotEnv = {
+  ...loadDotEnv(path.join(__dirname, '.env')),
+  ...loadDotEnv(path.join(__dirname, '.env.local')),
+};
+const googleEnv = loadFromGoogleServices();
+
+function pick(key) {
+  return dotEnv[key] || googleEnv[key] || process.env[key] || '';
+}
+
+const firebaseExtra = {
+  EXPO_PUBLIC_FIREBASE_API_KEY: pick('EXPO_PUBLIC_FIREBASE_API_KEY') || pick('VITE_FIREBASE_API_KEY'),
+  EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: pick('EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN') || pick('VITE_FIREBASE_AUTH_DOMAIN'),
+  EXPO_PUBLIC_FIREBASE_PROJECT_ID: pick('EXPO_PUBLIC_FIREBASE_PROJECT_ID') || pick('VITE_FIREBASE_PROJECT_ID'),
+  EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET:
+    pick('EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET') || pick('VITE_FIREBASE_STORAGE_BUCKET'),
+  EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
+    pick('EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID') || pick('VITE_FIREBASE_MESSAGING_SENDER_ID'),
+  EXPO_PUBLIC_FIREBASE_APP_ID: pick('EXPO_PUBLIC_FIREBASE_APP_ID') || pick('VITE_FIREBASE_APP_ID'),
+  EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID:
+    pick('EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID') || pick('VITE_FIREBASE_MEASUREMENT_ID'),
+  EXPO_PUBLIC_API_BASE_URL: pick('EXPO_PUBLIC_API_BASE_URL') || pick('VITE_API_BASE_URL') || '/api',
+  EXPO_PUBLIC_USE_FIREBASE_EMULATORS:
+    pick('EXPO_PUBLIC_USE_FIREBASE_EMULATORS') || pick('VITE_USE_FIREBASE_EMULATORS') || 'false',
+};
+
+const androidPackage =
+  googleEnv.ANDROID_PACKAGE || pick('EXPO_PUBLIC_ANDROID_PACKAGE') || 'com.mentalhealth.app';
+
+module.exports = {
+  expo: {
+    name: 'Neeva AI',
+    slug: 'neeva-ai',
+    version: '1.0.0',
+    orientation: 'portrait',
+    icon: './src/shared/assets/icon.jpg',
+    scheme: 'neeva',
+    userInterfaceStyle: 'automatic',
+    // Expo Go ships its own native binary — do not force New Architecture flags here.
+    splash: {
+      image: './src/shared/assets/splash.jpg',
+      resizeMode: 'contain',
+      backgroundColor: '#0F0A1A',
+    },
+    ios: {
+      supportsTablet: true,
+      bundleIdentifier: 'com.neeva.ai',
+    },
+    android: {
+      adaptiveIcon: {
+        foregroundImage: './src/shared/assets/adaptive-icon.jpg',
+        backgroundColor: '#0F0A1A',
+      },
+      package: androidPackage,
+    },
+    web: {
+      favicon: './src/shared/assets/favicon.png',
+      bundler: 'metro',
+    },
+    plugins: ['expo-router', 'expo-secure-store'],
+    extra: {
+      ...firebaseExtra,
+      eas: {
+        projectId: pick('EAS_PROJECT_ID') || undefined,
+      },
+    },
+  },
+};
