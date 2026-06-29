@@ -1,16 +1,8 @@
-/**
- * Neeva AI — Bottom Tab Navigator
- *
- * The navigation is permanently locked to five tabs:
- *   Home | Chat | Journey | Community | Profile
- *
- * No additional root tabs without explicit architectural approval.
- */
-
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Home, MessageCircle, Compass, Users, User } from 'lucide-react-native';
+import Animated from 'react-native-reanimated';
 
 type TabIconProps = {
   name: string;
@@ -20,22 +12,64 @@ type TabIconProps = {
 };
 
 function TabIcon({ name, focused, color, size }: TabIconProps) {
-  const iconProps = { color, size };
+  const iconProps = { color, size: focused ? size + 1 : size };
+  let iconComponent;
+
   switch (name) {
     case 'home':
-      return <Home {...iconProps} />;
+      iconComponent = <Home {...iconProps} />;
+      break;
     case 'chat':
-      return <MessageCircle {...iconProps} />;
+      iconComponent = <MessageCircle {...iconProps} />;
+      break;
     case 'journey':
-      return <Compass {...iconProps} />;
+      iconComponent = <Compass {...iconProps} />;
+      break;
     case 'community':
-      return <Users {...iconProps} />;
+      iconComponent = <Users {...iconProps} />;
+      break;
     case 'profile':
-      return <User {...iconProps} />;
+      iconComponent = <User {...iconProps} />;
+      break;
     default:
-      return <Home {...iconProps} />;
+      iconComponent = <Home {...iconProps} />;
   }
+
+  return (
+    <View style={styles.iconContainer}>
+      <Animated.View style={focused ? styles.iconActive : null}>
+        {iconComponent}
+      </Animated.View>
+      {focused && <View style={styles.activeDot} />}
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    width: '100%',
+    position: 'relative',
+    top: 2,
+  },
+  iconActive: {
+    transform: [{ scale: 1.12 }],
+  },
+  activeDot: {
+    position: 'absolute',
+    bottom: -6,
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#8B5CF6',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+  },
+});
 
 export default function TabLayout() {
   return (
@@ -43,19 +77,27 @@ export default function TabLayout() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#1A1428',
+          position: 'absolute',
+          backgroundColor: 'rgba(26, 20, 40, 0.92)',
           borderTopColor: 'rgba(255, 255, 255, 0.08)',
           borderTopWidth: 1,
-          height: 80,
-          paddingBottom: 24,
-          paddingTop: 10,
-          elevation: 0,
+          borderRadius: 24,
+          height: 64,
+          bottom: 24,
+          left: 16,
+          right: 16,
+          paddingBottom: 0,
+          paddingTop: 0,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 10,
         },
         tabBarActiveTintColor: '#8B5CF6',
         tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.35)',
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
+          display: 'none', // clean minimal floating appearance
         },
       }}
     >
@@ -63,8 +105,8 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="home" focused={false} color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabIcon name="home" focused={focused} color={color} size={size} />
           ),
         }}
       />
@@ -72,8 +114,8 @@ export default function TabLayout() {
         name="chat"
         options={{
           title: 'Chat',
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="chat" focused={false} color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabIcon name="chat" focused={focused} color={color} size={size} />
           ),
         }}
       />
@@ -81,8 +123,8 @@ export default function TabLayout() {
         name="journey"
         options={{
           title: 'Journey',
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="journey" focused={false} color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabIcon name="journey" focused={focused} color={color} size={size} />
           ),
         }}
       />
@@ -90,8 +132,8 @@ export default function TabLayout() {
         name="community"
         options={{
           title: 'Community',
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="community" focused={false} color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabIcon name="community" focused={focused} color={color} size={size} />
           ),
         }}
       />
@@ -99,8 +141,8 @@ export default function TabLayout() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <TabIcon name="profile" focused={false} color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <TabIcon name="profile" focused={focused} color={color} size={size} />
           ),
         }}
       />

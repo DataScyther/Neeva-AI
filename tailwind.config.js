@@ -60,7 +60,7 @@ export default {
         },
       },
       backgroundColor: {
-        'app-dark': '#0F0A1A',
+        'app-dark': '#0B0B12',
         'app-light': '#F8FAFF',
       },
       borderRadius: {

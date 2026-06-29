@@ -23,6 +23,7 @@ export default function RootLayout() {
         <Stack.Screen name="auth/login" options={{ animation: 'fade' }} />
         <Stack.Screen name="auth/signup" options={{ animation: 'slide_from_right' }} />
         <Stack.Screen name="auth/forgot-password" options={{ animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="auth/email-verification" options={{ animation: 'fade' }} />
 
         {/* Onboarding */}
         <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
