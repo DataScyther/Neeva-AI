@@ -6,7 +6,9 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useMoodEntries, useSaveMood } from '@/shared/hooks/useMood';
-import { useExercises, useSaveExerciseProgress } from '@/shared/hooks/useJourney';
+import { useActiveJourney } from '@/features/journey/hooks/useActiveJourney';
+import { router } from 'expo-router';
+import { ROUTES } from '@/core/config/routes';
 import { moodRepository } from '@/repositories/MoodRepository';
 import type { Mood, MoodRating } from '@/shared/types';
 import { MOOD_MAP } from '@/shared/types';
@@ -88,38 +90,13 @@ export function HomeScreen() {
     }
   }, [selectedMood, reflection, uid, saveMoodMutation]);
 
-  const { data: exercises = [], isLoading: exercisesLoading } = useExercises(uid);
-  const saveExerciseMutation = useSaveExerciseProgress();
-
-  const completedCount = useMemo(() => exercises.filter((ex) => ex.completed).length, [exercises]);
-  const totalCount = exercises.length || 8;
-
-  const nextExercise = useMemo(() => {
-    return exercises.find((ex) => !ex.completed) || null;
-  }, [exercises]);
-
-  const currentStep = useMemo(() => {
-    const firstUncompletedIndex = exercises.findIndex((ex) => !ex.completed);
-    return firstUncompletedIndex >= 0 ? firstUncompletedIndex + 1 : exercises.length;
-  }, [exercises]);
-
-  const percentComplete = useMemo(() => {
-    if (totalCount === 0) return 0;
-    return Math.round((completedCount / totalCount) * 100);
-  }, [completedCount, totalCount]);
-
-  const handleContinueJourney = useCallback(async () => {
-    if (!uid || !nextExercise) return;
-    try {
-      await saveExerciseMutation.mutateAsync({
-        uid,
-        exerciseId: nextExercise.id,
-        streak: nextExercise.streak + 1,
-      });
-    } catch (error) {
-      console.error('[HomeScreen] Save exercise progress error:', error);
-    }
-  }, [uid, nextExercise, saveExerciseMutation]);
+  const {
+    data: journey,
+    isLoading: journeyLoading,
+    error: journeyError,
+    resumeJourney,
+    refetchJourney,
+  } = useActiveJourney(uid);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -139,7 +116,7 @@ export function HomeScreen() {
       // 3. Re-read local cache (fast — AsyncStorage, never blocks)
       await Promise.all([
         queryClient.refetchQueries({ queryKey: ['moods', uid] }),
-        queryClient.refetchQueries({ queryKey: ['journey', 'exercises', uid] }),
+        queryClient.refetchQueries({ queryKey: ['active-journey', uid] }),
       ]);
     } catch (error) {
       console.error('[HomeScreen] Refresh error:', error);
@@ -268,12 +245,13 @@ export function HomeScreen() {
         <View style={styles.sectionSpacing}>
           <SectionHeader title="Continue Your Journey" />
           <ContinueJourneyCard
-            title={nextExercise ? nextExercise.title : 'No active exercises'}
-            currentStep={currentStep}
-            totalSteps={totalCount}
-            percent={percentComplete}
-            onContinue={handleContinueJourney}
-            disabled={exercisesLoading || saveExerciseMutation.isPending}
+            journey={journey}
+            isLoading={journeyLoading}
+            error={journeyError}
+            onContinue={resumeJourney}
+            onRetry={refetchJourney}
+            onStartJourney={() => journey && resumeJourney(journey)}
+            onExplorePrograms={() => router.push(ROUTES.TABS.JOURNEY)}
           />
         </View>
       </ScrollView>

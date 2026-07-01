@@ -146,3 +146,7 @@ export interface UserConversation {
 
 export type TabName = 'home' | 'chat' | 'journey' | 'community' | 'profile';
 export type AuthScreen = 'login' | 'signup' | 'onboarding';
+
+// ─── Journey ──────────────────────────────────────────────────────────
+
+export type { JourneyProgress, JourneyStatus, ResumeTarget } from '@/features/journey/types/JourneyProgress';

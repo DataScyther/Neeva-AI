@@ -10,8 +10,9 @@ import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 export interface ProgressBarProps {
   percent: number; // 0-100
   height?: number;
-  colors?: readonly string[];
+  color?: string;
   trackColor?: string;
+  variant?: 'default' | 'solid' | 'gradient';
   style?: ViewStyle;
   className?: string;
 }
@@ -19,8 +20,9 @@ export interface ProgressBarProps {
 export const ProgressBar = React.memo(({
   percent,
   height = 6,
-  colors = ['#8B5CF6', '#06B6D4'],
+  color = '#8B5CF6',
   trackColor = 'rgba(255, 255, 255, 0.08)',
+  variant = 'default',
   style,
   className = '',
 }: ProgressBarProps) => {
@@ -38,20 +40,36 @@ export const ProgressBar = React.memo(({
 
   const radius = height / 2;
 
+  if (variant === 'gradient') {
+    return (
+      <View style={[styles.container, style]} className={className}>
+        <View style={[styles.track, { height, borderRadius: radius, backgroundColor: trackColor }]}>
+          <Animated.View style={[styles.progressBar, progressStyle]}>
+            <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
+              <Defs>
+                <LinearGradient id="sharedProgressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <Stop offset="0%" stopColor={color} />
+                  <Stop offset="100%" stopColor="#06B6D4" />
+                </LinearGradient>
+              </Defs>
+              <Rect width="100%" height="100%" fill="url(#sharedProgressGrad)" rx={radius} />
+            </Svg>
+          </Animated.View>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.container, style]} className={className}>
       <View style={[styles.track, { height, borderRadius: radius, backgroundColor: trackColor }]}>
-        <Animated.View style={[styles.progressBar, progressStyle]}>
-          <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
-            <Defs>
-              <LinearGradient id="sharedProgressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <Stop offset="0%" stopColor={colors[0]} />
-                <Stop offset="100%" stopColor={colors[1]} />
-              </LinearGradient>
-            </Defs>
-            <Rect width="100%" height="100%" fill="url(#sharedProgressGrad)" rx={radius} />
-          </Svg>
-        </Animated.View>
+        <Animated.View
+          style={[
+            styles.progressBar,
+            progressStyle,
+            { backgroundColor: color, borderRadius: radius },
+          ]}
+        />
       </View>
     </View>
   );

@@ -3,46 +3,91 @@ import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { useTheme } from '@/hooks/useTheme';
+import { JourneyThumbnail } from './JourneyThumbnail';
+import { LessonStatus } from './LessonStatus';
+import { ContinueButton } from './ContinueButton';
+import { JourneyCompletedState } from './JourneyCompletedState';
+import { JourneyLoadingState } from './JourneyLoadingState';
+import { JourneyErrorState } from './JourneyErrorState';
+import { EmptyJourneyState } from './EmptyJourneyState';
+import type { JourneyProgress } from '@/features/journey/types/JourneyProgress';
 
 interface ContinueJourneyCardProps {
-  title: string;
-  currentStep: number;
-  totalSteps: number;
-  percent: number;
-  onContinue: () => void;
-  disabled?: boolean;
+  journey: JourneyProgress | null | undefined;
+  isLoading: boolean;
+  error: Error | null;
+  onContinue: (journey: JourneyProgress) => void;
+  onRetry: () => void;
+  onStartJourney: () => void;
+  onExplorePrograms: () => void;
 }
 
 export const ContinueJourneyCard = React.memo(({
-  title,
-  currentStep,
-  totalSteps,
-  percent,
+  journey,
+  isLoading,
+  error,
   onContinue,
-  disabled = false,
+  onRetry,
+  onStartJourney,
+  onExplorePrograms,
 }: ContinueJourneyCardProps) => {
   const { colors } = useTheme();
 
+  if (!journey && !error) {
+    return (
+      <Animated.View entering={FadeInDown.delay(100).duration(600).springify()}>
+        <JourneyLoadingState />
+      </Animated.View>
+    );
+  }
+
+  if (error) {
+    return (
+      <Animated.View entering={FadeInDown.delay(100).duration(600).springify()}>
+        <JourneyErrorState onRetry={onRetry} />
+      </Animated.View>
+    );
+  }
+
+  if (!journey) {
+    return null;
+  }
+
+  if (journey.status === 'completed') {
+    return (
+      <Animated.View entering={FadeInDown.delay(100).duration(600).springify()}>
+        <JourneyCompletedState onExplore={onExplorePrograms} />
+      </Animated.View>
+    );
+  }
+
+  if (journey.status === 'not_started') {
+    return (
+      <Animated.View entering={FadeInDown.delay(100).duration(600).springify()}>
+        <EmptyJourneyState onStart={onStartJourney} />
+      </Animated.View>
+    );
+  }
+
   return (
-    <Animated.View
-      entering={FadeInDown.delay(100).duration(600).springify()}
-    >
+    <Animated.View entering={FadeInDown.delay(100).duration(600).springify()}>
       <Pressable
-        onPress={onContinue}
-        disabled={disabled}
+        onPress={() => onContinue(journey)}
         style={[styles.card, { backgroundColor: colors.surface.primary, borderColor: colors.border.default }]}
         accessibilityRole="button"
-        accessibilityLabel={`${title}, Lesson ${currentStep} of ${totalSteps}, ${percent} percent complete`}
+        accessibilityLabel={`${journey.title}, Lesson ${journey.currentLesson} of ${journey.totalLessons}, ${journey.completionPercent} percent complete. Continue.`}
       >
         <View style={styles.topRow}>
-          <View style={[styles.thumbnail, { backgroundColor: `${colors.brand.primary}1A` }]}>
-            <Text style={styles.thumbnailText}>🧠</Text>
-          </View>
+          <JourneyThumbnail />
           <View style={styles.content}>
-            <Text style={[styles.title, { color: colors.text.primary }]}>{title}</Text>
-            <Text style={[styles.lesson, { color: colors.text.secondary }]}>
-              Lesson {currentStep} of {totalSteps}
+            <Text
+              style={[styles.title, { color: colors.text.primary }]}
+              numberOfLines={2}
+              allowFontScaling
+            >
+              {journey.title}
             </Text>
+            <LessonStatus current={journey.currentLesson} total={journey.totalLessons} />
           </View>
           <View style={styles.chevron}>
             <Text style={[styles.chevronText, { color: colors.text.secondary }]}>›</Text>
@@ -50,13 +95,20 @@ export const ContinueJourneyCard = React.memo(({
         </View>
 
         <View style={styles.progressRow}>
-          <ProgressBar percent={percent} height={6} style={styles.progress} />
-          <Text style={[styles.percentText, { color: colors.brand.primary }]}>{percent}% Complete</Text>
+          <ProgressBar
+            percent={journey.completionPercent}
+            height={8}
+            variant="default"
+            color={colors.brand.primary}
+            trackColor={`${colors.border.default}80`}
+            style={styles.progress}
+          />
+          <Text style={[styles.percentText, { color: colors.text.secondary }]}>
+            {journey.completionPercent}% Complete
+          </Text>
         </View>
 
-        <View style={[styles.button, { backgroundColor: colors.brand.primary }]}>
-          <Text style={[styles.buttonText, { color: colors.brand.contrastText }]}>Continue</Text>
-        </View>
+        <ContinueButton onPress={() => onContinue(journey)} />
       </Pressable>
     </Animated.View>
   );
@@ -73,27 +125,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 14,
   },
-  thumbnail: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 14,
-  },
-  thumbnailText: {
-    fontSize: 24,
-  },
   content: {
     flex: 1,
+    marginLeft: 14,
   },
   title: {
-    fontSize: 15,
+    fontSize: 22,
     fontWeight: '600',
     marginBottom: 2,
-  },
-  lesson: {
-    fontSize: 12,
   },
   chevron: {
     marginLeft: 8,
@@ -112,17 +151,8 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   percentText: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '500',
-  },
-  button: {
-    borderRadius: 10,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
 });
 
