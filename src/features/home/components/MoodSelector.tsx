@@ -1,31 +1,27 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
+import { MOOD_MAP } from '@/shared/types';
+import type { MoodRating } from '@/shared/types';
 import { MoodOption } from './MoodOption';
 
 export interface MoodSelectorProps {
-  selectedMood: number | null;
-  onSelectMood: (value: number) => void;
+  selectedMood: MoodRating | null;
+  onSelectMood: (value: MoodRating) => void;
 }
 
-export const MOODS: { value: number; label: string; emoji: string }[] = [
-  { value: 5, label: 'Great', emoji: '😊' },
-  { value: 4, label: 'Good', emoji: '🙂' },
-  { value: 3, label: 'Okay', emoji: '😐' },
-  { value: 2, label: 'Not good', emoji: '😞' },
-  { value: 1, label: 'Awful', emoji: '😣' },
-];
+const VALUES: MoodRating[] = [5, 4, 3, 2, 1];
 
 export const MoodSelector = React.memo(({ selectedMood, onSelectMood }: MoodSelectorProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.row}>
-        {MOODS.map((mood) => (
+        {VALUES.map((value) => (
           <MoodOption
-            key={mood.value}
-            emoji={mood.emoji}
-            label={mood.label}
-            isSelected={selectedMood === mood.value}
-            onPress={() => onSelectMood(mood.value)}
+            key={value}
+            emoji={MOOD_MAP[value].emoji}
+            label={MOOD_MAP[value].label}
+            isSelected={selectedMood === value}
+            onPress={() => onSelectMood(value)}
           />
         ))}
       </View>

@@ -4,21 +4,30 @@ import { ChevronRight } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { useTheme } from '@/hooks/useTheme';
+import { MOOD_MAP, getMoodEmoji, getMoodLabel } from '@/shared/types';
+import type { Mood } from '@/shared/types';
 
 interface MoodSnapshotCardProps {
-  moodEmoji?: string;
-  moodLabel?: string;
-  supportText?: string;
+  mood: Mood | null;
   onPress?: () => void;
 }
 
+function getMoodSnapshotSupport(rating: number): string {
+  if (rating >= 5) return 'Keep up the great work!';
+  if (rating >= 4) return 'A calm state of mind.';
+  if (rating >= 3) return 'Taking time to check in matters.';
+  return 'It\'s okay — Neeva is here for you.';
+}
+
 export function MoodSnapshotCard({
-  moodEmoji = '😌',
-  moodLabel = "You're feeling balanced",
-  supportText = 'Keep up the good work.',
+  mood,
   onPress,
 }: MoodSnapshotCardProps) {
   const { colors } = useTheme();
+  const rating = mood?.rating ?? 3;
+  const emoji = mood ? getMoodEmoji(rating) : '😌';
+  const label = mood ? `You're feeling ${getMoodLabel(rating).toLowerCase()}` : "You're feeling balanced";
+  const support = mood ? getMoodSnapshotSupport(rating) : 'Keep up the good work.';
 
   return (
     <Animated.View
@@ -28,16 +37,16 @@ export function MoodSnapshotCard({
         onPress={onPress}
         style={[styles.card, { backgroundColor: colors.surface.primary, borderColor: colors.border.default }]}
         accessibilityRole="button"
-        accessibilityLabel={`Mood Snapshot. ${moodLabel}. ${supportText}`}
+        accessibilityLabel={`Mood Snapshot. ${label}. ${support}`}
       >
         <View style={styles.left}>
           <View style={[styles.emojiContainer, { backgroundColor: `${colors.brand.primary}1A` }]}>
-            <Text style={styles.emoji}>{moodEmoji}</Text>
+            <Text style={styles.emoji}>{emoji}</Text>
           </View>
           <View style={styles.center}>
             <Text style={[styles.label, { color: colors.brand.primary }]}>Mood Snapshot</Text>
-            <Text style={[styles.status, { color: colors.text.primary }]}>{moodLabel}</Text>
-            <Text style={[styles.support, { color: colors.text.secondary }]}>{supportText}</Text>
+            <Text style={[styles.status, { color: colors.text.primary }]}>{label}</Text>
+            <Text style={[styles.support, { color: colors.text.secondary }]}>{support}</Text>
           </View>
         </View>
         <ChevronRight size={20} color={colors.text.secondary} style={{ opacity: 0.6 }} />

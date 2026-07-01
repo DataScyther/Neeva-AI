@@ -46,9 +46,27 @@ export interface UserProfile {
 
 // ─── Mood ───────────────────────────────────────────────────────────────
 
-export interface MoodEntry {
+export type MoodRating = 1 | 2 | 3 | 4 | 5;
+
+export const MOOD_MAP: Record<MoodRating, { label: string; emoji: string }> = {
+  5: { label: 'Great', emoji: '🤩' },
+  4: { label: 'Good', emoji: '😊' },
+  3: { label: 'Okay', emoji: '😌' },
+  2: { label: 'Not good', emoji: '😰' },
+  1: { label: 'Awful', emoji: '🤯' },
+};
+
+export function getMoodLabel(rating: MoodRating): string {
+  return MOOD_MAP[rating].label;
+}
+
+export function getMoodEmoji(rating: MoodRating): string {
+  return MOOD_MAP[rating].emoji;
+}
+
+export interface Mood {
   id: string;
-  mood: number; // 1–10 scale
+  rating: MoodRating;
   note: string;
   timestamp: Date;
 }
@@ -61,6 +79,67 @@ export interface ChatMessage {
   isUser: boolean;
   timestamp: Date;
   reasoning?: string;
+}
+
+// ─── Conversations / Groups ─────────────────────────────────────────────
+
+export type ConversationType = 'group';
+export type MessageType = 'text' | 'system';
+export type ParticipantRole = 'member' | 'admin';
+
+export interface LastMessagePreview {
+  content: string;
+  senderId: string;
+  senderName: string;
+  timestamp: Date;
+}
+
+export interface ConversationMetadata {
+  isSupportGroup: boolean;
+  category?: string;
+}
+
+export interface Conversation {
+  id: string;
+  type: ConversationType;
+  name: string;
+  description?: string;
+  imageURL?: string;
+  createdBy: string;
+  createdAt: Date;
+  updatedAt: Date;
+  participantIds: string[];
+  lastMessage?: LastMessagePreview;
+  metadata?: ConversationMetadata;
+  memberCount: number;
+}
+
+export interface ConversationMessage {
+  id: string;
+  senderId: string;
+  senderName: string;
+  content: string;
+  timestamp: Date;
+  type: MessageType;
+  replyTo?: string;
+  readBy: string[];
+}
+
+export interface ConversationParticipant {
+  id: string;
+  role: ParticipantRole;
+  joinedAt: Date;
+  lastReadAt: Date;
+  mutedUntil?: Date;
+}
+
+export interface UserConversation {
+  id: string;
+  lastReadAt: Date;
+  lastMessageAt: Date;
+  isPinned: boolean;
+  isMuted: boolean;
+  lastMessagePreview: string;
 }
 
 // ─── Navigation ─────────────────────────────────────────────────────────

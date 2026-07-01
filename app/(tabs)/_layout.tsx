@@ -1,17 +1,19 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Home, MessageCircle, Compass, Users, User } from 'lucide-react-native';
 import Animated from 'react-native-reanimated';
+import { useUnreadCount } from '@/hooks/realtime/useUnreadCount';
 
 type TabIconProps = {
   name: string;
   focused: boolean;
   color: string;
   size: number;
+  badge?: number;
 };
 
-function TabIcon({ name, focused, color, size }: TabIconProps) {
+function TabIcon({ name, focused, color, size, badge }: TabIconProps) {
   const iconProps = { color, size: focused ? size + 1 : size };
   let iconComponent;
 
@@ -39,6 +41,13 @@ function TabIcon({ name, focused, color, size }: TabIconProps) {
     <View style={styles.iconContainer}>
       <Animated.View style={focused ? styles.iconActive : null}>
         {iconComponent}
+        {badge != null && badge > 0 && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>
+              {badge > 99 ? '99+' : badge}
+            </Text>
+          </View>
+        )}
       </Animated.View>
       {focused && <View style={styles.activeDot} />}
     </View>
@@ -69,9 +78,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 4,
   },
+  badge: {
+    position: 'absolute',
+    top: -6,
+    right: -8,
+    backgroundColor: '#EF4444',
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: '700',
+  },
 });
 
 export default function TabLayout() {
+  const unreadCount = useUnreadCount();
+
   return (
     <Tabs
       screenOptions={{
@@ -128,15 +156,21 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="community"
-        options={{
-          title: 'Community',
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name="community" focused={focused} color={color} size={size} />
-          ),
-        }}
-      />
+        <Tabs.Screen
+          name="community"
+          options={{
+            title: 'Community',
+            tabBarIcon: ({ color, size, focused }) => (
+              <TabIcon
+                name="community"
+                focused={focused}
+                color={color}
+                size={size}
+                badge={unreadCount}
+              />
+            ),
+          }}
+        />
       <Tabs.Screen
         name="profile"
         options={{

@@ -16,7 +16,7 @@ export const features = {
   moodTracking: true,
 
   /** Enable community features */
-  community: false, // Phase 6 target
+  community: true,
 
   /** Enable crisis support */
   crisisSupport: true,
@@ -49,7 +49,7 @@ export const features = {
   notifications: true,
 
   /** Enable subscription management */
-  subscriptions: false, // Phase 7 target
+  subscriptions: true, // Phase 7 complete
 
   /** Development-only features */
   dev: {

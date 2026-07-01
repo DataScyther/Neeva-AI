@@ -7,8 +7,11 @@
 import { useEffect } from 'react';
 import { useAppStore } from '@/core/store/useAppStore';
 import { authService } from '@/services/auth';
+import { useProfileSync } from '@/hooks/useProfileSync';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const user = useAppStore((state) => state.session.user);
+  const uid = user?.uid ?? null;
   const setUser = useAppStore((state) => state.setUser);
   const clearSession = useAppStore((state) => state.clearSession);
   const setOnboardingCompleted = useAppStore((state) => state.setOnboardingCompleted);
@@ -16,14 +19,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const setAuthInitialized = useAppStore((state) => state.setAuthInitialized);
   const initialize = useAppStore((state) => state.initialize);
 
+  // Subscribe to real-time profile updates and sync to Zustand
+  useProfileSync(uid);
+
   useEffect(() => {
     void initialize();
   }, [initialize]);
 
   useEffect(() => {
-    const unsubscribe = authService.onAuthStateChanged(async (user) => {
-      if (user) {
-        setUser(user);
+    const unsubscribe = authService.onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
         setEmailVerified(authService.isEmailVerified());
         const onboardingCompleted = await authService.isOnboardingCompleted();
         setOnboardingCompleted(onboardingCompleted);

@@ -7,7 +7,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/shared/hooks/useAuth';
 import { useMoodEntries, useSaveMood } from '@/shared/hooks/useMood';
 import { useExercises, useSaveExerciseProgress } from '@/shared/hooks/useJourney';
-import type { MoodEntry } from '@/shared/types';
+import { moodRepository } from '@/repositories/MoodRepository';
+import type { Mood, MoodRating } from '@/shared/types';
+import { MOOD_MAP } from '@/shared/types';
 import { SectionHeader } from '@/shared/components/SectionHeader';
 import { spacing } from '@/core/theme';
 import { useSyncRefresh } from '@/shared/hooks/useSyncRefresh';
@@ -20,41 +22,9 @@ import {
   MoodSnapshotCard,
   CheckInCard,
   MoodSelector,
-  MiniMoodHistory,
+  WeeklyHistoryCard,
   ContinueJourneyCard,
 } from '../components';
-
-const getEmojiForRating = (rating: number): string => {
-  if (rating >= 9) return '🤩';
-  if (rating >= 8) return '😊';
-  if (rating >= 6) return '😌';
-  if (rating >= 4) return '😐';
-  if (rating >= 3) return '😰';
-  if (rating >= 2) return '😔';
-  return '🤯';
-};
-
-const getLabelForRating = (rating: number): string => {
-  if (rating >= 9) return 'Very Happy';
-  if (rating >= 8) return 'Happy';
-  if (rating >= 6) return 'Calm';
-  if (rating >= 4) return 'Neutral';
-  if (rating >= 3) return 'Stressed';
-  if (rating >= 2) return 'Sad';
-  return 'Overwhelmed';
-};
-
-const getMoodSnapshotStatus = (mood: number): string => {
-  const label = getLabelForRating(mood);
-  return `You're feeling ${label.toLowerCase()}`;
-};
-
-const getMoodSnapshotSupport = (mood: number): string => {
-  if (mood >= 8) return 'Keep up the good work!';
-  if (mood >= 6) return 'A calm state of mind.';
-  if (mood >= 4) return 'Taking time to check in matters.';
-  return 'It\'s okay — Neeva is here for you.';
-};
 
 export function HomeScreen() {
   const { colors } = useTheme();
@@ -65,17 +35,14 @@ export function HomeScreen() {
   const { data: moodEntries = [] } = useMoodEntries(uid);
   const saveMoodMutation = useSaveMood();
 
-  const [selectedMood, setSelectedMood] = useState<number | null>(null);
+  const [selectedMood, setSelectedMood] = useState<MoodRating | null>(null);
   const [showSelector, setShowSelector] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [reflection, setReflection] = useState('');
   const [refreshing, setRefreshing] = useState(false);
 
-  // Sync focus & resume hook
-  useSyncRefresh([
-    ['moods', uid],
-    ['journey', 'exercises', uid],
-  ]);
+  // Sync focus & resume hook — processes pending queue, never blocks UI
+  useSyncRefresh();
 
   // Sync Store UI selectors
   const pendingQueue = useSyncStore((state) => state.pendingQueue);
@@ -84,7 +51,7 @@ export function HomeScreen() {
   const lastError = useSyncStore((state) => state.lastError);
   const processQueue = useSyncStore((state) => state.processQueue);
 
-  const todayMoodEntry = useMemo(() => {
+  const todayMood = useMemo(() => {
     const todayStr = new Date().toDateString();
     const todayEntries = moodEntries.filter(
       (entry) => new Date(entry.timestamp).toDateString() === todayStr
@@ -96,16 +63,16 @@ export function HomeScreen() {
     setShowSelector(true);
   }, []);
 
-  const handleSelectMood = useCallback((value: number) => {
+  const handleSelectMood = useCallback((value: MoodRating) => {
     setSelectedMood(value);
   }, []);
 
   const handleSubmitMood = useCallback(async () => {
     if (selectedMood === null || !uid) return;
 
-    const entry: MoodEntry = {
+    const entry: Mood = {
       id: `mood-${Date.now()}`,
-      mood: selectedMood,
+      rating: selectedMood,
       note: reflection,
       timestamp: new Date(),
     };
@@ -157,7 +124,19 @@ export function HomeScreen() {
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
+      // 1. Process pending sync queue
       await processQueue(queryClient);
+
+      // 2. Start background cloud sync (not awaited — silently updates cache when done)
+      if (uid) {
+        void moodRepository.syncFromCloud(uid).then((merged) => {
+          if (merged.length > 0) {
+            queryClient.setQueryData(['moods', uid], merged);
+          }
+        });
+      }
+
+      // 3. Re-read local cache (fast — AsyncStorage, never blocks)
       await Promise.all([
         queryClient.refetchQueries({ queryKey: ['moods', uid] }),
         queryClient.refetchQueries({ queryKey: ['journey', 'exercises', uid] }),
@@ -229,20 +208,18 @@ export function HomeScreen() {
 
           <View style={styles.sectionSpacing}>
             <MoodSnapshotCard
-              moodEmoji={todayMoodEntry ? getEmojiForRating(todayMoodEntry.mood) : '😌'}
-              moodLabel={todayMoodEntry ? getMoodSnapshotStatus(todayMoodEntry.mood) : "You're feeling balanced"}
-              supportText={todayMoodEntry ? getMoodSnapshotSupport(todayMoodEntry.mood) : 'Keep up the good work.'}
+              mood={todayMood}
               onPress={handleCardPress}
             />
           </View>
 
-          {!todayMoodEntry && (
+          {!todayMood && (
             <View style={styles.sectionSpacing}>
               <CheckInCard onCheckIn={handleCheckIn} />
             </View>
           )}
 
-          {showSelector && !todayMoodEntry && (
+          {showSelector && !todayMood && (
             <View style={styles.sectionSpacing}>
               <SectionHeader title="How are you feeling today?" />
               <MoodSelector
@@ -252,7 +229,7 @@ export function HomeScreen() {
               {selectedMood !== null && (
                 <View style={[styles.submitContainer, { backgroundColor: colors.surface.secondary, borderColor: colors.border.default }]}>
                   <Text style={[styles.submitText, { color: colors.text.secondary }]}>
-                    You selected: {selectedMood >= 4 ? '😊' : selectedMood >= 3 ? '😐' : '😞'} — ready to check in?
+                    You selected: {MOOD_MAP[selectedMood].emoji} {MOOD_MAP[selectedMood].label} — ready to check in?
                   </Text>
                   
                   {/* Reflection input text block */}
@@ -282,7 +259,10 @@ export function HomeScreen() {
         </View>
 
         <View style={styles.sectionSpacing}>
-          <MiniMoodHistory moodEntries={moodEntries} />
+          <WeeklyHistoryCard
+            moodEntries={moodEntries}
+            onCheckIn={handleCheckIn}
+          />
         </View>
 
         <View style={styles.sectionSpacing}>

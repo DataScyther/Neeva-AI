@@ -14,38 +14,29 @@ export function useSyncRefresh(queryKeysToRefresh: any[][] = []) {
     void initializeQueue();
   }, [initializeQueue]);
 
-  // Screen focus listener
+  // Screen focus listener — processes pending queue only
+  // Data is already in AsyncStorage; cloud sync is handled by background sync hooks
   useEffect(() => {
     const handleFocus = () => {
-      // Process queue first
       void processQueue(queryClient);
-      
-      // Refresh only keys that need check
-      queryKeysToRefresh.forEach((key) => {
-        void queryClient.invalidateQueries({ queryKey: key });
-      });
     };
 
     const unsubscribe = navigation.addListener('focus', handleFocus);
     return unsubscribe;
-  }, [navigation, queryClient, queryKeysToRefresh, processQueue]);
+  }, [navigation, queryClient, processQueue]);
 
-  // App resume/active listener
+  // App resume/active listener — re-check connectivity, process queue
   useEffect(() => {
     const handleAppStateChange = async (nextAppState: AppStateStatus) => {
       if (nextAppState === 'active') {
         const online = await checkOnline();
         await setOnlineStatus(online, queryClient);
-        
-        queryKeysToRefresh.forEach((key) => {
-          void queryClient.invalidateQueries({ queryKey: key });
-        });
       }
     };
 
     const subscription = AppState.addEventListener('change', handleAppStateChange);
     return () => subscription.remove();
-  }, [queryClient, queryKeysToRefresh, setOnlineStatus]);
+  }, [queryClient, setOnlineStatus]);
 
   // Interval connectivity & sync check
   useEffect(() => {

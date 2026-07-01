@@ -32,6 +32,8 @@ export const ROUTES = {
     CHAT_CONVERSATION: '/chat/:id',
     PROFILE_SETTINGS: '/profile/settings',
     PROFILE_SUBSCRIPTION: '/profile/subscription',
+    PROFILE_NOTIFICATIONS: '/profile/notifications',
+    PROFILE_SECURITY: '/profile/security',
   } as const,
 } as const;
 

@@ -6,6 +6,7 @@ import { moodRepository } from '@/repositories/MoodRepository';
 import { journeyRepository } from '@/repositories/JourneyRepository';
 import { profileRepository } from '@/repositories/ProfileRepository';
 import { useAppStore } from './useAppStore';
+import type { Mood } from '@/shared/types';
 
 const STORAGE_KEY = 'sync_queue';
 
@@ -117,12 +118,20 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       retryCount: 0,
     };
 
-    // 1. Save locally to Zustand state and AsyncStorage
+    // 1. Persist mood data to AsyncStorage immediately (before queue processing)
+    if (type === 'save_mood') {
+      const { uid, entry } = payload;
+      if (uid && entry) {
+        await moodRepository.persistMoods(uid, [entry]);
+      }
+    }
+
+    // 2. Save queue item to Zustand state and AsyncStorage (for retry tracking)
     const updatedQueue = [...get().pendingQueue, newItem];
     set({ pendingQueue: updatedQueue });
     await storageService.setJSON(STORAGE_KEY, updatedQueue);
 
-    // 2. Apply optimistic updates immediately to UI / Query Client
+    // 3. Apply optimistic updates immediately to UI / Query Client
     if (type === 'save_mood') {
       const { uid, entry } = payload;
       if (uid && entry) {
@@ -150,7 +159,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       }
     }
 
-    // 3. Trigger processing in background
+    // 4. Trigger processing in background
     void get().processQueue(queryClient);
   },
 
@@ -188,12 +197,8 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
       try {
         if (item.type === 'save_mood') {
-          const { uid, entry } = item.payload;
-          const parsedEntry = {
-            ...entry,
-            timestamp: entry.timestamp ? new Date(entry.timestamp) : new Date(),
-          };
-          await moodRepository.saveMood(uid, parsedEntry);
+          const { uid, entry } = item.payload as { uid: string; entry: Mood };
+          await moodRepository.syncToCloud(uid, entry);
           queryClient.invalidateQueries({ queryKey: ['moods', uid] });
 
         } else if (item.type === 'save_exercise_progress') {

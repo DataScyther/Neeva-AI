@@ -3,10 +3,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { doc } from 'firebase/firestore';
 import { db, isFirebaseConfigured } from '@/lib/firebase';
 import { useRealtimeDocument } from '@/hooks/useRealtimeSubscription';
-import { profileRepository } from '@/repositories/ProfileRepository';
-import type { UserProfile } from '@/services/auth/types';
+import type { UserPreferences } from '@/shared/types';
 
-export function useRealtimeProfile(uid: string | null) {
+export function useRealtimePreferences(uid: string | null) {
   const queryClient = useQueryClient();
   const enabled = !!(uid && isFirebaseConfigured());
 
@@ -15,10 +14,14 @@ export function useRealtimeProfile(uid: string | null) {
     [uid],
   );
 
-  useRealtimeDocument<UserProfile>(docRef, ['profile', uid], enabled);
+  useRealtimeDocument<{ preferences: UserPreferences }>(
+    docRef,
+    ['profile', uid],
+    enabled,
+  );
 
   const queryFn = useCallback(
-    () => queryClient.getQueryData<UserProfile | null>(['profile', uid]) ?? null,
+    () => queryClient.getQueryData<{ preferences: UserPreferences } | null>(['profile', uid]) ?? null,
     [queryClient, uid],
   );
 
@@ -27,5 +30,6 @@ export function useRealtimeProfile(uid: string | null) {
     queryFn,
     enabled,
     staleTime: Infinity,
+    select: (data) => data?.preferences as UserPreferences | undefined,
   });
 }

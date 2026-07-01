@@ -13,12 +13,14 @@ export interface ExerciseProgressDoc {
 }
 
 export function useRealtimeExercises(uid: string | null) {
+  const enabled = !!(uid && db);
+
   const exercisesQuery = useMemo(
-    () => (uid ? collection(db, 'users', uid, 'exercises') : null),
+    () => (uid && db ? collection(db, 'users', uid, 'exercises') : null),
     [uid],
   );
 
-  useRealtimeCollection<ExerciseProgressDoc>(exercisesQuery, ['exercises', uid], !!uid);
+  useRealtimeCollection<ExerciseProgressDoc>(exercisesQuery, ['exercises', uid], enabled);
 
   return useQuery({
     queryKey: ['exercises', uid],
@@ -32,7 +34,7 @@ export function useRealtimeExercises(uid: string | null) {
         lastCompletedAt: p.lastCompletedAt,
       })) as ExerciseProgressDoc[];
     },
-    enabled: !!uid,
+    enabled,
     staleTime: Infinity,
     select: (data: ExerciseProgressDoc[]) => {
       const record: Record<string, ExerciseProgressDoc> = {};
