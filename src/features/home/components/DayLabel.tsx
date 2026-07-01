@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
 
 interface DayLabelProps {
@@ -11,28 +11,44 @@ export const DayLabel = React.memo(({ label, isToday }: DayLabelProps) => {
   const { colors } = useTheme();
 
   return (
-    <Text
-      style={[
-        styles.label,
-        { color: isToday ? colors.brand.primary : colors.text.secondary },
-        isToday && styles.today,
-      ]}
-    >
-      {label}
-    </Text>
+    <View style={styles.container}>
+      <Text
+        style={[
+          styles.label,
+          { color: isToday ? colors.brand.primary : colors.text.secondary },
+          isToday && styles.today,
+        ]}
+      >
+        {label}
+      </Text>
+      {isToday && (
+        <View style={[styles.activeDot, { backgroundColor: colors.brand.primary }]} />
+      )}
+    </View>
   );
 });
 
 DayLabel.displayName = 'DayLabel';
 
 const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   label: {
     fontSize: 10,
-    fontWeight: '500',
+    fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   today: {
-    fontWeight: '700',
+    fontWeight: '800',
+  },
+  activeDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    marginTop: 4,
   },
 });
+

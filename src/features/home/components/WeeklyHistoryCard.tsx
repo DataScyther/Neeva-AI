@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, { FadeInDown, useAnimatedStyle, useSharedValue, withRepeat, withTiming, Easing } from 'react-native-reanimated';
+import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import { useTheme } from '@/hooks/useTheme';
 import { spacing, borderRadius, shadows } from '@/core/theme';
 import type { Mood } from '@/shared/types';
@@ -17,7 +18,7 @@ interface WeeklyHistoryCardProps {
 }
 
 const DAY_LABELS = ['THU', 'FRI', 'SAT', 'SUN', 'MON', 'TUE', 'TODAY'];
-const GRAPH_HEIGHT = 80;
+const GRAPH_HEIGHT = 100;
 const GRAPH_PADDING_H = 20;
 const CARD_H_PADDING = spacing.lg * 2;
 
@@ -87,18 +88,18 @@ export const WeeklyHistoryCard = React.memo(({
 
   const insightText = useMemo(() => generateInsight(points), [points]);
 
-function SkeletonPulse({ children }: { children: React.ReactNode }) {
-  const opacity = useSharedValue(0.3);
-  useEffect(() => {
-    opacity.value = withRepeat(
-      withTiming(0.7, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
-      -1,
-      true
-    );
-  }, []);
-  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
-  return <Animated.View style={animatedStyle}>{children}</Animated.View>;
-}
+  function SkeletonPulse({ children }: { children: React.ReactNode }) {
+    const opacity = useSharedValue(0.3);
+    useEffect(() => {
+      opacity.value = withRepeat(
+        withTiming(0.7, { duration: 1200, easing: Easing.inOut(Easing.ease) }),
+        -1,
+        true
+      );
+    }, []);
+    const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
+    return <Animated.View style={animatedStyle}>{children}</Animated.View>;
+  }
 
   if (isLoading) {
     return (
@@ -107,7 +108,18 @@ function SkeletonPulse({ children }: { children: React.ReactNode }) {
         style={styles.container}
       >
         <View style={[styles.card, { backgroundColor: colors.surface.primary, borderColor: colors.border.default, ...shadows.glass }]}>
-          <View style={[styles.accentBar, { backgroundColor: colors.brand.primary }]} />
+          <View style={styles.accentBar}>
+            <Svg width="100%" height={3}>
+              <Defs>
+                <LinearGradient id="skeletonAccentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <Stop offset="0%" stopColor={colors.brand.secondary || '#8B5CF6'} />
+                  <Stop offset="50%" stopColor={colors.brand.primary} />
+                  <Stop offset="100%" stopColor="#06B6D4" />
+                </LinearGradient>
+              </Defs>
+              <Rect width="100%" height={3} fill="url(#skeletonAccentGrad)" />
+            </Svg>
+          </View>
           <WeeklyHistoryHeader />
           <SkeletonPulse>
             <View style={[styles.skeletonTimeline, { height: GRAPH_HEIGHT }]}>
@@ -143,7 +155,18 @@ function SkeletonPulse({ children }: { children: React.ReactNode }) {
       style={styles.container}
     >
       <View style={[styles.card, { backgroundColor: colors.surface.primary, borderColor: colors.border.default, ...shadows.glass }]}>
-          <View style={[styles.accentBar, { backgroundColor: colors.brand.primary }]} />
+        <View style={styles.accentBar}>
+          <Svg width="100%" height={3}>
+            <Defs>
+              <LinearGradient id="cardAccentGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <Stop offset="0%" stopColor={colors.brand.secondary || '#8B5CF6'} />
+                <Stop offset="50%" stopColor={colors.brand.primary} />
+                <Stop offset="100%" stopColor="#06B6D4" />
+              </LinearGradient>
+            </Defs>
+            <Rect width="100%" height={3} fill="url(#cardAccentGrad)" />
+          </Svg>
+        </View>
         <WeeklyHistoryHeader />
 
         {!hasData ? (
@@ -192,12 +215,12 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 3,
-    opacity: 0.6,
   },
   daysRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: GRAPH_PADDING_H,
+    marginTop: spacing.xs,
   },
   skeletonTimeline: {
     alignItems: 'center',
@@ -222,3 +245,4 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
 });
+

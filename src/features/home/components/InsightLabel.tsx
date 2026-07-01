@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Sparkles } from 'lucide-react-native';
 import { useTheme } from '@/hooks/useTheme';
-import { spacing } from '@/core/theme';
+import { spacing, borderRadius } from '@/core/theme';
 
 interface InsightLabelProps {
   text: string;
@@ -10,9 +11,14 @@ interface InsightLabelProps {
 export const InsightLabel = React.memo(({ text }: InsightLabelProps) => {
   const { colors } = useTheme();
 
+  if (!text) return null;
+
   return (
-    <View style={styles.container}>
-      <View style={[styles.divider, { backgroundColor: colors.border.default }]} />
+    <View style={[styles.container, { backgroundColor: `${colors.brand.primary}08`, borderColor: `${colors.brand.primary}18` }]}>
+      <View style={styles.header}>
+        <Sparkles size={13} color={colors.brand.primary} style={styles.icon} />
+        <Text style={[styles.headerText, { color: colors.brand.primary }]}>Neeva AI Insight</Text>
+      </View>
       <Text style={[styles.text, { color: colors.text.secondary }]}>{text}</Text>
     </View>
   );
@@ -23,16 +29,29 @@ InsightLabel.displayName = 'InsightLabel';
 const styles = StyleSheet.create({
   container: {
     marginTop: spacing.lg,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
   },
-  divider: {
-    height: 1,
-    opacity: 0.5,
-    marginBottom: spacing.md,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+  },
+  icon: {
+    marginRight: 6,
+  },
+  headerText: {
+    fontSize: 10,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
   },
   text: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '500',
-    fontStyle: 'italic',
-    letterSpacing: 0.2,
+    lineHeight: 18,
+    letterSpacing: 0.1,
   },
 });
+
