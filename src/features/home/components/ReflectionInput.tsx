@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
-import { typography, spacing, borderRadius, colors } from '@/core/theme';
+import { typography, spacing, borderRadius, colors as oldColors } from '@/core/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface ReflectionInputProps {
   value: string;
@@ -17,20 +18,24 @@ export const ReflectionInput = React.memo(({
 }: ReflectionInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const [inputHeight, setInputHeight] = useState(40);
+  const { colors } = useTheme();
 
   return (
     <View style={styles.container}>
       <View
         style={[
           styles.inputWrapper,
-          isFocused ? styles.inputWrapperFocused : styles.inputWrapperBlurred,
+          { borderColor: colors.border.default, backgroundColor: colors.surface.secondary },
+          isFocused
+            ? { backgroundColor: colors.surface.primary, borderColor: colors.brand.primary }
+            : null,
         ]}
       >
         <TextInput
-          style={[styles.textInput, { height: inputHeight }]}
+          style={[styles.textInput, { height: inputHeight, color: colors.text.primary }]}
           multiline
           placeholder={placeholder}
-          placeholderTextColor="rgba(255, 255, 255, 0.3)"
+          placeholderTextColor={colors.text.secondary}
           value={value}
           onChangeText={onChangeText}
           maxLength={maxLength}
@@ -44,7 +49,7 @@ export const ReflectionInput = React.memo(({
           accessibilityHint="Optionally type what is contributing to your feeling today, maximum 200 characters"
         />
         <View style={styles.bottomRow}>
-          <Text style={styles.charCounter}>
+          <Text style={[styles.charCounter, { color: colors.text.secondary }]}>
             {value.length} / {maxLength}
           </Text>
         </View>
@@ -65,16 +70,7 @@ const styles = StyleSheet.create({
     minHeight: 90,                 // 90dp starting height
     justifyContent: 'space-between',
   },
-  inputWrapperBlurred: {
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  inputWrapperFocused: {
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    borderColor: 'rgba(167, 139, 250, 0.4)', // Purple-400 with opacity
-  },
   textInput: {
-    color: '#FFFFFF',
     fontSize: 14,
     fontFamily: typography.fontFamily.sans,
     lineHeight: 20,
@@ -91,7 +87,6 @@ const styles = StyleSheet.create({
   },
   charCounter: {
     fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.3)',
     fontFamily: typography.fontFamily.sans,
   },
 });

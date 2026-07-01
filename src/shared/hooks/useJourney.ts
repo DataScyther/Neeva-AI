@@ -1,11 +1,7 @@
-/**
- * useJourney — Journey/Exercise Hooks
- *
- * TanStack Query hooks for exercise progress (server state).
- */
-
+import { useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { journeyRepository } from '@/repositories/JourneyRepository';
+import { useSyncStore } from '@/core/store/useSyncStore';
 
 const JOURNEY_QUERY_KEY = ['journey'] as const;
 
@@ -31,7 +27,7 @@ const DEFAULT_EXERCISES: Exercise[] = [
 ];
 
 export function useExercises(uid: string | null) {
-  return useQuery({
+  const query = useQuery({
     queryKey: [...JOURNEY_QUERY_KEY, 'exercises', uid],
     queryFn: async () => {
       if (!uid) return DEFAULT_EXERCISES;
@@ -48,10 +44,32 @@ export function useExercises(uid: string | null) {
     },
     enabled: true,
   });
+
+  const pendingQueue = useSyncStore((state) => state.pendingQueue);
+  const pendingProgress = useMemo(() => {
+    return pendingQueue.filter(
+      (item) => item.type === 'save_exercise_progress' && item.payload.uid === uid
+    );
+  }, [pendingQueue, uid]);
+
+  return {
+    ...query,
+    data: useMemo(() => {
+      if (!query.data) return undefined;
+      return query.data.map((ex) => {
+        const pending = pendingProgress.find((p) => p.payload.exerciseId === ex.id);
+        if (pending) {
+          return { ...ex, completed: true, streak: pending.payload.streak };
+        }
+        return ex;
+      });
+    }, [query.data, pendingProgress]),
+  };
 }
 
 export function useSaveExerciseProgress() {
   const queryClient = useQueryClient();
+  const enqueueItem = useSyncStore((state) => state.enqueueItem);
 
   return useMutation({
     mutationFn: async ({
@@ -63,12 +81,8 @@ export function useSaveExerciseProgress() {
       exerciseId: string;
       streak: number;
     }) => {
-      const success = await journeyRepository.saveProgress(uid, exerciseId, streak);
-      if (!success) throw new Error('Failed to save exercise progress');
+      await enqueueItem('save_exercise_progress', { uid, exerciseId, streak }, queryClient);
       return { exerciseId, streak };
-    },
-    onSuccess: (_, { uid }) => {
-      queryClient.invalidateQueries({ queryKey: [...JOURNEY_QUERY_KEY, 'exercises', uid] });
     },
   });
 }

@@ -96,12 +96,12 @@ module.exports = {
     slug: 'neeva-ai',
     version: '1.0.0',
     orientation: 'portrait',
-    icon: './src/shared/assets/icon.jpg',
+    icon: './src/shared/assets/icon.png',
     scheme: 'neeva',
     userInterfaceStyle: 'automatic',
     // Expo Go ships its own native binary — do not force New Architecture flags here.
     splash: {
-      image: './src/shared/assets/splash.jpg',
+      image: './src/shared/assets/splash.png',
       resizeMode: 'contain',
       backgroundColor: '#0F0A1A',
     },
@@ -111,7 +111,7 @@ module.exports = {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: './src/shared/assets/adaptive-icon.jpg',
+        foregroundImage: './src/shared/assets/adaptive-icon.png',
         backgroundColor: '#0F0A1A',
       },
       package: androidPackage,

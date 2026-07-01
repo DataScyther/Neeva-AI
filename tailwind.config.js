@@ -58,6 +58,29 @@ export default {
             border: 'rgba(255, 255, 255, 0.2)',
           },
         },
+        background: {
+          primary: 'var(--background-primary)',
+          secondary: 'var(--background-secondary)',
+        },
+        surface: {
+          primary: 'var(--surface-primary)',
+          secondary: 'var(--surface-secondary)',
+        },
+        text: {
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+        },
+        border: {
+          default: 'var(--border-default)',
+        },
+        brand: {
+          primary: 'var(--brand-primary)',
+          secondary: 'var(--brand-secondary)',
+          contrastText: 'var(--brand-contrastText)',
+        },
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        danger: 'var(--danger)',
       },
       backgroundColor: {
         'app-dark': '#0B0B12',

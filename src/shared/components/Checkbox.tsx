@@ -7,9 +7,12 @@ interface CheckboxProps {
   onPress: () => void;
   label?: string;
   error?: string;
+  theme?: 'dark' | 'light';
 }
 
-export function Checkbox({ checked, onPress, label, error }: CheckboxProps) {
+export function Checkbox({ checked, onPress, label, error, theme = 'dark' }: CheckboxProps) {
+  const isDark = theme === 'dark';
+
   return (
     <Pressable
       onPress={onPress}
@@ -18,20 +21,24 @@ export function Checkbox({ checked, onPress, label, error }: CheckboxProps) {
       <View
         className={`w-5 h-5 rounded border mr-3 items-center justify-center ${
           checked
-            ? 'bg-neeva-purple-600 border-neeva-purple-500'
-            : 'bg-neeva-glass-dark/40 border-neeva-glass-border'
+            ? isDark
+              ? 'bg-neeva-purple-600 border-neeva-purple-500'
+              : 'bg-blue-600 border-blue-600'
+            : isDark
+            ? 'bg-neeva-glass-dark/40 border-neeva-glass-border'
+            : 'bg-white border-slate-300'
         }`}
       >
         {checked && <Check size={12} color="#FFFFFF" strokeWidth={3} />}
       </View>
       <View className="flex-1">
         {label && (
-          <Text className="text-white/70 text-body-sm leading-5">
+          <Text className={`text-body-sm leading-5 ${isDark ? 'text-white/70' : 'text-slate-600 font-medium'}`}>
             {label}
           </Text>
         )}
         {error && (
-          <Text className="text-red-400 text-caption mt-1">
+          <Text className={`${isDark ? 'text-red-400' : 'text-red-500'} text-caption mt-1 font-medium`}>
             {error}
           </Text>
         )}

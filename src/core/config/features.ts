@@ -30,6 +30,9 @@ export const features = {
   /** Enable onboarding flow */
   onboarding: true,
 
+  /** Enable real-time Firestore subscriptions */
+  realtimeData: true,
+
   /** Enable Google authentication */
   googleAuth: true,
 

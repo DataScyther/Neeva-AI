@@ -12,20 +12,22 @@ interface PasswordFieldProps extends Omit<TextFieldProps, 'rightIcon' | 'secureT
   showStrength?: boolean;
 }
 
-export function PasswordField({ showStrength = false, ...props }: PasswordFieldProps) {
+export function PasswordField({ showStrength = false, theme = 'dark', ...props }: PasswordFieldProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const isDark = theme === 'dark';
 
   return (
     <>
       <TextField
         {...props}
+        theme={theme}
         secureTextEntry={!showPassword}
         rightIcon={
           <Pressable onPress={() => setShowPassword(!showPassword)}>
             {showPassword ? (
-              <EyeOff size={18} color="rgba(255,255,255,0.4)" />
+              <EyeOff size={18} color={isDark ? 'rgba(255,255,255,0.4)' : '#94A3B8'} />
             ) : (
-              <Eye size={18} color="rgba(255,255,255,0.4)" />
+              <Eye size={18} color={isDark ? 'rgba(255,255,255,0.4)' : '#94A3B8'} />
             )}
           </Pressable>
         }

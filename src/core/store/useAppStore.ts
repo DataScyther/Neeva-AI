@@ -97,7 +97,7 @@ export interface AppStore {
 
 const initialUIState: UIState = {
   currentTab: 'home',
-  theme: 'dark',
+  theme: 'light',
   isLoading: false,
   toasts: [],
   activeModal: null,
@@ -370,10 +370,25 @@ export const useAppStore = create<AppStore>()(
       },
 
       updateUserProfile: async (updates: Partial<UserProfile>) => {
-        await authService.updateProfile(updates);
-        const user = authService.getProfile();
-        if (user) {
-          set((s) => ({ session: { ...s.session, user } }));
+        const state = get();
+        const currentUser = state.session.user;
+        if (!currentUser) return;
+
+        const updatedUser = { ...currentUser, ...updates } as UserProfile;
+        set((s) => ({ session: { ...s.session, user: updatedUser } }));
+
+        try {
+          const { queryClient } = require('../queryClient');
+          const { useSyncStore } = require('./useSyncStore');
+          
+          await useSyncStore.getState().enqueueItem(
+            'update_profile',
+            { uid: currentUser.uid, updates },
+            queryClient
+          );
+        } catch (error) {
+          console.warn('[useAppStore] Sync queue enqueue failed, updating profile directly:', error);
+          await authService.updateProfile(updates);
         }
       },
 

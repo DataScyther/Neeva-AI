@@ -1,22 +1,10 @@
-/**
- * HomeHeader — Top hero section of the Home tab.
- *
- * Layout:
- *   - Top bar: Hamburger menu button (left), notification bell + avatar (right)
- *   - Greeting row: "Good morning/afternoon/evening, [User Name] 👋"
- *   - Welcome header: "I'm glad you're here. Let's take care of you today."
- *
- * Implements accessible buttons (min 44px touch targets) and dynamic greetings.
- */
-
 import React, { useMemo } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { Menu, Bell } from 'lucide-react-native';
+import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
+import { Bell } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Avatar } from '@/shared/components/Avatar';
 import { useUserDisplayName, useUser } from '@/shared/hooks/useAuth';
-
-// ── Helpers ────────────────────────────────────────────────────────────────
+import { useTheme } from '@/hooks/useTheme';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -25,27 +13,20 @@ function getGreeting(): string {
   return 'Good evening';
 }
 
-// ── Component ──────────────────────────────────────────────────────────────
-
 interface HomeHeaderProps {
-  /** Callback when hamburger menu is pressed */
-  onMenuPress?: () => void;
-  /** Callback when notification bell is pressed */
   onNotificationPress?: () => void;
-  /** Optional override for username (useful for previews) */
   userNameOverride?: string;
 }
 
 export function HomeHeader({
-  onMenuPress,
   onNotificationPress,
   userNameOverride,
 }: HomeHeaderProps) {
   const displayName = useUserDisplayName();
   const user = useUser();
   const greeting = useMemo(() => getGreeting(), []);
+  const { colors } = useTheme();
 
-  // Extract first name for greeting
   const firstName = useMemo(() => {
     if (userNameOverride) return userNameOverride;
     if (!displayName || displayName === 'User') return '';
@@ -57,63 +38,42 @@ export function HomeHeader({
       entering={FadeInDown.duration(600).springify()}
       style={styles.container}
     >
-      {/* 1. Top Row: Navigation Controls */}
-      <View style={styles.topRow}>
-        <Pressable
-          onPress={onMenuPress}
-          hitSlop={12}
-          style={styles.iconButton}
-          className="bg-white/5 active:bg-white/10"
-          accessibilityLabel="Open menu"
-          accessibilityRole="button"
-        >
-          <Menu size={20} color="rgba(255,255,255,0.7)" />
-        </Pressable>
+      <View style={styles.brandRow}>
+        <View style={styles.brandLeft}>
+          <Image
+            source={require('@/shared/assets/neeva-logo.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={[styles.wordmark, { color: colors.text.primary }]}>Neeva</Text>
+        </View>
 
-        <View style={styles.rightControls}>
+        <View style={styles.brandRight}>
           <Pressable
             onPress={onNotificationPress}
             hitSlop={12}
             style={styles.iconButton}
-            className="bg-white/5 active:bg-white/10 mr-3"
             accessibilityLabel="View notifications"
             accessibilityRole="button"
           >
-            <Bell size={18} color="rgba(255,255,255,0.7)" />
-            {/* Notification dot indicator */}
-            <View style={styles.notificationDot} />
+            <Bell size={20} color={colors.text.secondary} />
+            <View style={[styles.notificationDot, { backgroundColor: colors.brand.primary }]} />
           </Pressable>
 
-          <View style={styles.avatarWrapper}>
-            <Avatar
-              photoURL={user?.photoURL ?? null}
-              name={displayName}
-              size="md"
-              className="border border-neeva-purple-500/20"
-            />
-            {/* User status green dot overlay */}
-            <View style={styles.statusDot} />
-          </View>
+          <Avatar
+            photoURL={user?.photoURL ?? null}
+            name={displayName}
+            size="sm"
+          />
         </View>
       </View>
 
-      {/* 2. Greeting Text */}
       <View style={styles.greetingSection}>
-        <Text
-          style={styles.greetingText}
-          className="text-white/50 font-sans"
-          allowFontScaling={true}
-        >
+        <Text style={[styles.greetingTitle, { color: colors.text.primary }]}>
           {greeting}{firstName ? `, ${firstName}` : ''} 👋
         </Text>
-
-        {/* 3. Display Welcome Message */}
-        <Text
-          style={styles.welcomeText}
-          className="text-white font-sans font-semibold"
-          allowFontScaling={true}
-        >
-          I'm glad you're here.
+        <Text style={[styles.greetingSubtitle, { color: colors.text.secondary }]}>
+          Let's take care of your mind today.
         </Text>
       </View>
     </Animated.View>
@@ -122,62 +82,60 @@ export function HomeHeader({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 24,
     paddingTop: 8,
-    paddingBottom: 2,
   },
-  topRow: {
+  brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
   },
-  rightControls: {
+  brandLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logo: {
+    width: 32,
+    height: 32,
+  },
+  wordmark: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginLeft: 8,
+    letterSpacing: -0.3,
+  },
+  brandRight: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   iconButton: {
-    width: 44, // Minimum 44px touch target compliance
-    height: 44,
-    borderRadius: 22,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    marginRight: 8,
   },
   notificationDot: {
     position: 'absolute',
-    top: 12,
-    right: 12,
+    top: 10,
+    right: 10,
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#06B6D4', // Cyan-500 status indicator
-  },
-  avatarWrapper: {
-    position: 'relative',
-  },
-  statusDot: {
-    position: 'absolute',
-    top: -1,
-    right: -1,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#10B981', // Green active indicator status
-    borderWidth: 2,
-    borderColor: '#0B0B12', // Matches new dark surface background
   },
   greetingSection: {
-    marginTop: 0,
+    marginTop: 16,
   },
-  greetingText: {
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: '500',
-  },
-  welcomeText: {
-    fontSize: 32,
-    lineHeight: 40,
+  greetingTitle: {
+    fontSize: 36,
+    fontWeight: '700',
+    lineHeight: 44,
     letterSpacing: -0.6,
+  },
+  greetingSubtitle: {
+    fontSize: 16,
+    fontWeight: '400',
+    lineHeight: 24,
     marginTop: 4,
   },
 });

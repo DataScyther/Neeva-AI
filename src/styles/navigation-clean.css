@@ -40,23 +40,17 @@
   position: relative;
   border-radius: 28px;
   padding: 8px 16px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.12),
-    0 4px 16px rgba(0, 0, 0, 0.06),
-    0 1px 4px rgba(0, 0, 0, 0.04);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Dark mode pill */
 .dark .navigation-pill,
 [data-theme="dark"] .navigation-pill {
-  background: #1a1a2e;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.05);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xl);
 }
 
 
@@ -64,18 +58,18 @@
 /* Force light override (keep for explicit light mode) */
 .mobile-nav-container .navigation-pill,
 div.mobile-nav-container div.navigation-pill {
-  background-color: #ffffff !important;
+  background-color: var(--color-bg-secondary) !important;
   background-image: none !important;
-  background: #ffffff !important;
+  background: var(--color-bg-secondary) !important;
 }
 
 .dark .mobile-nav-container .navigation-pill,
 .dark div.mobile-nav-container div.navigation-pill,
 [data-theme="dark"] .mobile-nav-container .navigation-pill {
-  background-color: #1a1a2e !important;
+  background-color: var(--color-bg-secondary) !important;
   background-image: none !important;
-  background: #1a1a2e !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background: var(--color-bg-secondary) !important;
+  border-color: var(--color-border) !important;
 }
 
 
@@ -113,38 +107,18 @@ div.mobile-nav-container div.navigation-pill {
 }
 
 .nav-pill-item:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: color-mix(in srgb, var(--color-text) 6%, transparent);
   transform: translateY(-1px);
 }
 
 .nav-pill-item:active {
   transform: scale(0.92);
-  background: rgba(0, 0, 0, 0.06);
-}
-
-/* Dark mode hover/active */
-
-
-.dark .nav-pill-item:hover,
-[data-theme="dark"] .nav-pill-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.dark .nav-pill-item:active,
-[data-theme="dark"] .nav-pill-item:active {
-  background: rgba(255, 255, 255, 0.12);
+  background: color-mix(in srgb, var(--color-text) 10%, transparent);
 }
 
 /* Active state — subtle bg glow */
 .nav-pill-item.active {
-  background: rgba(59, 130, 246, 0.08);
-}
-
-
-
-.dark .nav-pill-item.active,
-[data-theme="dark"] .nav-pill-item.active {
-  background: rgba(59, 130, 246, 0.15);
+  background: color-mix(in srgb, #3b82f6 10%, transparent);
 }
 
 /* ============================================
@@ -160,16 +134,8 @@ div.mobile-nav-container div.navigation-pill {
 .nav-icon {
   width: 22px;
   height: 22px;
-  color: #9ca3af;
+  color: var(--color-text-tertiary);
   transition: color 0.2s ease;
-}
-
-/* Dark mode icon color */
-
-
-.dark .nav-icon,
-[data-theme="dark"] .nav-icon {
-  color: #6b7280;
 }
 
 /* Active icon gets its color from inline style */
@@ -209,7 +175,7 @@ div.mobile-nav-container div.navigation-pill {
   right: -2px;
   width: 6px;
   height: 6px;
-  background: linear-gradient(135deg, #8b5cf6, #ec4899);
+  background: var(--color-primary);
   border-radius: 50%;
   animation: pulse 2s infinite;
 }
@@ -237,11 +203,9 @@ div.mobile-nav-container div.navigation-pill {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 2px solid #ffffff;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
-  box-shadow:
-    0 4px 14px rgba(139, 92, 246, 0.4),
-    0 2px 6px rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--color-bg-secondary);
+  background: var(--color-primary);
+  box-shadow: var(--shadow-md);
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -254,34 +218,16 @@ div.mobile-nav-container div.navigation-pill {
 
 .nav-center-button:hover {
   transform: translateY(-2px) scale(1.06);
-  box-shadow:
-    0 6px 20px rgba(139, 92, 246, 0.5),
-    0 3px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
 }
 
 .nav-center-button:active {
   transform: scale(0.94);
-  box-shadow:
-    0 2px 8px rgba(139, 92, 246, 0.3),
-    0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 .nav-center-button.active {
-  box-shadow:
-    0 4px 14px rgba(139, 92, 246, 0.5),
-    0 2px 6px rgba(0, 0, 0, 0.1),
-    0 0 0 3px rgba(139, 92, 246, 0.2);
-}
-
-/* Dark mode center button */
-
-
-.dark .nav-center-button,
-[data-theme="dark"] .nav-center-button {
-  border-color: #1a1a2e;
-  box-shadow:
-    0 4px 14px rgba(139, 92, 246, 0.5),
-    0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-md), 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 
 /* ============================================

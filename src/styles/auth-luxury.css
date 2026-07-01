@@ -2,40 +2,16 @@
    Auth Luxury Styles — Light & Dark Theme Support
    ═══════════════════════════════════════════════════════════ */
 
-/* ─── Light Mode: Soft pastel gradient ─── */
 .luxury-gradient-bg {
-  background: linear-gradient(-45deg, #f8fafc, #ede9fe, #e0e7ff, #fdf4ff);
-  background-size: 400% 400%;
-  animation: luxuryGradient 15s ease infinite;
+  background: var(--color-bg-secondary);
   position: relative;
   overflow: hidden;
 }
 
-/* ─── Dark Mode: Deep cinematic gradient ─── */
-.dark .luxury-gradient-bg {
-  background: linear-gradient(-45deg, #020617, #1e1b4b, #312e81, #0f172a);
-  background-size: 400% 400%;
-  animation: luxuryGradient 15s ease infinite;
-}
-
-@keyframes luxuryGradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 .luxury-glass-overlay {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
 }
 
 .luxury-input {

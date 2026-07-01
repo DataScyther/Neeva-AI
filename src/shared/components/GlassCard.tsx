@@ -100,9 +100,11 @@ export function GlassCard({
               stopColor={themeColor ? '#FFFFFF' : 'rgba(255, 255, 255, 0.25)'}
               stopOpacity={themeColor ? 0.32 : 1.0}
             />
-            {themeColor ? (
-              <Stop offset="25%" stopColor={themeColor} stopOpacity={0.22} />
-            ) : null}
+            <Stop
+              offset="25%"
+              stopColor={themeColor || 'rgba(255, 255, 255, 0.06)'}
+              stopOpacity={themeColor ? 0.22 : 1.0}
+            />
             <Stop offset="60%" stopColor="rgba(255, 255, 255, 0.06)" />
             <Stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" />
           </LinearGradient>

@@ -1,7 +1,7 @@
 /**
  * Mood Repository
  *
- * Manages mood entries in Firestore.
+ * Manages mood entries in Firestore with local storage fallback.
  */
 
 import {
@@ -14,13 +14,23 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { storageService } from '@/services/storage';
 import type { MoodEntry } from '@/shared/types';
 
 const COLLECTION = 'users';
 
+function getLocalKey(uid: string): string {
+  return `moods_${uid}`;
+}
+
 export class MoodRepository {
   async loadMoods(uid: string): Promise<MoodEntry[]> {
-    if (!uid || !db) return [];
+    if (!uid) return [];
+
+    if (!db) {
+      const local = await storageService.getJSON<MoodEntry[]>(getLocalKey(uid));
+      return local || [];
+    }
 
     try {
       const moodsRef = collection(db, COLLECTION, uid, 'moods');
@@ -38,7 +48,20 @@ export class MoodRepository {
   }
 
   async saveMood(uid: string, entry: MoodEntry): Promise<boolean> {
-    if (!uid || !db) return false;
+    if (!uid) return false;
+
+    if (!db) {
+      try {
+        const key = getLocalKey(uid);
+        const existing = await storageService.getJSON<MoodEntry[]>(key) || [];
+        existing.push(entry);
+        await storageService.setJSON(key, existing);
+        return true;
+      } catch (error) {
+        console.error('Error saving mood locally:', error);
+        return false;
+      }
+    }
 
     try {
       const docRef = doc(db, COLLECTION, uid, 'moods', entry.id);

@@ -17,6 +17,7 @@ import {
   Feather,
 } from 'lucide-react-native';
 import { typography, spacing, borderRadius } from '@/core/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface RecommendationHeaderProps {
   title?: string;
@@ -99,44 +100,47 @@ export const getBadgeStyleAndIcon = (badgeText: string) => {
 
   // Default (Mindfulness, AI Companion, etc.)
   return {
-    bg: 'rgba(139, 92, 246, 0.04)', // Softer Purple-500 tint
-    border: 'rgba(139, 92, 246, 0.12)',
-    color: '#A78BFA', // Purple-300
+    bg: 'rgba(108, 76, 241, 0.04)', // Softer Purple-500 tint
+    border: 'rgba(108, 76, 241, 0.12)',
+    color: '#8B5CF6', // Purple-400
     icon: Sparkles,
-    gradient: ['#8B5CF6', '#A78BFA'] as const,
-    glow: 'rgba(139, 92, 246, 0.15)',
+    gradient: ['#6C4CF1', '#8B5CF6'] as const,
+    glow: 'rgba(108, 76, 241, 0.15)',
   };
 };
 
 export const RecommendationHeader = React.memo(({
-  title = "Today's Focus",
-  badgeText = "AI Companion",
+  title = 'Your Recommendation',
+  badgeText,
 }: RecommendationHeaderProps) => {
+  const breathScale = useSharedValue(1);
   const glowOpacity = useSharedValue(0.4);
-  const breathScale = useSharedValue(1.0);
+  const { colors } = useTheme();
 
   useEffect(() => {
-    // Sync glow opacity and scale to form a 4-second breathing cycle (2s inhale, 2s exhale)
-    glowOpacity.value = withRepeat(
-      withSequence(
-        withTiming(0.8, { duration: 2000 }),
-        withTiming(0.4, { duration: 2000 })
-      ),
-      -1,
-      true
-    );
+    // Pulse animation mimicking a gentle breathing guide
     breathScale.value = withRepeat(
       withSequence(
-        withTiming(1.08, { duration: 2000 }),
-        withTiming(1.0, { duration: 2000 })
+        withTiming(1.08, { duration: 4000 }),
+        withTiming(1.0, { duration: 4000 })
       ),
       -1,
       true
     );
-  }, [glowOpacity, breathScale]);
+
+    glowOpacity.value = withRepeat(
+      withSequence(
+        withTiming(0.8, { duration: 4000 }),
+        withTiming(0.3, { duration: 4000 })
+      ),
+      -1,
+      true
+    );
+  }, []);
 
   const glowStyle = useAnimatedStyle(() => {
     return {
+      transform: [{ scale: breathScale.value * 1.15 }],
       opacity: glowOpacity.value,
     };
   });
@@ -147,7 +151,7 @@ export const RecommendationHeader = React.memo(({
     };
   });
 
-  const badgeStyle = getBadgeStyleAndIcon(badgeText);
+  const badgeStyle = getBadgeStyleAndIcon(badgeText || '');
   const BadgeIcon = badgeStyle.icon;
 
   return (
@@ -164,7 +168,7 @@ export const RecommendationHeader = React.memo(({
 
       {/* Row containing the title and the vertically centered breathing companion */}
       <View style={styles.titleRow}>
-        <Text style={styles.titleText} allowFontScaling={true}>
+        <Text style={[styles.titleText, { color: colors.text.primary }]} allowFontScaling={true}>
           {title}
         </Text>
 
@@ -177,24 +181,18 @@ export const RecommendationHeader = React.memo(({
               { backgroundColor: badgeStyle.color, shadowColor: badgeStyle.color },
             ]}
           />
-          <View style={[styles.avatarInner, { borderColor: 'rgba(255, 255, 255, 0.08)' }]}>
+          <View style={[styles.avatarInner, { backgroundColor: colors.surface.primary, borderColor: colors.border.default }]}>
             <Svg width={36} height={36} viewBox="0 0 40 40">
-              <Defs>
-                <RadialGradient id="avatarGrad" cx="50%" cy="50%" rx="50%" ry="50%">
-                  <Stop offset="0%" stopColor="#1E1A3C" />
-                  <Stop offset="100%" stopColor="#0B091B" />
-                </RadialGradient>
-              </Defs>
               {/* Background face circle */}
-              <Circle cx={20} cy={20} r={19} fill="url(#avatarGrad)" stroke={badgeStyle.color} strokeWidth={1.2} />
+              <Circle cx={20} cy={20} r={19} fill={colors.surface.secondary} stroke={badgeStyle.color} strokeWidth={1.2} />
               {/* Cute robot eyes */}
-              <Circle cx={14} cy={17} r={2} fill="#06B6D4" />
-              <Circle cx={26} cy={17} r={2} fill="#06B6D4" />
+              <Circle cx={14} cy={17} r={2} fill={colors.brand.primary} />
+              <Circle cx={26} cy={17} r={2} fill={colors.brand.primary} />
               {/* Robot smile path */}
               <Path
                 d="M 14,24 A 6,6 0 0,0 26,24"
                 fill="transparent"
-                stroke="#06B6D4"
+                stroke={colors.brand.primary}
                 strokeWidth={1.5}
                 strokeLinecap="round"
               />
@@ -258,7 +256,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#0B091B',
     overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
@@ -270,7 +267,6 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
     fontSize: 24,
     fontWeight: '900',
-    color: '#FFFFFF',
     fontFamily: typography.fontFamily.display,
     lineHeight: 30,
     letterSpacing: 0.2,

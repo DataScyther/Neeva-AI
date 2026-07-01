@@ -15,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import { Play } from 'lucide-react-native';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface PrimaryRecommendationButtonProps {
   onPress: () => void;
@@ -32,6 +33,7 @@ export const PrimaryRecommendationButton = React.memo(({
   disabled = false,
 }: PrimaryRecommendationButtonProps) => {
   const scale = useSharedValue(1);
+  const { colors } = useTheme();
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -85,8 +87,8 @@ export const PrimaryRecommendationButton = React.memo(({
           <Svg width="100%" height="100%">
             <Defs>
               <LinearGradient id="recBtnGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <Stop offset="0%" stopColor="#06B6D4" />
-                <Stop offset="100%" stopColor="#8B5CF6" />
+                <Stop offset="0%" stopColor={colors.brand.primary} />
+                <Stop offset="100%" stopColor={colors.brand.secondary} />
               </LinearGradient>
             </Defs>
             <Rect width="100%" height="100%" rx={16} fill="url(#recBtnGrad)" />
@@ -95,15 +97,15 @@ export const PrimaryRecommendationButton = React.memo(({
       )}
 
       {disabled && !loading && (
-        <View style={[StyleSheet.absoluteFill, styles.disabledBg]} pointerEvents="none" />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.background.secondary, borderRadius: 16 }]} pointerEvents="none" />
       )}
 
       {loading ? (
-        <ActivityIndicator size="small" color="#FFFFFF" />
+        <ActivityIndicator size="small" color={colors.brand.contrastText} />
       ) : (
         <View style={styles.contentRow}>
-          <Play size={14} color="#FFFFFF" fill="#FFFFFF" style={styles.playIcon} />
-          <Text style={styles.text}>{text}</Text>
+          <Play size={14} color={colors.brand.contrastText} fill={colors.brand.contrastText} style={styles.playIcon} />
+          <Text style={[styles.text, { color: colors.brand.contrastText }]}>{text}</Text>
         </View>
       )}
     </AnimatedPressable>
@@ -119,10 +121,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     overflow: 'hidden',
   },
-  disabledBg: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 16,
-  },
   contentRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -132,7 +130,6 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   text: {
-    color: '#FFFFFF',
     fontSize: 14,
     fontWeight: '600',
     fontFamily: 'SF Pro Display',

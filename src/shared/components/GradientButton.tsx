@@ -17,6 +17,7 @@ import Animated, {
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
 import { typography } from '@/core/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface GradientButtonProps {
   title: string;
@@ -39,10 +40,13 @@ export const GradientButton = React.memo(({
   loading = false,
   icon,
   size = 'md',
-  colors = ['#8B5CF6', '#06B6D4'], // Default: purple to cyan
+  colors: propColors,
   style,
   className = '',
 }: GradientButtonProps) => {
+  const { colors: themeColors } = useTheme();
+  const colors = propColors || [themeColors.brand.primary, themeColors.brand.secondary];
+
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -106,7 +110,7 @@ export const GradientButton = React.memo(({
   const fontSize = size === 'sm' ? 12 : size === 'md' ? 14 : 16;
   const iconLeftOffset = size === 'sm' ? 14 : size === 'md' ? 18 : 22;
 
-  const activeShadowStyle = !disabled && !loading ? styles.activeShadow : {};
+  const activeShadowStyle = !disabled && !loading ? { shadowColor: themeColors.brand.primary } : {};
   const borderStyle = !disabled && !loading ? { borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.15)' } : {};
 
   return (
@@ -145,11 +149,11 @@ export const GradientButton = React.memo(({
       )}
 
       {disabled && !loading && (
-        <View style={[StyleSheet.absoluteFill, styles.disabledBg, { borderRadius: btnRadius }]} pointerEvents="none" />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: themeColors.background.secondary, borderRadius: btnRadius }]} pointerEvents="none" />
       )}
 
       {loading ? (
-        <ActivityIndicator size="small" color="#FFFFFF" />
+        <ActivityIndicator size="small" color={themeColors.brand.contrastText} />
       ) : (
         <View style={styles.contentRow}>
           {icon && (
@@ -157,7 +161,7 @@ export const GradientButton = React.memo(({
               {icon}
             </View>
           )}
-          <Text style={[styles.text, { fontSize }]}>{title}</Text>
+          <Text style={[styles.text, { fontSize, color: themeColors.brand.contrastText }]}>{title}</Text>
         </View>
       )}
     </AnimatedPressable>
@@ -171,12 +175,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: '100%',
     position: 'relative',
-  },
-  disabledBg: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  activeShadow: {
-    shadowColor: '#8B5CF6',
   },
   contentRow: {
     flexDirection: 'row',
@@ -193,7 +191,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    color: '#FFFFFF',
     fontWeight: '700',
     fontFamily: typography.fontFamily.display,
     letterSpacing: 0.5,

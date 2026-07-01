@@ -70,7 +70,7 @@ export default function AppEntry() {
       <View className="flex-1 bg-app-dark items-center justify-center">
         <Animated.View style={logoAnimatedStyle} className="items-center mb-8">
           <Image
-            source={require('@/shared/assets/neeva-logo.jpg')}
+            source={require('@/shared/assets/neeva-logo.png')}
             style={{
               width: width * 0.45,
               height: width * 0.45,
@@ -92,7 +92,7 @@ export default function AppEntry() {
   }
 
   if (!isAuthenticated) {
-    return <Redirect href="/auth/login" />;
+    return <Redirect href="/auth/welcome" />;
   }
 
   if (!onboardingCompleted) {

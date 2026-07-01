@@ -41,6 +41,28 @@
     <meta name="twitter:image" content="/logo.svg" />
     <meta name="twitter:image:alt" content="Neeva AI Logo" />
 
+    <!-- ─── Flash-prevention: apply theme before React hydrates ─── -->
+    <script>
+      (function() {
+        var mode = localStorage.getItem('neeva-theme-mode') || 'auto';
+        var theme;
+        if (mode === 'auto') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        } else {
+          theme = mode;
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.documentElement.style.colorScheme = theme;
+        document.documentElement.classList.add('preload');
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            document.documentElement.classList.remove('preload');
+          });
+        });
+      })();
+    </script>
+
     <!-- ─── Google Fonts ─── -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

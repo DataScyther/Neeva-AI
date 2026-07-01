@@ -51,7 +51,10 @@
     "src/styles",
     "src/App.tsx",
     "src/main.tsx",
-    "src/vite-env.d.ts"
+    "src/vite-env.d.ts",
+    "src/hooks/useAuthSelectors.ts",
+    "src/hooks/queries.ts",
+    "src/lib/db.ts"
   ],
   "extends": "expo/tsconfig.base"
 }

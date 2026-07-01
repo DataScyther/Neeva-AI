@@ -88,7 +88,7 @@ export function ForgotPasswordScreen() {
           >
             <View className="mb-4">
               <Image
-                source={require('@/shared/assets/neeva-logo.jpg')}
+                source={require('@/shared/assets/neeva-logo.png')}
                 style={{
                   width: width * 0.28,
                   height: width * 0.28,

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, type ViewStyle } from 'react-native';
 import { typography, spacing } from '@/core/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface SectionHeaderProps {
   title: string;
@@ -21,13 +22,15 @@ export const SectionHeader = React.memo(({
   style,
   className = '',
 }: SectionHeaderProps) => {
+  const { colors } = useTheme();
+
   return (
     <View style={[styles.container, style]} className={className}>
       <View style={styles.leftSection}>
         {icon && <View style={styles.iconContainer}>{icon}</View>}
         <View>
           <Text
-            style={styles.title}
+            style={[styles.title, { color: colors.text.primary }]}
             allowFontScaling={true}
             numberOfLines={1}
           >
@@ -35,7 +38,7 @@ export const SectionHeader = React.memo(({
           </Text>
           {subtitle && (
             <Text
-              style={styles.subtitle}
+              style={[styles.subtitle, { color: colors.text.secondary }]}
               allowFontScaling={true}
               numberOfLines={2}
             >
@@ -57,7 +60,7 @@ export const SectionHeader = React.memo(({
           accessibilityRole="button"
           accessibilityLabel={actionText}
         >
-          <Text style={styles.actionText}>{actionText}</Text>
+          <Text style={[styles.actionText, { color: colors.brand.primary }]}>{actionText}</Text>
         </Pressable>
       )}
     </View>
@@ -87,14 +90,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: typography.fontSize.caption,
     fontWeight: typography.fontWeight['section-title'],
-    color: '#FFFFFF',
     fontFamily: typography.fontFamily.display,
     textTransform: 'uppercase',
     letterSpacing: typography.letterSpacing['section-title'] ?? 0,
   },
   subtitle: {
     fontSize: typography.fontSize.label,
-    color: 'rgba(255, 255, 255, 0.4)',
     fontFamily: typography.fontFamily.sans,
     marginTop: spacing.xs / 4,
   },
@@ -106,7 +107,6 @@ const styles = StyleSheet.create({
   },
   actionText: {
     fontSize: typography.fontSize.label,
-    color: '#06B6D4',
     fontWeight: typography.fontWeight.label,
     fontFamily: typography.fontFamily.sans,
   },

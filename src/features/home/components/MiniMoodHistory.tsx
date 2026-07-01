@@ -1,19 +1,18 @@
 import React, { useMemo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Animated, { FadeInDown, Layout } from 'react-native-reanimated';
-import { Calendar } from 'lucide-react-native';
-import { typography, spacing } from '@/core/theme';
-import { MoodHistoryItem } from './MoodHistoryItem';
-import { GlassCard } from '@/shared/components/GlassCard';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import Svg, { Path, Circle } from 'react-native-svg';
 import type { MoodEntry } from '@/shared/types';
 
-export interface MiniMoodHistoryProps {
+import { useTheme } from '@/hooks/useTheme';
+
+interface MiniMoodHistoryProps {
   moodEntries: MoodEntry[];
-  selectedDate: Date | null;
-  onSelectDate: (date: Date) => void;
 }
 
-const getEmojiForRating = (rating: number): string => {
+const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+function getEmojiForRating(rating: number): string {
   if (rating >= 9) return '🤩';
   if (rating >= 8) return '😊';
   if (rating >= 6) return '😌';
@@ -21,190 +20,160 @@ const getEmojiForRating = (rating: number): string => {
   if (rating >= 3) return '😰';
   if (rating >= 2) return '😔';
   return '🤯';
-};
+}
 
-const getDayName = (date: Date): string => {
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  return days[date.getDay()];
-};
+function getMoodValue(rating: number): number {
+  if (rating >= 9) return 5;
+  if (rating >= 8) return 4;
+  if (rating >= 6) return 3;
+  if (rating >= 4) return 2;
+  return 1;
+}
 
 export const MiniMoodHistory = React.memo(({
   moodEntries,
-  selectedDate,
-  onSelectDate,
 }: MiniMoodHistoryProps) => {
-  // Generate the last 7 calendar days
-  const lastSevenDays = useMemo(() => {
-    const days = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setHours(0, 0, 0, 0);
-      d.setDate(d.getDate() - i);
-      days.push(d);
-    }
-    return days;
-  }, []);
+  const { colors } = useTheme();
 
-  // Map entries to dates
   const timelineData = useMemo(() => {
-    return lastSevenDays.map((date) => {
-      // Find all entries for this date
-      const dayEntries = moodEntries.filter((entry) => {
-        const entryDate = new Date(entry.timestamp);
-        return entryDate.toDateString() === date.toDateString();
+    const today = new Date();
+    const data = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const dayEntries = moodEntries.filter(
+        (e) => new Date(e.timestamp).toDateString() === d.toDateString()
+      );
+      const latest = dayEntries.length > 0 ? dayEntries[dayEntries.length - 1] : null;
+      data.push({
+        day: DAYS[d.getDay()],
+        emoji: latest ? getEmojiForRating(latest.mood) : null,
+        value: latest ? getMoodValue(latest.mood) : null,
       });
+    }
+    return data;
+  }, [moodEntries]);
 
-      // Get the latest entry if multiple exist
-      const latestEntry = dayEntries.length > 0 ? dayEntries[dayEntries.length - 1] : null;
+  const graphWidth = 260;
+  const graphHeight = 60;
+  const padding = 20;
 
-      return {
-        date,
-        dayLabel: getDayName(date),
-        emoji: latestEntry ? getEmojiForRating(latestEntry.mood) : null,
-        entry: latestEntry,
-      };
+  const points = useMemo(() => {
+    const step = (graphWidth - padding * 2) / 6;
+    return timelineData.map((item, i) => {
+      const x = padding + i * step;
+      const y = item.value
+        ? graphHeight - (item.value / 5) * (graphHeight - 16) - 8
+        : graphHeight - 8;
+      return { x, y, value: item.value };
     });
-  }, [lastSevenDays, moodEntries]);
+  }, [timelineData]);
 
-  // Find note for the selected date
-  const selectedDayInfo = useMemo(() => {
-    if (!selectedDate) return null;
-
-    const matched = timelineData.find(
-      (item) => item.date.toDateString() === selectedDate.toDateString()
-    );
-
-    return matched || null;
-  }, [selectedDate, timelineData]);
+  const pathD = useMemo(() => {
+    if (points.length === 0) return '';
+    let d = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const cx1 = (prev.x + curr.x) / 2;
+      const cx2 = (prev.x + curr.x) / 2;
+      d += ` C ${cx1} ${prev.y}, ${cx2} ${curr.y}, ${curr.x} ${curr.y}`;
+    }
+    return d;
+  }, [points]);
 
   return (
     <Animated.View
-      entering={FadeInDown.delay(300).duration(600).springify()}
+      entering={FadeInDown.delay(200).duration(600).springify()}
       style={styles.container}
     >
-      <GlassCard intensity="dark">
-        {/* Title */}
+      <View style={[styles.card, { backgroundColor: colors.surface.primary, borderColor: colors.border.default }]}>
         <View style={styles.header}>
-          <Calendar size={14} color="#06B6D4" />
-          <Text style={styles.titleText}>Weekly History</Text>
+          <Text style={[styles.title, { color: colors.text.primary }]}>Weekly History</Text>
+          <Text style={[styles.thisWeek, { color: colors.brand.primary }]}>This Week</Text>
         </View>
 
-        {/* Timeline Row */}
-        <View style={styles.timelineRow}>
-          {timelineData.map((item, index) => {
-            const isSelected = selectedDate !== null && selectedDate.toDateString() === item.date.toDateString();
-            return (
-              <MoodHistoryItem
-                key={item.date.toISOString()}
-                dayLabel={item.dayLabel}
-                emoji={item.emoji}
-                isSelected={isSelected}
-                onPress={() => onSelectDate(item.date)}
-                index={index}
+        <View style={styles.graphContainer}>
+          <Svg width={graphWidth} height={graphHeight}>
+            {points.filter((p) => p.value !== null).length > 1 && (
+              <Path
+                d={pathD}
+                stroke={colors.brand.primary}
+                strokeWidth={2}
+                fill="none"
+                strokeLinecap="round"
               />
-            );
-          })}
+            )}
+            {points.map((p, i) => (
+              p.value !== null ? (
+                <Circle
+                  key={i}
+                  cx={p.x}
+                  cy={p.y}
+                  r={4}
+                  fill={colors.brand.primary}
+                />
+              ) : null
+            ))}
+          </Svg>
         </View>
 
-        {/* Dynamic Note Display with Speech Bubble styling */}
-        {selectedDate && selectedDayInfo && (
-          <Animated.View layout={Layout.springify()} style={styles.noteContainer}>
-            <View style={styles.bubbleArrow} />
-            <View style={styles.noteBubble}>
-              {selectedDayInfo.entry ? (
-                <>
-                  <Text style={styles.noteTitle}>
-                    Reflected on {selectedDayInfo.dayLabel}:
-                  </Text>
-                  <Text style={styles.noteContent}>
-                    {selectedDayInfo.entry.note.trim()
-                      ? `"${selectedDayInfo.entry.note}"`
-                      : 'Checked in but left no reflection note.'}
-                  </Text>
-                </>
-              ) : (
-                <Text style={styles.noCheckInText}>
-                  No check-in recorded for this day.
-                </Text>
-              )}
+        <View style={styles.daysRow}>
+          {timelineData.map((item, i) => (
+            <View key={i} style={styles.dayItem}>
+              <Text style={styles.dayEmoji}>{item.emoji || '·'}</Text>
+              <Text style={[styles.dayLabel, { color: colors.text.secondary }]}>{item.day}</Text>
             </View>
-          </Animated.View>
-        )}
-      </GlassCard>
+          ))}
+        </View>
+      </View>
     </Animated.View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: spacing.xl, // 24px
-    marginVertical: spacing.sm,    // 8px standard
+    marginVertical: 8,
+  },
+  card: {
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  titleText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#06B6D4',
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    marginLeft: 8,
-    fontFamily: typography.fontFamily.display,
-  },
-  timelineRow: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 12,
   },
-  noteContainer: {
-    marginTop: spacing.lg,
-    alignItems: 'center',
-    width: '100%',
-  },
-  bubbleArrow: {
-    width: 0,
-    height: 0,
-    backgroundColor: 'transparent',
-    borderStyle: 'solid',
-    borderLeftWidth: 8,
-    borderRightWidth: 8,
-    borderBottomWidth: 8,
-    borderLeftColor: 'transparent',
-    borderRightColor: 'transparent',
-    borderBottomColor: 'rgba(255, 255, 255, 0.04)',
-  },
-  noteBubble: {
-    width: '100%',
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    borderRadius: 16,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
-  },
-  noteTitle: {
-    fontSize: 11,
+  title: {
+    fontSize: 13,
     fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.4)',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    fontFamily: typography.fontFamily.sans,
+  },
+  thisWeek: {
+    fontSize: 11,
+    fontWeight: '500',
+  },
+  graphContainer: {
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  daysRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  dayItem: {
+    alignItems: 'center',
+    width: 32,
+  },
+  dayEmoji: {
+    fontSize: 16,
     marginBottom: 4,
   },
-  noteContent: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontFamily: typography.fontFamily.sans,
-  },
-  noCheckInText: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.4)',
-    textAlign: 'center',
-    fontStyle: 'italic',
-    fontFamily: typography.fontFamily.sans,
+  dayLabel: {
+    fontSize: 10,
+    fontWeight: '500',
+    textTransform: 'uppercase',
   },
 });
 

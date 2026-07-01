@@ -19,6 +19,7 @@ export interface TextFieldProps extends Omit<TextInputProps, 'className'> {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   containerClassName?: string;
+  theme?: 'dark' | 'light';
 }
 
 export function TextField({
@@ -31,20 +32,34 @@ export function TextField({
   onFocus,
   onBlur,
   containerClassName = '',
+  theme = 'dark',
   ...inputProps
 }: TextFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+
+  const isDark = theme === 'dark';
 
   const borderColor = error
     ? 'border-red-400'
     : isFocused
-    ? 'border-neeva-purple-500'
-    : 'border-neeva-glass-border';
+    ? isDark
+      ? 'border-neeva-purple-500'
+      : 'border-blue-600'
+    : isDark
+    ? 'border-neeva-glass-border'
+    : 'border-slate-200';
 
   const labelAnimatedStyle = useAnimatedStyle(() => ({
     color: withTiming(
-      error ? '#F87171' : isFocused ? '#8B5CF6' : 'rgba(255,255,255,0.4)',
+      error
+        ? '#F87171'
+        : isFocused
+        ? isDark
+          ? '#A78BFA'
+          : '#1C51E2'
+        : isDark
+        ? 'rgba(255,255,255,0.4)'
+        : '#475569',
       { duration: 200 }
     ),
   }));
@@ -64,14 +79,16 @@ export function TextField({
       {label && (
         <Animated.Text
           style={labelAnimatedStyle}
-          className="text-body-sm font-medium mb-2"
+          className="text-body-sm font-semibold mb-2"
         >
           {label}
         </Animated.Text>
       )}
 
       <View
-        className={`flex-row items-center bg-neeva-glass-dark/40 rounded-glass border ${borderColor} px-4 py-3`}
+        className={`flex-row items-center rounded-xl border ${borderColor} px-4 py-3.5 ${
+          isDark ? 'bg-neeva-glass-dark/40' : 'bg-white'
+        }`}
       >
         {leftIcon && <View className="mr-3">{leftIcon}</View>}
 
@@ -79,8 +96,8 @@ export function TextField({
           value={value}
           onFocus={handleFocus}
           onBlur={handleBlur}
-          placeholderTextColor="rgba(255,255,255,0.3)"
-          className="flex-1 text-white text-body"
+          placeholderTextColor={isDark ? 'rgba(255,255,255,0.3)' : '#94A3B8'}
+          className={`flex-1 text-body ${isDark ? 'text-white' : 'text-slate-800 font-medium'}`}
           {...inputProps}
         />
 
@@ -88,11 +105,13 @@ export function TextField({
       </View>
 
       {error && (
-        <Text className="text-red-400 text-caption mt-1.5">{error}</Text>
+        <Text className="text-red-500 text-caption mt-1.5 font-medium">{error}</Text>
       )}
 
       {hint && !error && (
-        <Text className="text-white/30 text-caption mt-1.5">{hint}</Text>
+        <Text className={`text-caption mt-1.5 ${isDark ? 'text-white/40' : 'text-slate-400'}`}>
+          {hint}
+        </Text>
       )}
     </View>
   );

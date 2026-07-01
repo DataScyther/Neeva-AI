@@ -7,6 +7,7 @@ interface GoogleSignInButtonProps {
   onPress: () => void;
   loading?: boolean;
   disabled?: boolean;
+  theme?: 'dark' | 'light';
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -36,6 +37,7 @@ export function GoogleSignInButton({
   onPress,
   loading = false,
   disabled = false,
+  theme = 'dark',
 }: GoogleSignInButtonProps) {
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -43,22 +45,28 @@ export function GoogleSignInButton({
     };
   });
 
+  const isDark = theme === 'dark';
+
   return (
     <AnimatedPressable
       onPress={onPress}
       disabled={disabled || loading}
-      className="flex-row items-center justify-center rounded-glass px-8 py-4 bg-neeva-glass-highlight border border-neeva-glass-border active:opacity-80 mt-4"
+      className={`flex-row items-center justify-center rounded-xl px-8 py-3.5 border active:opacity-85 ${
+        isDark
+          ? 'bg-neeva-glass-highlight border-neeva-glass-border'
+          : 'bg-white border-slate-200 shadow-sm shadow-slate-100'
+      }`}
       style={animatedStyle}
       accessibilityRole="button"
       accessibilityLabel="Continue with Google"
       accessibilityHint="Double tap to sign in with your Google account"
     >
       {loading ? (
-        <ActivityIndicator size="small" color="#FFFFFF" />
+        <ActivityIndicator size="small" color={isDark ? '#FFFFFF' : '#8B5CF6'} />
       ) : (
         <>
           <GoogleIcon />
-          <Text className="text-white font-semibold ml-3 text-body">
+          <Text className={`font-semibold ml-3 text-body ${isDark ? 'text-white' : 'text-slate-800'}`}>
             Continue with Google
           </Text>
         </>
