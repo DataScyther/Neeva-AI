@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { ProgressBar } from '@/shared/components/ProgressBar';
 import { useTheme } from '@/hooks/useTheme';
@@ -15,6 +15,7 @@ import type { JourneyProgress } from '@/features/journey/types/JourneyProgress';
 interface ContinueJourneyCardProps {
   journey: JourneyProgress | null | undefined;
   isLoading: boolean;
+  isFetching?: boolean;
   error: Error | null;
   onContinue: (journey: JourneyProgress) => void;
   onRetry: () => void;
@@ -25,6 +26,7 @@ interface ContinueJourneyCardProps {
 export const ContinueJourneyCard = React.memo(({
   journey,
   isLoading,
+  isFetching = false,
   error,
   onContinue,
   onRetry,
@@ -33,7 +35,8 @@ export const ContinueJourneyCard = React.memo(({
 }: ContinueJourneyCardProps) => {
   const { colors } = useTheme();
 
-  if (!journey && !error) {
+  // Skeleton: I don't know yet (loading, no data)
+  if (isLoading && !journey && !error) {
     return (
       <Animated.View entering={FadeInDown.delay(100).duration(600).springify()}>
         <JourneyLoadingState />
@@ -49,8 +52,13 @@ export const ContinueJourneyCard = React.memo(({
     );
   }
 
+  // Empty: I know there is no journey (not loading, no data)
   if (!journey) {
-    return null;
+    return (
+      <Animated.View entering={FadeInDown.delay(100).duration(600).springify()}>
+        <EmptyJourneyState onStart={onStartJourney} />
+      </Animated.View>
+    );
   }
 
   if (journey.status === 'completed') {
@@ -106,6 +114,9 @@ export const ContinueJourneyCard = React.memo(({
           <Text style={[styles.percentText, { color: colors.text.secondary }]}>
             {journey.completionPercent}% Complete
           </Text>
+          {isFetching && (
+            <ActivityIndicator size="small" color={colors.brand.primary} style={styles.syncIndicator} />
+          )}
         </View>
 
         <ContinueButton onPress={() => onContinue(journey)} />
@@ -153,6 +164,9 @@ const styles = StyleSheet.create({
   percentText: {
     fontSize: 13,
     fontWeight: '500',
+  },
+  syncIndicator: {
+    marginLeft: 6,
   },
 });
 

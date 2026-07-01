@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { storageService } from '@/services/storage';
+import { journeyCache } from '@/features/journey/services/JourneyCache';
 import type { JourneyProgress } from '@/features/journey/types/JourneyProgress';
 
 export interface ExerciseProgress {
@@ -148,6 +149,7 @@ export class JourneyRepository {
     if (!uid || !exerciseId || !db) return false;
 
     try {
+      // 1. Write to Firestore
       const docRef = doc(db, COLLECTION, uid, 'exercises', exerciseId);
       await setDoc(
         docRef,
@@ -159,6 +161,18 @@ export class JourneyRepository {
         },
         { merge: true }
       );
+
+      // 2. Write-through: persist locally (returns merged data, no redundant read)
+      const mergedProgress = await this.persistLocal(uid, {
+        [exerciseId]: { completed: true, streak, lastCompletedAt: new Date() },
+      });
+
+      // 3. Recompute and update journey cache
+      if (Object.keys(mergedProgress).length > 0) {
+        const journey = computeJourneyFromProgress(mergedProgress);
+        await journeyCache.set(journey);
+      }
+
       return true;
     } catch (error) {
       console.error('Error saving exercise progress:', error);
@@ -176,12 +190,18 @@ export class JourneyRepository {
     if (!uid) return null;
 
     const cloudData = await this.loadFromCloud(uid);
+    let merged: Record<string, ExerciseProgress>;
     if (Object.keys(cloudData).length > 0) {
-      await this.persistLocal(uid, cloudData);
+      merged = await this.persistLocal(uid, cloudData);
+    } else {
+      merged = await this.loadFromLocal(uid);
     }
 
-    const merged = await this.loadFromLocal(uid);
-    return computeJourneyFromProgress(merged);
+    const journey = computeJourneyFromProgress(merged);
+    if (journey) {
+      await journeyCache.set(journey);
+    }
+    return journey;
   }
 
   // ─── Local persistence ───────────────────────────────────────────────
@@ -189,15 +209,17 @@ export class JourneyRepository {
   async persistLocal(
     uid: string,
     progress: Record<string, ExerciseProgress>
-  ): Promise<void> {
-    if (!uid) return;
+  ): Promise<Record<string, ExerciseProgress>> {
+    if (!uid) return {};
     try {
       const key = getLocalKey(uid);
       const existing = await this.loadFromLocal(uid);
       const merged = { ...existing, ...progress };
       await storageService.setJSON(key, merged);
+      return merged;
     } catch (error) {
       console.error('Error persisting journey progress locally:', error);
+      return {};
     }
   }
 

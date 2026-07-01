@@ -143,6 +143,10 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     } else if (type === 'save_exercise_progress') {
       const { uid, exerciseId, streak } = payload;
       if (uid && exerciseId) {
+        // Write-through: persist locally immediately (like mood)
+        await journeyRepository.persistLocal(uid, {
+          [exerciseId]: { completed: true, streak, lastCompletedAt: new Date() },
+        });
         queryClient.setQueryData(['exercises', uid], (old: Record<string, any> = {}) => {
           return { ...old, [exerciseId]: { ...old[exerciseId], completed: true, streak } };
         });

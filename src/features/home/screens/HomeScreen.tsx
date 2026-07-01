@@ -93,6 +93,7 @@ export function HomeScreen() {
   const {
     data: journey,
     isLoading: journeyLoading,
+    isFetching: journeyFetching,
     error: journeyError,
     resumeJourney,
     refetchJourney,
@@ -247,6 +248,7 @@ export function HomeScreen() {
           <ContinueJourneyCard
             journey={journey}
             isLoading={journeyLoading}
+            isFetching={journeyFetching}
             error={journeyError}
             onContinue={resumeJourney}
             onRetry={refetchJourney}
